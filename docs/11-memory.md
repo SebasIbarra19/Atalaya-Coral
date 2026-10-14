@@ -1,0 +1,79 @@
+---
+titulo: Project Memory
+proyecto: Atalaya (coral reef thermal-stress platform)
+version: 0.1
+estado: borrador
+fecha: 2026-10-14
+duenio: Sebastián Ibarra Herrera
+depende_de: [00-spec.md, 09-implementation-plan.md, 10-tasks.md]
+---
+
+# Project Memory
+
+The living document. Update it at the end of every work session. Add entries, never rewrite history. If a chat contradicts this file, this file wins.
+
+## 1. Current state
+
+| Item | Value |
+| --- | --- |
+| Current phase | F0 (documentation) |
+| Last completed task | Documentation suite drafted (13 documents) |
+| Next task | Review the drafts, then F0-T01 (create the repository) |
+| Blockers | First sites are not decided |
+| Last updated | 2026-10-14 |
+
+## 2. Completed
+
+| Date | What |
+| --- | --- |
+| 2026-10-10 | Flagship idea defined and references collected (`proyecto-insignia-referencias.md` in the Claude project) |
+| 2026-10-14 | First specification written as a Claude Docs draft (Spanish) |
+| 2026-10-14 | Reusable documentation prompt created and applied; 13 documents drafted in English |
+
+## 3. Important decisions
+
+| Date | Decision | Reason | Alternatives discarded |
+| --- | --- | --- | --- |
+| 2026-10-10 | Data from NOAA Coral Reef Watch 5 km for Costa Rican sites | Public, daily, real domain | Own data (does not exist yet) |
+| 2026-10-10 | Branch A replicates the approach of Arcodia et al. (2025), XGBoost with SHAP, starting from a simple baseline | Explainable and proven on a similar problem | Neural networks |
+| 2026-10-10 | Branch C is split: HolmesGPT for operations and an own domain agent | Learn both integrating and building | Only one of them |
+| 2026-10-10 | The jiu-jitsu app is not a workload of this platform | Keep client work and portfolio separate | Reusing it |
+| 2026-10-10 | AI works as mentor and copilot, not author | The goal is learning | AI writes everything |
+| 2026-10-14 | No fixed dates; phases close at exit gates | Available hours vary by semester | Calendar plan |
+| 2026-10-14 | Local cluster first, cloud later | Free and repeatable | Cloud from the start |
+| 2026-10-14 | Mentor mode is mixed by phase | Strict where the owner wants mastery, flexible on infrastructure configuration | One mode for all |
+| 2026-10-14 | Documents are written in English | Public portfolio repository | Spanish |
+| 2026-10-14 | Independent from CoraMar for now | Avoid depending on approvals | Connected from the start |
+| 2026-10-14 | Project name is Atalaya (watchtower); repository `Atalaya-Coral` | Short, original, ties to early warning | Isoterma, Zooxa, Coralert, Vigia, Centinela |
+| 2026-10-14 | Markdown files in the repository are the source of truth; the first Spanish Claude Docs draft is frozen as a reading copy | One source of truth | Two editable copies |
+
+## 4. In progress and blockers
+
+- Review of the 13 drafts by the owner.
+- Open: first sites, forecast horizon, notification channel, license confirmation.
+
+## 5. Lessons learned
+
+- No entries yet.
+
+## 6. Document changes
+
+| Date | Document | What changed and why |
+| --- | --- | --- |
+| 2026-10-14 | All | First drafts created from the documentation prompt and the specification |
+| 2026-10-14 | All | Project name set to Atalaya in front matter; name TBD removed |
+
+## 7. Session log
+
+| Date | What was done | What is next |
+| --- | --- | --- |
+| 2026-10-14 | Name chosen (Atalaya). Local repo created with remote. Starter package added (CLAUDE.md, README, Makefile stubs, .gitignore, .env.example, LICENSE, minimal CI) and project name updated in all front matter | Owner reviews and makes the first commit and push; then F0-T03 onward |
+| 2026-10-14 | Applied the documentation prompt to the flagship project; drafted `00-spec` to `11-memory` and `AGENTS.md` | Owner reviews drafts; then create the repository (F0) |
+
+## Open questions
+
+See `00-spec.md`, section 10.
+
+## Related documents
+
+[00-spec.md](00-spec.md) · [09-implementation-plan.md](09-implementation-plan.md) · [10-tasks.md](10-tasks.md) · [AGENTS.md](../AGENTS.md)
