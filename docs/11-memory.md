@@ -17,8 +17,8 @@ The living document. Update it at the end of every work session. Add entries, ne
 | Item | Value |
 | --- | --- |
 | Current phase | F0 (documentation) |
-| Last completed task | Documentation suite drafted (13 documents) |
-| Next task | Review the drafts, then F0-T01 (create the repository) |
+| Last completed task | F0-T07 (ADR-001 to ADR-005) |
+| Next task | F0-T04 verify locally, F0-T05 CI on a pull request, F0-T06 branch protection and pre-commit secret scan |
 | Blockers | First sites are not decided |
 | Last updated | 2026-10-14 |
 
@@ -45,6 +45,8 @@ The living document. Update it at the end of every work session. Add entries, ne
 | 2026-10-14 | Documents are written in English | Public portfolio repository | Spanish |
 | 2026-10-14 | Independent from CoraMar for now | Avoid depending on approvals | Connected from the start |
 | 2026-10-14 | Project name is Atalaya (watchtower); repository `Atalaya-Coral` | Short, original, ties to early warning | Isoterma, Zooxa, Coralert, Vigia, Centinela |
+| 2026-10-14 | Repository will be public | Portfolio project; branch protection on GitHub Free needs a public repository | Keep private without protection |
+| 2026-10-14 | Owner runs the remaining F0 steps by hand with AI guidance | Learn the tooling (make, CI, rulesets, hooks) | AI runs them |
 | 2026-10-14 | Markdown files in the repository are the source of truth; the first Spanish Claude Docs draft is frozen as a reading copy | One source of truth | Two editable copies |
 
 ## 4. In progress and blockers
@@ -62,11 +64,13 @@ The living document. Update it at the end of every work session. Add entries, ne
 | --- | --- | --- |
 | 2026-10-14 | All | First drafts created from the documentation prompt and the specification |
 | 2026-10-14 | All | Project name set to Atalaya in front matter; name TBD removed |
+| 2026-10-14 | README.md | Added architecture diagram and link to `docs/decisions/` (F0-T03) |
 
 ## 7. Session log
 
 | Date | What was done | What is next |
 | --- | --- | --- |
+| 2026-10-14 | F0 review: T01, T02 confirmed done (commit ceb51f5, pushed). T03: architecture diagram added to README. T07: five ADRs written in `docs/decisions/`. Found: `make` not installed locally; repository is private (branch protection on GitHub Free needs a public repo or a paid plan) | Owner reviews ADRs; decide on installing make and gitleaks; open a PR to run CI (T05) |
 | 2026-10-14 | Name chosen (Atalaya). Local repo created with remote. Starter package added (CLAUDE.md, README, Makefile stubs, .gitignore, .env.example, LICENSE, minimal CI) and project name updated in all front matter | Owner reviews and makes the first commit and push; then F0-T03 onward |
 | 2026-10-14 | Applied the documentation prompt to the flagship project; drafted `00-spec` to `11-memory` and `AGENTS.md` | Owner reviews drafts; then create the repository (F0) |
 

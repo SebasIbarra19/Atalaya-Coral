@@ -8,7 +8,22 @@ It is a learning and portfolio project. It does not replace official NOAA alerts
 
 ## Planned architecture
 
-See `docs/03-architecture.md` for the diagram and stack. In short: a daily ingestion job fills PostgreSQL, a forecast model (XGBoost with SHAP) writes predictions, a read API serves them to a dashboard and to agents, and everything runs on Kubernetes deployed from Git.
+```mermaid
+flowchart LR
+  NOAA[NOAA ERDDAP] --> ING[Ingestion CronJob]
+  ING --> DB[(PostgreSQL)]
+  DB <--> TRAIN[Training and forecast]
+  TRAIN --> MLF[MLflow]
+  DB --> API[Read API]
+  API --> DASH[Dashboard]
+  API --> AGENT[Domain agent]
+  OBS[Observability stack] --> HOLMES[HolmesGPT]
+  GH[GitHub and CI] --> ARGO[ArgoCD]
+  ARGO -. deploys .-> ING
+  ARGO -. deploys .-> API
+```
+
+Details and stack in [`docs/03-architecture.md`](docs/03-architecture.md). In short: a daily ingestion job fills PostgreSQL, a forecast model (XGBoost with SHAP) writes predictions, a read API serves them to a dashboard and to agents, and everything runs on Kubernetes deployed from Git.
 
 ## Documentation
 
@@ -27,6 +42,7 @@ The Markdown files in this repository are the single source of truth.
 - [`docs/09-implementation-plan.md`](docs/09-implementation-plan.md): plan and gates
 - [`docs/10-tasks.md`](docs/10-tasks.md): tasks
 - [`docs/11-memory.md`](docs/11-memory.md): project memory and decisions
+- [`docs/decisions/`](docs/decisions/): architecture decision records (ADRs)
 
 ## How to run
 
