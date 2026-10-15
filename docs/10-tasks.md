@@ -20,15 +20,15 @@ depende_de: [00-spec.md, 01-prd.md, 08-testing-guide.md, 09-implementation-plan.
 
 ## Phase F0: Repository and documentation (flexible)
 
-- [ ] F0-T01 · Create the repository with name and license
+- [x] F0-T01 · Create the repository with name and license
   - Done when: repository exists, license file present, name recorded in `11-memory.md`
   - Depends on: none (name decided: Atalaya, repository Atalaya-Coral)
   - Requirement: RF-14
-- [ ] F0-T02 · Add `docs/` and `AGENTS.md` from this suite
+- [x] F0-T02 · Add `docs/` and `AGENTS.md` from this suite
   - Done when: all documents are in the repository and linked from the README
   - Depends on: F0-T01
   - Requirement: governance
-- [ ] F0-T03 · Write the README skeleton
+- [x] F0-T03 · Write the README skeleton
   - Done when: it has summary, architecture diagram, how to run (marked TODO), and links to `docs/`
   - Depends on: F0-T02
   - Requirement: RF-14
@@ -44,7 +44,7 @@ depende_de: [00-spec.md, 01-prd.md, 08-testing-guide.md, 09-implementation-plan.
   - Done when: a direct push to main is rejected and a fake secret is blocked locally
   - Depends on: F0-T05
   - Requirement: NFR-8
-- [ ] F0-T07 · Write ADR-001 to ADR-005
+- [x] F0-T07 · Write ADR-001 to ADR-005
   - Done when: five short ADRs exist in `docs/decisions/`
   - Depends on: F0-T02
   - Requirement: governance
