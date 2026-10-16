@@ -32,15 +32,15 @@ depende_de: [00-spec.md, 01-prd.md, 08-testing-guide.md, 09-implementation-plan.
   - Done when: it has summary, architecture diagram, how to run (marked TODO), and links to `docs/`
   - Depends on: F0-T02
   - Requirement: RF-14
-- [ ] F0-T04 · Create the Makefile with `up`, `test`, `lint` and `check` stubs
+- [x] F0-T04 · Create the Makefile with `up`, `test`, `lint` and `check` stubs
   - Done when: each target runs and prints what it will do
   - Depends on: F0-T01
   - Requirement: RF-14
-- [ ] F0-T05 · Add minimal CI (lint and secret scan)
+- [x] F0-T05 · Add minimal CI (lint and secret scan)
   - Done when: a pull request runs the pipeline and passes
   - Depends on: F0-T04
   - Requirement: NFR-8, NFR-12
-- [ ] F0-T06 · Enable branch protection and a pre-commit hook for secret scanning
+- [x] F0-T06 · Enable branch protection and a pre-commit hook for secret scanning
   - Done when: a direct push to main is rejected and a fake secret is blocked locally
   - Depends on: F0-T05
   - Requirement: NFR-8
@@ -49,7 +49,7 @@ depende_de: [00-spec.md, 01-prd.md, 08-testing-guide.md, 09-implementation-plan.
   - Depends on: F0-T02
   - Requirement: governance
 
-**Gate F0:** repository is public-ready, CI is green, documents are in place.
+**Gate F0:** repository is public-ready, CI is green, documents are in place. Passed 2026-10-15.
 
 ## Phase F1: Ingestion and database (strict)
 

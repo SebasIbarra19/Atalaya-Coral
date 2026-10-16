@@ -16,11 +16,11 @@ The living document. Update it at the end of every work session. Add entries, ne
 
 | Item | Value |
 | --- | --- |
-| Current phase | F0 (documentation) |
-| Last completed task | F0-T07 (ADR-001 to ADR-005) |
-| Next task | F0-T04 verify locally, F0-T05 CI on a pull request, F0-T06 branch protection and pre-commit secret scan |
+| Current phase | F1 (ingestion and database, strict) |
+| Last completed task | F0 complete (gate passed 2026-10-15) |
+| Next task | F1-T01 (decide the first sites) |
 | Blockers | First sites are not decided |
-| Last updated | 2026-10-14 |
+| Last updated | 2026-10-15 |
 
 ## 2. Completed
 
@@ -29,6 +29,7 @@ The living document. Update it at the end of every work session. Add entries, ne
 | 2026-10-10 | Flagship idea defined and references collected (`proyecto-insignia-referencias.md` in the Claude project) |
 | 2026-10-14 | First specification written as a Claude Docs draft (Spanish) |
 | 2026-10-14 | Reusable documentation prompt created and applied; 13 documents drafted in English |
+| 2026-10-15 | F0 complete: README diagram, ADR-001 to 005, Makefile, CI green (PR #1, #2), repository public, ruleset `protect-main`, local gitleaks pre-commit hook |
 
 ## 3. Important decisions
 
@@ -46,6 +47,7 @@ The living document. Update it at the end of every work session. Add entries, ne
 | 2026-10-14 | Independent from CoraMar for now | Avoid depending on approvals | Connected from the start |
 | 2026-10-14 | Project name is Atalaya (watchtower); repository `Atalaya-Coral` | Short, original, ties to early warning | Isoterma, Zooxa, Coralert, Vigia, Centinela |
 | 2026-10-14 | Repository will be public | Portfolio project; branch protection on GitHub Free needs a public repository | Keep private without protection |
+| 2026-10-15 | CI `make-check` runs `make lint test`; secret scanning only in the `secret-scan` job | CI jobs run on separate machines and gitleaks is only installed in `secret-scan`; avoids a duplicate scan | Installing gitleaks in `make-check`; skipping `scan` when gitleaks is missing (silently disables a security check) |
 | 2026-10-14 | Owner runs the remaining F0 steps by hand with AI guidance | Learn the tooling (make, CI, rulesets, hooks) | AI runs them |
 | 2026-10-14 | Markdown files in the repository are the source of truth; the first Spanish Claude Docs draft is frozen as a reading copy | One source of truth | Two editable copies |
 
@@ -56,7 +58,12 @@ The living document. Update it at the end of every work session. Add entries, ne
 
 ## 5. Lessons learned
 
-- No entries yet.
+- VS Code keeps the PATH from when it was opened; restart it fully after installing a tool. `make` reads the `Makefile` in the current folder.
+- `gitleaks-action` on pull requests needs `pull-requests: read` besides `contents: read`.
+- Each CI job runs on its own clean machine; tools installed in one job do not exist in another.
+- Git hooks must use LF line endings, live in `.git/hooks/` (not versioned) and have no extension.
+- Run `git status` before every commit: anything staged goes into the commit (a test line slipped into PR #2 and was reverted in the same PR).
+- Ruleset required checks match job names; renaming a job requires updating the ruleset.
 
 ## 6. Document changes
 
@@ -64,12 +71,16 @@ The living document. Update it at the end of every work session. Add entries, ne
 | --- | --- | --- |
 | 2026-10-14 | All | First drafts created from the documentation prompt and the specification |
 | 2026-10-14 | All | Project name set to Atalaya in front matter; name TBD removed |
+| 2026-10-15 | .github/workflows/ci.yml | Added `pull-requests: read`; `make-check` runs `make lint test` |
+| 2026-10-15 | Makefile | `scan` runs `gitleaks git --redact --verbose` |
+| 2026-10-15 | 10-tasks.md | F0 tasks checked, gate F0 passed |
 | 2026-10-14 | README.md | Added architecture diagram and link to `docs/decisions/` (F0-T03) |
 
 ## 7. Session log
 
 | Date | What was done | What is next |
 | --- | --- | --- |
+| 2026-10-15 | Owner completed F0 by hand with guidance: installed make, PR #1 (README diagram, ADRs, CI permission fix), repository made public, ruleset `protect-main` (direct push to main rejected with GH013), local gitleaks hook (fake `github-pat` blocked), PR #2 (`make scan` with gitleaks, CI runs `make lint test`). Gate F0 passed | F1-T01: decide the first sites (strict mode) |
 | 2026-10-14 | F0 review: T01, T02 confirmed done (commit ceb51f5, pushed). T03: architecture diagram added to README. T07: five ADRs written in `docs/decisions/`. Found: `make` not installed locally; repository is private (branch protection on GitHub Free needs a public repo or a paid plan) | Owner reviews ADRs; decide on installing make and gitleaks; open a PR to run CI (T05) |
 | 2026-10-14 | Name chosen (Atalaya). Local repo created with remote. Starter package added (CLAUDE.md, README, Makefile stubs, .gitignore, .env.example, LICENSE, minimal CI) and project name updated in all front matter | Owner reviews and makes the first commit and push; then F0-T03 onward |
 | 2026-10-14 | Applied the documentation prompt to the flagship project; drafted `00-spec` to `11-memory` and `AGENTS.md` | Owner reviews drafts; then create the repository (F0) |
