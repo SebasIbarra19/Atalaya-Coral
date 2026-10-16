@@ -7,7 +7,7 @@ fecha: 2026-10-14
 duenio: Sebastián Ibarra Herrera
 depende_de: []
 ---
-
+# PRUEBA DE GIT a verr si es cierto
 # Project Specification
 
 This is the parent document. It answers "why" and "what" at a high level. Detail lives in the PRD, TRD and the other documents, and those link back here instead of copying it.
