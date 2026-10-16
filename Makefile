@@ -10,7 +10,7 @@ lint:
 	@echo "[stub] will run formatters and linters. Defined in F1."
 
 scan:
-	@echo "[stub] will run gitleaks. Defined in F0-T06."
+		gitleaks git --redact --verbose 
 
 check: lint test scan
 	@echo "[stub] check finished (all targets are still stubs)."
