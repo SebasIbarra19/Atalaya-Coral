@@ -48,3 +48,6 @@ Thumbs.db
 
 # Claude Code local settings
 .claude/settings.local.json
+
+# Archify delivery receipts (contain local absolute paths)
+docs/diagrams/*.delivery.json

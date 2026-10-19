@@ -1,0 +1,268 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Atalaya architecture (planned)",
+    "output": "docs/diagrams/architecture.html",
+    "locale": "en",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/SebasIbarra19/Atalaya-Coral.git",
+      "provider": "github",
+      "link_mode": "web",
+      "revision": "6c3ea428d2ac7430510cd9e87032bb128b25c5d7"
+    },
+    "legend": {
+      "entries": {
+        "cloud": { "label": "Platform service" },
+        "external": { "label": "Outside the cluster" }
+      }
+    }
+  },
+  "components": [
+    {
+      "id": "training", "type": "backend", "label": "Training and forecast", "sublabel": "XGBoost + SHAP",
+      "pos": [975, 60], "size": [180, 64],
+      "sources": [
+        { "path": "docs/03-architecture.md", "line": 74, "label": "Component: training and forecast job" },
+        { "path": "docs/03-architecture.md", "line": 94, "end_line": 95, "label": "Training job connections" },
+        { "path": "docs/decisions/002-xgboost-with-shap.md", "line": 12, "label": "ADR-002 decision" }
+      ]
+    },
+    {
+      "id": "mlflow", "type": "cloud", "label": "MLflow", "sublabel": "runs, metrics, artifacts",
+      "pos": [1260, 60], "size": [150, 64],
+      "sources": [
+        { "path": "docs/03-architecture.md", "line": 75, "label": "Component: MLflow" },
+        { "path": "docs/03-architecture.md", "line": 95, "label": "Training job to MLflow" }
+      ]
+    },
+    {
+      "id": "user", "type": "external", "label": "User", "sublabel": "browser",
+      "pos": [40, 220], "size": [120, 64],
+      "sources": [
+        { "path": "docs/03-architecture.md", "line": 128, "label": "User asks in the dashboard" }
+      ]
+    },
+    {
+      "id": "ingress", "type": "cloud", "label": "NGINX Ingress", "sublabel": "TLS, request limits",
+      "pos": [230, 220], "size": [150, 64],
+      "sources": [
+        { "path": "docs/03-architecture.md", "line": 61, "label": "Stack: NGINX Ingress" },
+        { "path": "docs/03-architecture.md", "line": 85, "label": "Routes HTTP to API and dashboard" },
+        { "path": "docs/decisions/013-ingress-and-terraform-from-f3.md", "line": 12, "label": "ADR-013 decision" }
+      ]
+    },
+    {
+      "id": "dashboard", "type": "frontend", "label": "Dashboard", "sublabel": "Next.js",
+      "pos": [480, 220], "size": [140, 64],
+      "sources": [
+        { "path": "docs/03-architecture.md", "line": 77, "label": "Component: dashboard" },
+        { "path": "docs/03-architecture.md", "line": 97, "label": "Dashboard to read API" },
+        { "path": "docs/03-architecture.md", "line": 128, "label": "Question asked in the dashboard" }
+      ]
+    },
+    {
+      "id": "read_api", "type": "backend", "label": "Read API", "sublabel": "FastAPI",
+      "pos": [720, 220], "size": [140, 64],
+      "sources": [
+        { "path": "docs/03-architecture.md", "line": 76, "label": "Component: read API" },
+        { "path": "docs/03-architecture.md", "line": 96, "label": "Read API to PostgreSQL" },
+        { "path": "docs/decisions/004-fastapi-separate-api.md", "line": 12, "label": "ADR-004 decision" }
+      ]
+    },
+    {
+      "id": "postgres", "type": "database", "label": "PostgreSQL", "sublabel": "with pgvector (doc_chunks)",
+      "pos": [980, 220], "size": [170, 64],
+      "sources": [
+        { "path": "docs/03-architecture.md", "line": 73, "label": "Component: PostgreSQL" },
+        { "path": "docs/03-architecture.md", "line": 170, "end_line": 176, "label": "Initial data model" },
+        { "path": "docs/decisions/007-agent-design-mcp-rag.md", "line": 13, "label": "ADR-007 pgvector retrieval" }
+      ]
+    },
+    {
+      "id": "ingestion", "type": "backend", "label": "Ingestion CronJob", "sublabel": "daily, logs each run",
+      "pos": [1260, 220], "size": [150, 64],
+      "sources": [
+        { "path": "docs/03-architecture.md", "line": 72, "label": "Component: ingestion job" },
+        { "path": "docs/03-architecture.md", "line": 92, "end_line": 93, "label": "Ingestion job connections" },
+        { "path": "docs/decisions/003-cronjob-for-ingestion.md", "line": 12, "label": "ADR-003 decision" }
+      ]
+    },
+    {
+      "id": "noaa", "type": "external", "label": "NOAA ERDDAP", "sublabel": "Coral Reef Watch 5 km",
+      "pos": [1560, 220], "size": [150, 64],
+      "sources": [
+        { "path": "docs/03-architecture.md", "line": 44, "label": "Stack: data source" },
+        { "path": "docs/03-architecture.md", "line": 92, "label": "Ingestion job to NOAA ERDDAP" }
+      ]
+    },
+    {
+      "id": "mcp", "type": "backend", "label": "MCP server", "sublabel": "read-only tools",
+      "pos": [720, 380], "size": [140, 64],
+      "sources": [
+        { "path": "docs/03-architecture.md", "line": 79, "label": "Component: MCP server" },
+        { "path": "docs/03-architecture.md", "line": 98, "end_line": 100, "label": "MCP server connections" },
+        { "path": "docs/decisions/007-agent-design-mcp-rag.md", "line": 12, "label": "ADR-007 read-only tool allowlist" }
+      ]
+    },
+    {
+      "id": "observability", "type": "cloud", "label": "Observability stack", "sublabel": "Prometheus, Loki, Grafana, OTel",
+      "pos": [972, 380], "size": [186, 64],
+      "sources": [
+        { "path": "docs/03-architecture.md", "line": 54, "label": "Stack: observability" },
+        { "path": "docs/03-architecture.md", "line": 82, "label": "Component: observability stack" },
+        { "path": "docs/03-architecture.md", "line": 103, "label": "Services to observability stack" }
+      ]
+    },
+    {
+      "id": "argocd", "type": "cloud", "label": "ArgoCD", "sublabel": "syncs cluster to Git",
+      "pos": [1260, 380], "size": [150, 64],
+      "sources": [
+        { "path": "docs/03-architecture.md", "line": 84, "label": "Component: ArgoCD" },
+        { "path": "docs/03-architecture.md", "line": 105, "label": "ArgoCD to GitHub" },
+        { "path": "docs/03-architecture.md", "line": 136, "end_line": 139, "label": "Flow: deployment" }
+      ]
+    },
+    {
+      "id": "github", "type": "external", "label": "GitHub and CI", "sublabel": "lint, tests, CodeQL, gitleaks",
+      "pos": [1545, 380], "size": [180, 64],
+      "sources": [
+        { "path": "docs/03-architecture.md", "line": 66, "label": "Stack: GitHub Actions CI" },
+        { "path": "docs/03-architecture.md", "line": 136, "end_line": 137, "label": "Flow: commit and CI" },
+        { "path": "docs/decisions/012-ci-supply-chain.md", "line": 12, "end_line": 16, "label": "ADR-012 CI rules" }
+      ]
+    },
+    {
+      "id": "sealed_secrets", "type": "security", "label": "Sealed Secrets", "sublabel": "decrypts secrets from Git",
+      "pos": [225, 540], "size": [160, 64],
+      "sources": [
+        { "path": "docs/03-architecture.md", "line": 86, "label": "Component: Sealed Secrets controller" },
+        { "path": "docs/decisions/011-sealed-secrets.md", "line": 12, "label": "ADR-011 decision" }
+      ]
+    },
+    {
+      "id": "agent", "type": "backend", "label": "Domain agent", "sublabel": "structured JSON answers",
+      "pos": [475, 540], "size": [150, 64],
+      "sources": [
+        { "path": "docs/03-architecture.md", "line": 78, "label": "Component: domain agent" },
+        { "path": "docs/03-architecture.md", "line": 126, "end_line": 132, "label": "Flow: ask the agent" },
+        { "path": "docs/decisions/007-agent-design-mcp-rag.md", "line": 12, "end_line": 15, "label": "ADR-007 decision" }
+      ]
+    },
+    {
+      "id": "phoenix", "type": "cloud", "label": "Phoenix", "sublabel": "LLM traces",
+      "pos": [725, 540], "size": [130, 64],
+      "sources": [
+        { "path": "docs/03-architecture.md", "line": 81, "label": "Component: Phoenix" },
+        { "path": "docs/03-architecture.md", "line": 102, "label": "Agents to Phoenix" },
+        { "path": "docs/decisions/008-phoenix-llm-observability.md", "line": 12, "label": "ADR-008 decision" }
+      ]
+    },
+    {
+      "id": "holmesgpt", "type": "backend", "label": "HolmesGPT", "sublabel": "investigates alerts",
+      "pos": [990, 540], "size": [150, 64],
+      "sources": [
+        { "path": "docs/03-architecture.md", "line": 83, "label": "Component: HolmesGPT" },
+        { "path": "docs/03-architecture.md", "line": 102, "end_line": 104, "label": "HolmesGPT connections" },
+        { "path": "docs/decisions/006-local-llm-ollama-outside-cluster.md", "line": 8, "label": "ADR-006: HolmesGPT needs a model" }
+      ]
+    },
+    {
+      "id": "k8s_api", "type": "cloud", "label": "Kubernetes API", "sublabel": "cluster state",
+      "pos": [1260, 540], "size": [150, 64],
+      "sources": [
+        { "path": "docs/03-architecture.md", "line": 104, "label": "HolmesGPT reads the Kubernetes API" }
+      ]
+    },
+    {
+      "id": "ghcr", "type": "external", "label": "GHCR", "sublabel": "container images",
+      "pos": [1560, 540], "size": [150, 64],
+      "sources": [
+        { "path": "docs/03-architecture.md", "line": 63, "label": "Stack: image registry" },
+        { "path": "docs/03-architecture.md", "line": 137, "label": "CI pushes images to GHCR" }
+      ]
+    },
+    {
+      "id": "ollama", "type": "external", "label": "Ollama on the host", "sublabel": "LLM and embedding models",
+      "pos": [470, 700], "size": [160, 64],
+      "sources": [
+        { "path": "docs/03-architecture.md", "line": 80, "label": "Component: Ollama (host)" },
+        { "path": "docs/03-architecture.md", "line": 101, "label": "Domain agent to Ollama" },
+        { "path": "docs/decisions/006-local-llm-ollama-outside-cluster.md", "line": 12, "label": "ADR-006 decision" }
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Kubernetes cluster: kind or k3d locally, AWS in F8",
+      "wraps": ["training", "mlflow", "ingress", "dashboard", "read_api", "postgres", "ingestion", "mcp", "observability", "argocd", "sealed_secrets", "agent", "phoenix", "holmesgpt", "k8s_api"],
+      "pad": 24
+    }
+  ],
+  "connections": [
+    { "id": "user-to-ingress", "from": "user", "to": "ingress", "label": "HTTPS", "variant": "emphasis" },
+    { "id": "ingress-to-dashboard", "from": "ingress", "to": "dashboard", "label": "routes HTTP", "variant": "emphasis" },
+    { "id": "ingress-to-api", "from": "ingress", "to": "read_api", "label": "routes HTTP", "fromSide": "top", "toSide": "top" },
+    { "id": "dashboard-to-api", "from": "dashboard", "to": "read_api", "label": "HTTPS, JSON", "variant": "emphasis" },
+    { "id": "api-to-postgres", "from": "read_api", "to": "postgres", "label": "SQL, read-only", "variant": "emphasis" },
+    { "id": "ingestion-to-noaa", "from": "ingestion", "to": "noaa", "label": "HTTPS, data subsets" },
+    { "id": "ingestion-to-postgres", "from": "ingestion", "to": "postgres", "label": "SQL upserts" },
+    { "id": "training-to-postgres", "from": "training", "to": "postgres", "label": "SQL: reads observations, writes forecasts" },
+    { "id": "training-to-mlflow", "from": "training", "to": "mlflow", "label": "HTTP: runs" },
+    { "id": "dashboard-to-agent", "from": "dashboard", "to": "agent", "label": "question, JSON answer" },
+    { "id": "agent-to-mcp", "from": "agent", "to": "mcp", "label": "MCP tools", "fromSide": "top", "toSide": "bottom" },
+    { "id": "mcp-to-api", "from": "mcp", "to": "read_api", "label": "HTTPS, read-only" },
+    { "id": "mcp-to-postgres", "from": "mcp", "to": "postgres", "label": "SQL, similarity search", "fromSide": "top", "toSide": "bottom" },
+    { "id": "agent-to-ollama", "from": "agent", "to": "ollama", "label": "HTTP, OpenAI API" },
+    { "id": "agent-to-phoenix", "from": "agent", "to": "phoenix", "label": "OTel traces", "variant": "dashed" },
+    { "id": "holmes-to-phoenix", "from": "holmesgpt", "to": "phoenix", "label": "OTel traces", "variant": "dashed" },
+    { "id": "holmes-to-observability", "from": "holmesgpt", "to": "observability", "label": "read-only: Prometheus, Loki" },
+    { "id": "holmes-to-k8s", "from": "holmesgpt", "to": "k8s_api", "label": "read-only" },
+    { "id": "holmes-to-ollama", "from": "holmesgpt", "to": "ollama", "label": "LLM calls", "fromSide": "bottom", "toSide": "right" },
+    { "id": "argocd-to-github", "from": "argocd", "to": "github", "label": "pulls manifests" },
+    { "id": "argocd-to-k8s", "from": "argocd", "to": "k8s_api", "label": "syncs cluster" },
+    { "id": "github-to-ghcr", "from": "github", "to": "ghcr", "label": "pushes scanned images" }
+  ],
+  "cards": [
+    {
+      "dot": "amber",
+      "title": "Planned, nothing runs yet",
+      "items": [
+        "Design from docs/03-architecture.md and ADR-001 to ADR-013",
+        "Arrows point from caller to callee, as in section 4",
+        "Not drawn: every service sends metrics, logs and traces to the observability stack"
+      ]
+    },
+    {
+      "dot": "cyan",
+      "title": "Environments",
+      "items": [
+        "Local cluster first, kind or k3d (ADR-001)",
+        "Before F3, the core runs in Docker Compose with profiles core, ml, agent, obs (ADR-009)",
+        "From F3, Terraform creates the cluster and installs NGINX Ingress, ArgoCD and Sealed Secrets (ADR-013)",
+        "AWS free plan only in F8, destroyed when idle (ADR-010)"
+      ]
+    },
+    {
+      "dot": "violet",
+      "title": "Agents",
+      "items": [
+        "MCP tools: get_site_status, get_forecast, search_docs",
+        "Answers are JSON with text, sources and data used, validated against a schema (ADR-007)",
+        "No fine-tuning; the model is chosen in F7 with the evaluation set (ADR-006)",
+        "TO DEFINE: dashboard-to-agent protocol and the step that embeds doc_chunks"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Security",
+      "items": [
+        "Read-only access: read API database role, MCP tools, HolmesGPT credentials",
+        "Only sealed (encrypted) secrets are stored in Git (ADR-011)",
+        "CI runs gitleaks, CodeQL and Trivy with actions pinned by commit hash (ADR-012)"
+      ]
+    }
+  ]
+}
