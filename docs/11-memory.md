@@ -18,9 +18,9 @@ The living document. Update it at the end of every work session. Add entries, ne
 | --- | --- |
 | Current phase | F1 (ingestion and database, strict) |
 | Last completed task | F0 complete (gate passed 2026-10-15) |
-| Next task | F1-T01 (decide the first sites) |
+| Next task | Architecture diagrams as HTML with Archify; then F1-T00a (install Docker) |
 | Blockers | First sites are not decided |
-| Last updated | 2026-10-15 |
+| Last updated | 2026-10-18 |
 
 ## 2. Completed
 
@@ -56,12 +56,17 @@ The living document. Update it at the end of every work session. Add entries, ne
 | 2026-10-18 | Phoenix for LLM observability (ADR-008) | Single container, built on OpenTelemetry | Langfuse self-hosted (several extra services) |
 | 2026-10-18 | Compose profiles and WSL2 memory cap (ADR-009) | 16 GB RAM is the real local limit | Running the whole stack at once |
 | 2026-10-18 | AWS instead of Azure for F8, free plan only, account created only when F8 starts (ADR-010) | AWS appears more in the job postings reviewed; avoid accidental charges | Azure through the Student Pack |
+| 2026-10-18 | NGINX Ingress as reverse proxy; Terraform from F3 for the local cluster; no Ansible (ADR-013) | Standard and demanded; practice IaC for free before AWS; Kubernetes is already declarative | Traefik; Terraform only in F8; Ansible |
+| 2026-10-18 | Sealed Secrets for cluster secrets (ADR-011) | Free and fits GitOps | Plain Secrets in Git; External Secrets |
+| 2026-10-18 | gitleaks, CodeQL and Trivy in CI with supply chain rules (ADR-012) | DevSecOps; the March 2026 Trivy incident shows actions must be pinned | Actions pinned by tag; no scanners |
+| 2026-10-18 | MLflow from the first trained model; Dependabot with owner approval | Avoid rebuilding experiments; reviewed updates | MLflow only in F6; automatic merges |
+| 2026-10-18 | Architecture diagrams as HTML with the Archify skill (next task) | Richer, interactive diagrams for the portfolio | Mermaid only |
 | 2026-10-18 | lazydocker and k9s as personal development tools | Faster inspection of containers and the cluster | Only raw `docker` and `kubectl` commands |
 
 ## 4. In progress and blockers
 
 - Review of the 13 drafts by the owner.
-- Open: first sites, forecast horizon, notification channel, license confirmation.
+- Open: first sites, forecast horizon, notification channel, license confirmation, Python version, migration tool, EKS or k3s on EC2, uncertainty intervals, MLflow artifact storage.
 
 ## 5. Lessons learned
 
@@ -86,12 +91,13 @@ The living document. Update it at the end of every work session. Add entries, ne
 | 2026-10-14 | README.md | Added architecture diagram and link to `docs/decisions/` (F0-T03) |
 | 2026-10-18 | 00-spec, 01-prd, 02-trd, 03-architecture, 05-security, 08-testing, 09-plan, 10-tasks, README | Branch C design (MCP, RAG with pgvector, structured outputs, Phoenix, local Ollama), development machine constraints, Compose profiles, development tools; ADR-006 to 009 added |
 | 2026-10-18 | 00-spec, 01-prd, 02-trd, 03-architecture, 05-security, 09-plan, 10-tasks, ADR-001 | Cloud provider changed from Azure to AWS (free plan only); F8 access and cost rules; ADR-010 added |
+| 2026-10-18 | 00-spec, 02-trd, 03-architecture, 05-security, 08-testing, 09-plan, 10-tasks, README | Applied the plan adjustments: F1-T00 tasks, NGINX Ingress, Terraform from F3, Sealed Secrets, CI supply chain rules, GHCR, k6, MLflow from F5, F6 promotion and quality monitoring; ADR-011 to 013 added |
 
 ## 7. Session log
 
 | Date | What was done | What is next |
 | --- | --- | --- |
-| 2026-10-18 | Reviewed DevOps, DevSecOps, MLOps, LLMOps and AIOps against the project; defined the Branch C design and the local resource budget for the development machine; moved the cloud from Azure to AWS; ADR-006 to 010 | F1-T01: decide the first sites (strict mode) |
+| 2026-10-18 | Reviewed DevOps, DevSecOps, MLOps, LLMOps and AIOps against the project; defined the Branch C design and the local resource budget for the development machine; moved the cloud from Azure to AWS; applied the plan adjustments (F1-T00, ingress, secrets, CI supply chain); ADR-006 to 013 | Architecture diagrams as HTML with Archify; then F1-T00a |
 | 2026-10-15 | Owner completed F0 by hand with guidance: installed make, PR #1 (README diagram, ADRs, CI permission fix), repository made public, ruleset `protect-main` (direct push to main rejected with GH013), local gitleaks hook (fake `github-pat` blocked), PR #2 (`make scan` with gitleaks, CI runs `make lint test`). Gate F0 passed | F1-T01: decide the first sites (strict mode) |
 | 2026-10-14 | F0 review: T01, T02 confirmed done (commit ceb51f5, pushed). T03: architecture diagram added to README. T07: five ADRs written in `docs/decisions/`. Found: `make` not installed locally; repository is private (branch protection on GitHub Free needs a public repo or a paid plan) | Owner reviews ADRs; decide on installing make and gitleaks; open a PR to run CI (T05) |
 | 2026-10-14 | Name chosen (Atalaya). Local repo created with remote. Starter package added (CLAUDE.md, README, Makefile stubs, .gitignore, .env.example, LICENSE, minimal CI) and project name updated in all front matter | Owner reviews and makes the first commit and push; then F0-T03 onward |

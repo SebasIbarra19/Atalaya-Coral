@@ -30,8 +30,8 @@ This guide defines how the platform is kept safe, even though it only handles pu
 | Public read endpoints | No credential; protected by rate limits (see `04-api-guide.md`) |
 | Admin endpoints | API key, checked on every request in the API layer, not only at the ingress |
 | Database roles | Separate roles: ingestion (write observations), training (write forecasts), API (read-only) |
-| Kubernetes | One service account per workload; HolmesGPT and the domain agent get read-only roles |
-| GitHub | Branch protection on the main branch; no direct pushes `[TO CONFIGURE in F0]` |
+| Kubernetes | One service account per workload; HolmesGPT and the domain agent get read-only roles; NetworkPolicies allow only the traffic each workload needs; Pod Security standards enforced per namespace |
+| GitHub | Ruleset `protect-main` on the main branch; no direct pushes (done in F0) |
 | Cloud | MFA on the AWS root account and no access keys for it; separate IAM identity for Terraform; GitHub Actions uses OIDC, never long-lived keys; no personal admin credentials inside the cluster |
 
 ## 4. Environment and secrets
@@ -40,7 +40,7 @@ This guide defines how the platform is kept safe, even though it only handles pu
 - Real `.env` files are in `.gitignore` and never committed.
 - A secret scanner (gitleaks) runs in CI and as a pre-commit hook.
 - A leaked secret is revoked and rotated first, and only then removed from history.
-- In the cluster, secrets come from a secret mechanism `[TO DEFINE: Kubernetes Secrets, Sealed Secrets or External Secrets]`, never from manifests in plain text.
+- In the cluster, secrets are Sealed Secrets (ADR-011): encrypted in Git, decrypted only by the controller. The controller's private key is backed up outside the repository. Never plain-text secrets in manifests.
 - Documents in this repository never contain real keys, tokens or passwords.
 
 ## 5. Data protection
@@ -68,7 +68,9 @@ If the project ever stores personal data (for example user accounts), this secti
 ## 7. Dependencies
 
 - Pin versions and commit lockfiles.
-- Enable automated update proposals (Dependabot or Renovate `[TO DEFINE]`).
+- Dependabot proposes updates; the owner reviews and approves each one.
+- CI supply chain (ADR-012): every third-party action is pinned by full commit hash, never by tag; versions are pinned and updated on purpose after review; scanner jobs get only `contents: read` and no secrets; `pull_request_target` is not used in those jobs.
+- Context: in March 2026 `trivy-action`, `setup-trivy` and Trivy v0.69.4 were compromised to steal CI secrets and cloud credentials. Known safe versions are re-verified at the moment of use. If a bad version ever runs, every pipeline secret is rotated.
 - Run dependency audits in CI (`pip-audit`, `npm audit` or equivalents).
 - Review the base images of containers and rebuild periodically.
 - Prefer maintained projects; record why each major dependency was chosen in an ADR.
@@ -98,9 +100,9 @@ The project has one owner, so the process is short.
 
 ## Open questions
 
-- [ ] Secret mechanism in the cluster.
+- [x] Secret mechanism in the cluster: Sealed Secrets (ADR-011).
 - [ ] Security contact for external reports.
-- [ ] Dependency update tool.
+- [x] Dependency update tool: Dependabot, approved by the owner.
 
 ## Related documents
 

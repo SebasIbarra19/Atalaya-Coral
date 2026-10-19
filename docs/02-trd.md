@@ -44,13 +44,14 @@ In scope: ingestion, storage, forecasting, read API, dashboard, agents, observab
 | NFR-3 | Reliability | Ingestion survives network errors | Retries with backoff, run recorded as failed if exhausted | Test with simulated failures |
 | NFR-4 | Data quality | Values outside valid ranges are rejected and logged | Ranges `[TO DEFINE from NOAA documentation]` | Unit tests |
 | NFR-5 | Data quality | An empty day raises an alert | Alert fires within the next scheduled check | Provoked missing day |
-| NFR-6 | Performance | API read latency | `[TO MEASURE]` baseline first, then set a target | Load check on the local cluster |
+| NFR-6 | Performance | API read latency | `[TO MEASURE]` baseline first, then set a target | Load test with k6 |
 | NFR-7 | ML quality | Forecast beats the baseline | Better than persistence on held-out period | Versioned metrics report |
 | NFR-8 | Security | No secrets in the repository | Zero findings | gitleaks in CI |
 | NFR-9 | Security | Least privilege per component | Read-only roles where possible | Review against `05-security-guide.md` |
 | NFR-10 | Observability | Every service exposes health and basic metrics | 100% of services | Dashboard review |
 | NFR-11 | Cost | Cloud spending stays within the AWS free plan | AWS Budgets alert configured; zero unexpected charges | Cost report recorded in `11-memory.md` after each session |
 | NFR-12 | Maintainability | CI runs on every change | Lint, type check, tests and build | Green pipeline required to merge |
+| NFR-13 | Security | The CI supply chain is pinned and scanned | Every third-party action pinned by full commit hash; minimal permissions per job; CodeQL on every pull request; images scanned with Trivy | Review against ADR-012 |
 
 ## 4. Interfaces and external integrations
 
@@ -71,7 +72,7 @@ The initial model is in `03-architecture.md`, section 7. All data is public, so 
 | Environment | Requirements |
 | --- | --- |
 | Local core | Docker and Docker Compose with profiles (`core`, `ml`, `agent`, `obs`) so only the services in use run |
-| Local cluster | kind or k3d, ArgoCD, Prometheus, Grafana, Loki, OpenTelemetry collector |
+| Local cluster | kind or k3d created with Terraform; NGINX Ingress, ArgoCD, Sealed Secrets, Prometheus, Grafana, Loki, OpenTelemetry collector |
 | Local LLM | Ollama on the host machine using the GPU; Phoenix for LLM traces |
 | Cloud | AWS through Terraform (EKS or k3s on EC2, decided in F8); destroyed when idle; AWS Budgets alert |
 

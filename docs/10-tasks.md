@@ -53,6 +53,41 @@ depende_de: [00-spec.md, 01-prd.md, 08-testing-guide.md, 09-implementation-plan.
 
 ## Phase F1: Ingestion and database (strict)
 
+F1-T00 prepares the environment and access (flexible: the owner runs each step and must understand it).
+
+- [ ] F1-T00a · Install Docker on Windows
+  - Done when: `docker run hello-world` works
+  - Depends on: none
+  - Requirement: RF-14
+- [ ] F1-T00b · Pin the Python version, create a virtual environment and a dependency file with pinned versions
+  - Done when: the version is written in `06-code-style-guide.md` and `make` uses it
+  - Depends on: none
+  - Requirement: NFR-1
+- [ ] F1-T00c · Local PostgreSQL in a minimal Compose file and a real `.env` created from `.env.example`
+  - Done when: a client connects with the owner's own user and password, and `.env` is still ignored by Git
+  - Depends on: F1-T00a
+  - Requirement: NFR-8
+- [ ] F1-T00d · Database roles: one with write access for ingestion and one read-only for the API
+  - Done when: the read-only role fails when it tries to write
+  - Depends on: F1-T00c
+  - Requirement: NFR-9
+- [ ] F1-T00e · Choose the migration tool (Alembic or plain SQL with a runner) and record an ADR
+  - Done when: the ADR exists. Blocks F1-T03
+  - Depends on: F1-T00b
+  - Requirement: governance
+- [ ] F1-T00f · Make `make lint` and `make test` real (Ruff and pytest) and add them to the hook and to CI with Python
+  - Done when: CI runs real tests
+  - Depends on: F1-T00b
+  - Requirement: NFR-12
+- [ ] F1-T00g · Pin every GitHub Action in CI by full commit hash and set minimal permissions per job
+  - Done when: no `uses:` points to a tag (ADR-012)
+  - Depends on: none
+  - Requirement: NFR-13
+- [ ] F1-T00h · Add CodeQL to CI (official action pinned by hash)
+  - Done when: the analysis runs on every pull request
+  - Depends on: F1-T00g
+  - Requirement: NFR-13
+
 - [ ] F1-T01 · Decide the first sites
   - Done when: a short list of sites with coordinates is recorded and the 5 km pixel question is checked
   - Depends on: none
@@ -93,8 +128,8 @@ depende_de: [00-spec.md, 01-prd.md, 08-testing-guide.md, 09-implementation-plan.
   - Done when: an interrupted backfill resumes without duplicates and prints a coverage report (TC-5)
   - Depends on: F1-T08
   - Requirement: RF-3
-- [ ] F1-T11 · Package ingestion as a container
-  - Done when: the container runs the job against the local database
+- [ ] F1-T11 · Package ingestion as a container and scan it with Trivy
+  - Done when: the container runs the job against the local database and Trivy runs in CI under the rules of ADR-012
   - Depends on: F1-T10
   - Requirement: RF-14
 
@@ -142,12 +177,16 @@ depende_de: [00-spec.md, 01-prd.md, 08-testing-guide.md, 09-implementation-plan.
   - Done when: the README works literally and any fixes are committed
   - Depends on: F2-T09
   - Requirement: NFR-1
+- [ ] F2-T11 · Load test the API with k6
+  - Done when: a first latency and throughput measurement is recorded and replaces `[TO MEASURE]` in NFR-6
+  - Depends on: F2-T09
+  - Requirement: NFR-6
 
 **Gate F2:** release v0.1. The core starts with a single command.
 
 ## Phase F3: Kubernetes and GitOps (flexible, owner explains each piece)
 
-Outline, refine at phase start: cap WSL2 memory with `.wslconfig` (ADR-009); Dockerfiles for each service; create local cluster; manifests under `deploy/k8s`; install ArgoCD; sync from Git; choose Helm or Kustomize and record an ADR.
+Outline, refine at phase start: cap WSL2 memory with `.wslconfig` (ADR-009); Dockerfiles for each service; build images in CI, scan them with Trivy and push them to GHCR; Terraform creates the local cluster (kind or k3d) and installs NGINX Ingress, ArgoCD and Sealed Secrets (back up the private key outside the repository; check the project is still maintained); manifests under `deploy/k8s` with NetworkPolicies and Pod Security; sync from Git; choose Helm or Kustomize and record an ADR. Optional early Terraform practice: describe the `protect-main` ruleset with the GitHub provider.
 
 **Gate F3:** a change in Git reaches the cluster without manual steps.
 
@@ -159,7 +198,7 @@ Outline, refine at phase start: expose metrics from ingestion and API; deploy Pr
 
 ## Phase F5: Forecast, Branch A (strict)
 
-Outline, refine at phase start: build features; baseline; temporal split and leakage test; XGBoost; SHAP; write forecasts; expose through the API; compare against the baseline.
+Outline, refine at phase start: MLflow from the first model; build features with the same code for training and inference, with a test; baseline; temporal split and leakage test; XGBoost; SHAP; write forecasts; expose through the API; compare against the baseline.
 
 Requirements: RF-7, RF-8, RF-9.
 
@@ -167,7 +206,7 @@ Requirements: RF-7, RF-8, RF-9.
 
 ## Phase F6: MLOps, Branch B (mixed)
 
-Outline, refine at phase start: MLflow; scheduled retraining; drift check; notifications through the chosen channel.
+Outline, refine at phase start: promotion rule and rollback; forecast quality monitoring with an alert against the baseline; drift check (KS or PSI, Evidently optional); retraining on schedule, drift or quality drop; small training quality gate in CI; decide MLflow artifact storage; ADR for batch forecasts versus online serving; notifications through the chosen channel.
 
 Requirements: RF-10, RF-11.
 
@@ -175,7 +214,7 @@ Requirements: RF-10, RF-11.
 
 ## Phase F7: Agents, Branch C (mixed; agent logic strict)
 
-Outline, refine at phase start: install Ollama on the host and pick a small model by evaluations; MCP server with read-only tools (`get_site_status`, `get_forecast`, `search_docs`); public document corpus and pgvector ingestion; domain agent with structured outputs; Phoenix traces through OpenTelemetry; evaluation set (grounding, refusal, schema, injection) running in CI; guardrails; HolmesGPT with read-only access.
+Outline, refine at phase start: install Ollama on the host and pick a small model by evaluations; MCP server with read-only tools (`get_site_status`, `get_forecast`, `search_docs`); public document corpus and pgvector ingestion; domain agent with structured outputs; Phoenix traces through OpenTelemetry; evaluation set (grounding, refusal, schema, injection) running in CI; guardrails; HolmesGPT with read-only access. If a hosted model API is ever used, its key has a spend limit set at the provider; never a key without a limit.
 
 Requirements: RF-12, RF-13.
 
