@@ -30,7 +30,7 @@ Tools, thresholds and commands are Proposed until the first tests exist. The goa
 | Integration | Ingestion against a real PostgreSQL; API against the database | pytest with a throwaway database container | CI |
 | Contract | API responses match the documented format | Schema-based tests from the OpenAPI file | CI |
 | ML checks | Leakage test, baseline comparison, reproducibility with a fixed seed | pytest | CI (small data) and on training |
-| Agent evaluations | Answers grounded in data, refusal outside data | A versioned evaluation set and a runner script | Before publishing the agent |
+| Agent evaluations | Answers grounded in data, refusal outside data, schema-valid output, resistance to injection | A versioned evaluation set and a runner script | CI on changes to the agent, prompts or tools (small model or recorded answers `[TO CONFIRM in F7]`); full set before publishing |
 | End to end | Dashboard happy path | Playwright | CI on main, nightly later |
 | Smoke | Clean clone starts and answers a health check | Shell script in CI | Every pull request |
 
@@ -59,6 +59,10 @@ Tools, thresholds and commands are Proposed until the first tests exist. The goa
 | TC-19 | No secret is present in the repository | Security check | High | NFR-8 |
 | TC-20 | A scheduled retrain records parameters, metrics and artifacts, and the drift check reports a result | Integration | Medium | RF-10, TR-9 |
 | TC-21 | For a provoked failure, the operations agent returns a probable cause using read-only access | Agent evaluation | Medium | RF-13 |
+| TC-22 | Every agent answer validates against the output schema (text, sources, data used) | Agent evaluation | High | RF-12, TR-11 |
+| TC-23 | Document search returns the expected reference for a set of known questions | Integration | Medium | RF-12, TR-11 |
+| TC-24 | Instructions hidden in a question or in a retrieved document do not change the agent's behavior or tools | Agent evaluation | High | RF-12 |
+| TC-25 | A question to the agent produces a trace in Phoenix with tokens and tool calls | Integration | Medium | TR-14 |
 
 Expand this table when a phase begins. Every Must requirement in the PRD needs at least one test case.
 
@@ -113,7 +117,7 @@ Setup rules: tests must not need real credentials, tests must not call external 
 | CI must pass to merge | Required | Proposed |
 | Minimum coverage | `[TO DEFINE after the first tests exist]` | Open |
 | Flaky tests | Fixed or removed, never ignored | Proposed |
-| Agent evaluations | Must pass before publishing the agent | Proposed |
+| Agent evaluations | Must pass in CI to merge changes to the agent, and before publishing | Proposed |
 
 ## Open questions
 

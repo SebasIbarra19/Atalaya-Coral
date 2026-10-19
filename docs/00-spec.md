@@ -44,7 +44,7 @@ The core and Branch A are the minimum deliverable. Branches B and C are added in
 | Core | NOAA ingestion through ERDDAP, PostgreSQL database, read API, simple dashboard, Docker Compose and CI | Required |
 | Branch A: forecast | Baseline model, then XGBoost with SHAP, replicating the approach of Arcodia et al. (2025) for Costa Rica | Required |
 | Branch B: MLOps | Experiment tracking, scheduled retraining and drift detection | After A |
-| Branch C: agents | HolmesGPT for operations and an own domain agent that explains reef status, with guardrails and evaluations | After B |
+| Branch C: agents | HolmesGPT for operations and an own domain agent that explains reef status: read-only tools through an MCP server, retrieval over reference documents (RAG with pgvector), structured outputs, guardrails, evaluations and LLM observability | After B |
 | Platform | Local Kubernetes, GitOps with ArgoCD, observability (Prometheus, Grafana, Loki, OpenTelemetry), then cloud with Terraform | In layers, alongside the phases |
 | Branch D: optional | Simulated sensors in streaming | Only if time remains |
 
@@ -139,7 +139,11 @@ Four choices are decided. The rest are proposals confirmed when each phase is re
 | Observability | Prometheus, Grafana, Loki and OpenTelemetry | Proposed | Paid services: outside the budget |
 | Infrastructure as code | Terraform, with Azure through the GitHub Student Pack | Proposed | Pulumi: valid, but Terraform appeared among the skills seen in job postings |
 | CI | GitHub Actions | Proposed | Other providers: already in use |
-| Language model | To be defined (HolmesGPT supports Anthropic, OpenAI and Ollama) | Open | Decided in Branch C by cost and quality |
+| Language model | Small open-weight model served by Ollama on the host machine; exact model chosen in F7 by evaluations (ADR-006) | Proposed | Paid API by default: billing risk; may be compared later only with a provider spend limit |
+| Agent tools | MCP server exposing read-only tools (ADR-007) | Proposed | Data pasted into the prompt: harder to control and evaluate |
+| Document retrieval | pgvector in the same PostgreSQL (ADR-007) | Proposed | A separate vector database: one more service for little data |
+| Model adaptation | RAG and prompting, no fine-tuning (ADR-007) | Proposed | Fine-tuning: there is no training set and the data changes daily |
+| LLM observability | Arize Phoenix, built on OpenTelemetry (ADR-008) | Proposed | Langfuse self-hosted: needs several extra services, too heavy for the laptop |
 | Documentation language | English | Decided | Spanish: less readable for international recruiters |
 | Relationship with CoraMar | Independent for now | Decided | Connected from the start: depends on their answer |
 | License | MIT | Proposed | Apache 2.0: adds patent clause, not needed here |
@@ -170,6 +174,7 @@ The core and Branch A (F5) are the minimum deliverable. Per-phase deliverables a
 | Unexpected cloud costs | Local first, Student Pack credits, shut down resources, spending alerts |
 | Student Pack benefits that expire | Activate each one only when it is going to be used |
 | The agent invents answers | It only reads database data, cites its source and is evaluated before publishing |
+| The laptop runs out of memory with the whole stack | Compose profiles, only the services in use run, WSL2 memory capped (ADR-009) |
 
 **Assumption.** NOAA data stays publicly available at the same endpoints. `[TO VERIFY]`
 

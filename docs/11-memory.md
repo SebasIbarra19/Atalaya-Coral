@@ -50,6 +50,12 @@ The living document. Update it at the end of every work session. Add entries, ne
 | 2026-10-15 | CI `make-check` runs `make lint test`; secret scanning only in the `secret-scan` job | CI jobs run on separate machines and gitleaks is only installed in `secret-scan`; avoids a duplicate scan | Installing gitleaks in `make-check`; skipping `scan` when gitleaks is missing (silently disables a security check) |
 | 2026-10-14 | Owner runs the remaining F0 steps by hand with AI guidance | Learn the tooling (make, CI, rulesets, hooks) | AI runs them |
 | 2026-10-14 | Markdown files in the repository are the source of truth; the first Spanish Claude Docs draft is frozen as a reading copy | One source of truth | Two editable copies |
+| 2026-10-18 | Domain agent uses read-only tools through an MCP server, RAG with pgvector and structured outputs (ADR-007) | Current LLM practices, easy to evaluate, no extra database | Data pasted into the prompt; separate vector database |
+| 2026-10-18 | No fine-tuning; RAG and prompting instead (ADR-007) | No training set; data changes daily | Fine-tuning a small model |
+| 2026-10-18 | Language model runs locally with Ollama on the host, outside the cluster (ADR-006) | Zero cost; uses the laptop GPU; GPU passthrough to a local cluster on Windows is fragile | Paid API by default; Ollama inside the cluster; llama.cpp, LocalAI, vLLM (needs a bigger GPU) |
+| 2026-10-18 | Phoenix for LLM observability (ADR-008) | Single container, built on OpenTelemetry | Langfuse self-hosted (several extra services) |
+| 2026-10-18 | Compose profiles and WSL2 memory cap (ADR-009) | 16 GB RAM is the real local limit | Running the whole stack at once |
+| 2026-10-18 | lazydocker and k9s as personal development tools | Faster inspection of containers and the cluster | Only raw `docker` and `kubectl` commands |
 
 ## 4. In progress and blockers
 
@@ -64,6 +70,8 @@ The living document. Update it at the end of every work session. Add entries, ne
 - Git hooks must use LF line endings, live in `.git/hooks/` (not versioned) and have no extension.
 - Run `git status` before every commit: anything staged goes into the commit (a test line slipped into PR #2 and was reverted in the same PR).
 - Ruleset required checks match job names; renaming a job requires updating the ruleset.
+- Kubernetes itself is free; a local cluster (kind or k3d) is real Kubernetes. Only managed cloud clusters and their machines cost money (F8).
+- On this laptop, RAM (16 GB) limits the local stack more than the GPU does; XGBoost needs no GPU at this data size.
 
 ## 6. Document changes
 
@@ -75,11 +83,13 @@ The living document. Update it at the end of every work session. Add entries, ne
 | 2026-10-15 | Makefile | `scan` runs `gitleaks git --redact --verbose` |
 | 2026-10-15 | 10-tasks.md | F0 tasks checked, gate F0 passed |
 | 2026-10-14 | README.md | Added architecture diagram and link to `docs/decisions/` (F0-T03) |
+| 2026-10-18 | 00-spec, 01-prd, 02-trd, 03-architecture, 05-security, 08-testing, 09-plan, 10-tasks, README | Branch C design (MCP, RAG with pgvector, structured outputs, Phoenix, local Ollama), development machine constraints, Compose profiles, development tools; ADR-006 to 009 added |
 
 ## 7. Session log
 
 | Date | What was done | What is next |
 | --- | --- | --- |
+| 2026-10-18 | Reviewed DevOps, DevSecOps, MLOps, LLMOps and AIOps against the project; defined the Branch C design and the local resource budget for the development machine; ADR-006 to 009 | F1-T01: decide the first sites (strict mode) |
 | 2026-10-15 | Owner completed F0 by hand with guidance: installed make, PR #1 (README diagram, ADRs, CI permission fix), repository made public, ruleset `protect-main` (direct push to main rejected with GH013), local gitleaks hook (fake `github-pat` blocked), PR #2 (`make scan` with gitleaks, CI runs `make lint test`). Gate F0 passed | F1-T01: decide the first sites (strict mode) |
 | 2026-10-14 | F0 review: T01, T02 confirmed done (commit ceb51f5, pushed). T03: architecture diagram added to README. T07: five ADRs written in `docs/decisions/`. Found: `make` not installed locally; repository is private (branch protection on GitHub Free needs a public repo or a paid plan) | Owner reviews ADRs; decide on installing make and gitleaks; open a PR to run CI (T05) |
 | 2026-10-14 | Name chosen (Atalaya). Local repo created with remote. Starter package added (CLAUDE.md, README, Makefile stubs, .gitignore, .env.example, LICENSE, minimal CI) and project name updated in all front matter | Owner reviews and makes the first commit and push; then F0-T03 onward |

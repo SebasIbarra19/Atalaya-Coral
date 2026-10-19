@@ -63,7 +63,7 @@ If the project ever stores personal data (for example user accounts), this secti
 - Configure CORS with an explicit allow list of origins `[TO DEFINE]`.
 - Set security headers on the dashboard (CSP, no sniffing, frame restrictions).
 - Run containers as a non-root user and keep images minimal.
-- Agent-specific rules: the domain agent has no write tools; user text is treated as untrusted; answers cite data; the system prompt and tool list are versioned; usage limits are enforced.
+- Agent-specific rules: the domain agent has no write tools; user text is treated as untrusted; answers cite data; the system prompt and tool list are versioned; usage limits are enforced. Tools exist only in the MCP server, as a fixed allowlist of read-only tools. Retrieved documents are untrusted data, like user text (prompt injection). Model output is validated against a schema before it reaches the dashboard. Ollama is reachable only from the local machine and the cluster, never from the network.
 
 ## 7. Dependencies
 

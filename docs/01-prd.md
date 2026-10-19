@@ -94,7 +94,7 @@ IDs match the specification so traceability stays simple. Priority uses MoSCoW: 
 - NOAA data stays publicly available at the same endpoints `[TO VERIFY]`.
 - Available hours vary by semester, so there are no dates.
 - Budget is close to zero: local first, cloud with Student Pack credits.
-- The agents depend on a language model `[TO DEFINE in Branch C]`.
+- The agents depend on a language model: a small open-weight model served locally by Ollama (Proposed, exact model chosen in F7 by evaluations).
 
 ## 9. Releases
 
