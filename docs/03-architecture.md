@@ -94,15 +94,19 @@ The core is ingestion, database, API and dashboard. Everything else is added by 
 | Training job | PostgreSQL | SQL reads of observations; writes forecasts |
 | Training job | MLflow | HTTP, logs runs and artifacts |
 | Read API | PostgreSQL | SQL with a read-only role |
+| NGINX Ingress | Read API, Dashboard | HTTP routing with TLS and request limits (ADR-013) |
 | Dashboard | Read API | HTTPS, JSON |
+| Dashboard | Domain agent | The user's question about a site; a structured JSON answer validated against a schema (ADR-007). Protocol `[TO DEFINE]` |
 | Domain agent | MCP server | MCP, read-only tools (`get_site_status`, `get_forecast`, `search_docs`) |
 | MCP server | Read API | HTTPS, JSON, read-only |
 | MCP server | PostgreSQL (pgvector) | SQL with a read-only role, similarity search over document chunks |
-| Domain agent | Ollama | HTTP, OpenAI-compatible API on the host machine |
+| Document indexing step `[TO DEFINE]` | Ollama, PostgreSQL (pgvector) | Embeds the public reference documents with the embedding model and writes `doc_chunks` (ADR-007) |
+| Domain agent, HolmesGPT | Ollama | HTTP, OpenAI-compatible API on the host machine (ADR-006) |
 | Domain agent, HolmesGPT | Phoenix | OpenTelemetry traces of model and tool calls |
 | Services | Observability stack | Prometheus scrape, OpenTelemetry export, logs to Loki |
 | HolmesGPT | Prometheus, Loki, Kubernetes API | Read-only credentials |
 | ArgoCD | GitHub | Git pull of manifests |
+| Sealed Secrets controller | Kubernetes API | Reads SealedSecret resources synced from Git and writes the decrypted Kubernetes Secrets (ADR-011) |
 
 ## 5. Main flows
 
@@ -213,6 +217,8 @@ Each decision lives in `docs/decisions/NNN-title.md` with: context, decision, al
 | ADR-011 | Sealed Secrets for cluster secrets | Decided |
 | ADR-012 | CI supply chain rules | Decided |
 | ADR-013 | NGINX Ingress and Terraform from F3; no Ansible | Decided |
+| ADR-014 | Architecture diagrams as HTML with Archify | Decided |
+| ADR-015 | No AI attribution in the repository | Decided |
 | Pending | Migration tool (Alembic or plain SQL), decided in F1-T00e | Open |
 
 ## Open questions
@@ -220,6 +226,8 @@ Each decision lives in `docs/decisions/NNN-title.md` with: context, decision, al
 - [ ] Exact variable names and units in the ERDDAP dataset.
 - [ ] Do we need a time-series extension or is plain PostgreSQL enough?
 - [ ] Helm or Kustomize for manifests?
+- [ ] Protocol between the dashboard and the domain agent.
+- [ ] Which step embeds the documents into `doc_chunks`, and what embeds the `search_docs` query.
 
 ## Related documents
 

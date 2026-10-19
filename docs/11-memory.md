@@ -17,8 +17,8 @@ The living document. Update it at the end of every work session. Add entries, ne
 | Item | Value |
 | --- | --- |
 | Current phase | F1 (ingestion and database, strict) |
-| Last completed task | F0 complete (gate passed 2026-10-15) |
-| Next task | Architecture diagrams as HTML with Archify; then F1-T00a (install Docker) |
+| Last completed task | Architecture diagram updated to the new section 4 rows (sources pinned to b5b7b31) |
+| Next task | Owner reviews; push and open the PR when the owner decides; then F1-T00a (install Docker) |
 | Blockers | First sites are not decided |
 | Last updated | 2026-10-18 |
 
@@ -30,6 +30,7 @@ The living document. Update it at the end of every work session. Add entries, ne
 | 2026-10-14 | First specification written as a Claude Docs draft (Spanish) |
 | 2026-10-14 | Reusable documentation prompt created and applied; 13 documents drafted in English |
 | 2026-10-15 | F0 complete: README diagram, ADR-001 to 005, Makefile, CI green (PR #1, #2), repository public, ruleset `protect-main`, local gitleaks pre-commit hook |
+| 2026-10-18 | Planned architecture diagram generated with Archify: `docs/diagrams/architecture.json` (source) and `architecture.html`; every node links to its lines in `03-architecture.md` and the ADRs at commit 6c3ea42 |
 
 ## 3. Important decisions
 
@@ -62,12 +63,14 @@ The living document. Update it at the end of every work session. Add entries, ne
 | 2026-10-18 | MLflow from the first trained model; Dependabot with owner approval | Avoid rebuilding experiments; reviewed updates | MLflow only in F6; automatic merges |
 | 2026-10-18 | Architecture diagrams as HTML with the Archify skill (next task) | Richer, interactive diagrams for the portfolio | Mermaid only |
 | 2026-10-18 | lazydocker and k9s as personal development tools | Faster inspection of containers and the cluster | Only raw `docker` and `kubectl` commands |
+| 2026-10-18 | Diagrams are Archify HTML plus JSON source in `docs/diagrams/`, built only from the documents, arrows from caller to callee, delivery receipts not committed (ADR-014) | Explorable diagrams a reviewer can check line by line | Mermaid only; output in `.archify/`; arrows in the direction of the data |
+| 2026-10-18 | No AI attribution in commits, pull requests or files; one-line commit messages (ADR-015) | The owner is the only author of record, as decided on 2026-10-10 | Co-author trailer on AI-assisted commits |
 
 ## 4. In progress and blockers
 
 - Review of the 13 drafts by the owner.
 - Open: first sites, forecast horizon, notification channel, license confirmation, Python version, migration tool, EKS or k3s on EC2, uncertainty intervals, MLflow artifact storage.
-
+- `03-architecture.md` section 4 still has two `[TO DEFINE]` items: the protocol between the dashboard and the domain agent, and the step that embeds `doc_chunks` (also what embeds the `search_docs` query).
 ## 5. Lessons learned
 
 - VS Code keeps the PATH from when it was opened; restart it fully after installing a tool. `make` reads the `Makefile` in the current folder.
@@ -92,11 +95,20 @@ The living document. Update it at the end of every work session. Add entries, ne
 | 2026-10-18 | 00-spec, 01-prd, 02-trd, 03-architecture, 05-security, 08-testing, 09-plan, 10-tasks, README | Branch C design (MCP, RAG with pgvector, structured outputs, Phoenix, local Ollama), development machine constraints, Compose profiles, development tools; ADR-006 to 009 added |
 | 2026-10-18 | 00-spec, 01-prd, 02-trd, 03-architecture, 05-security, 09-plan, 10-tasks, ADR-001 | Cloud provider changed from Azure to AWS (free plan only); F8 access and cost rules; ADR-010 added |
 | 2026-10-18 | 00-spec, 02-trd, 03-architecture, 05-security, 08-testing, 09-plan, 10-tasks, README | Applied the plan adjustments: F1-T00 tasks, NGINX Ingress, Terraform from F3, Sealed Secrets, CI supply chain rules, GHCR, k6, MLflow from F5, F6 promotion and quality monitoring; ADR-011 to 013 added |
+| 2026-10-18 | docs/diagrams/ (new) | Planned architecture diagram (Archify) built only from `03-architecture.md` and ADR-001 to 013; arrows follow section 4 (caller to callee) |
+| 2026-10-18 | .gitignore | Ignores `docs/diagrams/*.delivery.json`: Archify delivery receipts hold local absolute paths and are not needed in the repository |
+| 2026-10-18 | 03-architecture | Section 4: rows for NGINX Ingress, dashboard to domain agent, HolmesGPT to Ollama, the document indexing step and the Sealed Secrets controller (unknown facts marked `[TO DEFINE]`); section 10 lists ADR-014 and 015; two open questions added |
+| 2026-10-18 | decisions | ADR-014 (architecture diagrams with Archify) and ADR-015 (no AI attribution) added |
+| 2026-10-18 | AGENTS.md | Rule 11: no AI attribution, one-line commit messages (ADR-015) |
+| 2026-10-18 | docs/diagrams/ | Diagram updated to the new section 4 rows: Sealed Secrets arrow to the Kubernetes API, Ollama moved to the left outside the cluster; sources pinned to b5b7b31 |
 
 ## 7. Session log
 
 | Date | What was done | What is next |
 | --- | --- | --- |
+| 2026-10-18 | Updated the diagram to the new section 4 rows (Sealed Secrets to Kubernetes API) and pinned its sources to b5b7b31; the document indexing step stays in a card because its component is `[TO DEFINE]`; automated checks passed and captures reviewed | Owner reviews; push and open the PR when the owner decides; then F1-T00a |
+| 2026-10-18 | Removed an AI co-author trailer from the diagram commit before any push; recorded ADR-014 and ADR-015 and added rule 11 to `AGENTS.md`; filled the five section 4 gaps in `03-architecture.md` | Owner reviews; update the diagram to the new section 4 rows and re-pin its sources; push and open the PR when the owner decides; then F1-T00a |
+| 2026-10-18 | Built the planned architecture diagram with Archify in `docs/diagrams/` (all automated checks passed, light and dark captures reviewed). Arrows and protocols come from section 4; additions only where sections 3 and 5 or an ADR state them. Sealed Secrets is drawn without arrows because no document gives its connection. Listed five gaps in section 4 (see section 4 of this file) | Owner reviews the diagram and decides on the section 4 gaps; then F1-T00a |
 | 2026-10-18 | Reviewed DevOps, DevSecOps, MLOps, LLMOps and AIOps against the project; defined the Branch C design and the local resource budget for the development machine; moved the cloud from Azure to AWS; applied the plan adjustments (F1-T00, ingress, secrets, CI supply chain); ADR-006 to 013 | Architecture diagrams as HTML with Archify; then F1-T00a |
 | 2026-10-15 | Owner completed F0 by hand with guidance: installed make, PR #1 (README diagram, ADRs, CI permission fix), repository made public, ruleset `protect-main` (direct push to main rejected with GH013), local gitleaks hook (fake `github-pat` blocked), PR #2 (`make scan` with gitleaks, CI runs `make lint test`). Gate F0 passed | F1-T01: decide the first sites (strict mode) |
 | 2026-10-14 | F0 review: T01, T02 confirmed done (commit ceb51f5, pushed). T03: architecture diagram added to README. T07: five ADRs written in `docs/decisions/`. Found: `make` not installed locally; repository is private (branch protection on GitHub Free needs a public repo or a paid plan) | Owner reviews ADRs; decide on installing make and gitleaks; open a PR to run CI (T05) |

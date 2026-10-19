@@ -41,6 +41,7 @@ If the task is unclear, ask before starting.
 8. **Documents have owners.** Change a fact in the document that owns it, and log it in `docs/11-memory.md`.
 9. **Never put real secrets** in code, docs, logs or commits.
 10. **Writing style for text meant for the owner:** do not use long dashes (— or –); use commas or parentheses. No emojis unless asked.
+11. **No AI attribution.** Commit messages, pull request descriptions and files never include co-author trailers or "generated with" lines. Commit messages are one line: `type: summary (references)` (ADR-015).
 
 ## 3. Allowed commands
 
