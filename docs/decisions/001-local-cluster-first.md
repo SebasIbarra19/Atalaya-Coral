@@ -2,6 +2,7 @@
 
 - Status: Decided
 - Date: 2026-10-14
+- Note: the cloud provider was changed from Azure to AWS on 2026-10-18, see ADR-010
 
 ## Context
 

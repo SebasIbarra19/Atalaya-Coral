@@ -108,7 +108,7 @@ Numeric targets are set once a first measurement exists, not before. Detail live
 | Reliability | Ingestion tolerates network failures and missing data without corrupting the database | Tests with simulated failures |
 | Data quality | Validate ranges and dates before storing, and warn if a day arrives empty | Automated tests and a missing-data alert |
 | ML quality | Temporal evaluation and comparison with a baseline; reproducible results with fixed seeds | Versioned metrics report |
-| Cost | The local version costs nothing; the cloud uses credits and is shut down when done | Budget and spending alerts in the cloud |
+| Cost | The local version costs nothing; the cloud uses the AWS free plan only, never a paid plan, and is destroyed when done | AWS Budgets alert and a console review after each session |
 | Maintainability | Layered code, automated tests, CI on every change and recorded decisions | Green CI and an up-to-date decisions folder |
 | Agent safety | The agent only reads data, performs no destructive actions and has usage limits | Evaluations and read-only permissions |
 
@@ -126,7 +126,7 @@ Four choices are decided. The rest are proposals confirmed when each phase is re
 | --- | --- | --- | --- |
 | Data source | NOAA Coral Reef Watch 5 km, through ERDDAP | Decided | Own data: does not exist yet |
 | Model | XGBoost with SHAP, replicating Arcodia et al. (2025), starting from a baseline | Decided | Neural networks: more complex and less explainable at this data size (Proposed) |
-| Environment | Local cluster first, cloud afterwards | Decided | Cloud from the start: costs credits and adds billing risk |
+| Environment | Local cluster first, cloud afterwards | Decided | Cloud from the start: adds billing risk while learning |
 | Operations agent | HolmesGPT | Decided | k8sgpt: another LLM-based option to compare later |
 | Data and ML language | Python | Proposed | R: not the owner's stack |
 | Database | PostgreSQL | Proposed | A specialized time-series database: evaluated if volume demands it |
@@ -137,7 +137,8 @@ Four choices are decided. The rest are proposals confirmed when each phase is re
 | Containers and local cluster | Docker, and kind or k3d | Proposed | Minikube: heavier |
 | GitOps | ArgoCD | Proposed | Flux: valid alternative, may be compared later |
 | Observability | Prometheus, Grafana, Loki and OpenTelemetry | Proposed | Paid services: outside the budget |
-| Infrastructure as code | Terraform, with Azure through the GitHub Student Pack | Proposed | Pulumi: valid, but Terraform appeared among the skills seen in job postings |
+| Infrastructure as code | Terraform | Proposed | Pulumi: valid, but Terraform appeared among the skills seen in job postings |
+| Cloud provider | AWS on the free plan, only in F8 (ADR-010) | Decided | Azure through the Student Pack: AWS appears more often in the job postings reviewed |
 | CI | GitHub Actions | Proposed | Other providers: already in use |
 | Language model | Small open-weight model served by Ollama on the host machine; exact model chosen in F7 by evaluations (ADR-006) | Proposed | Paid API by default: billing risk; may be compared later only with a provider spend limit |
 | Agent tools | MCP server exposing read-only tools (ADR-007) | Proposed | Data pasted into the prompt: harder to control and evaluate |
@@ -171,8 +172,8 @@ The core and Branch A (F5) are the minimum deliverable. Per-phase deliverables a
 | ERDDAP or NOAA product changes or outages | Keep a local copy of what is downloaded and test with sample data |
 | A 5 km pixel can be coarse for small coastal reefs (to verify) | Review candidate sites before training |
 | The model gives modest results | Success is measured by the complete system and an honest comparison against the baseline |
-| Unexpected cloud costs | Local first, Student Pack credits, shut down resources, spending alerts |
-| Student Pack benefits that expire | Activate each one only when it is going to be used |
+| Unexpected cloud costs | Local first; AWS account created only when F8 starts, free plan only; AWS Budgets alert; destroy with Terraform after each session; avoid services that bill silently (NAT Gateway, load balancers, forgotten instances) |
+| Free plan or Student Pack benefits that expire | Activate each one only when it is going to be used |
 | The agent invents answers | It only reads database data, cites its source and is evaluated before publishing |
 | The laptop runs out of memory with the whole stack | Compose profiles, only the services in use run, WSL2 memory capped (ADR-009) |
 

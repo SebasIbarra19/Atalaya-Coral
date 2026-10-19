@@ -32,7 +32,7 @@ This guide defines how the platform is kept safe, even though it only handles pu
 | Database roles | Separate roles: ingestion (write observations), training (write forecasts), API (read-only) |
 | Kubernetes | One service account per workload; HolmesGPT and the domain agent get read-only roles |
 | GitHub | Branch protection on the main branch; no direct pushes `[TO CONFIGURE in F0]` |
-| Cloud | Separate cloud identity for Terraform; no personal admin credentials inside the cluster |
+| Cloud | MFA on the AWS root account and no access keys for it; separate IAM identity for Terraform; GitHub Actions uses OIDC, never long-lived keys; no personal admin credentials inside the cluster |
 
 ## 4. Environment and secrets
 
@@ -93,7 +93,7 @@ The project has one owner, so the process is short.
 - [ ] Database roles are least-privilege and the API role is read-only.
 - [ ] Containers run as non-root.
 - [ ] Agents have read-only access and their evaluations pass.
-- [ ] Cloud resources have a budget alert and an owner.
+- [ ] AWS has a Budgets alert, MFA on the root account and no long-lived access keys.
 - [ ] No weakness described in the docs is still open.
 
 ## Open questions
