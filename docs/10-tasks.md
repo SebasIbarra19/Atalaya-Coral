@@ -183,7 +183,7 @@ Requirements: RF-12, RF-13.
 
 ## Phase F8: Cloud (flexible in configuration, strict in understanding cost)
 
-Outline, refine at phase start: Terraform modules; deploy through GitOps; budget alert; teardown; record cost.
+Outline, refine at phase start: prepare AWS access first (create the account on the free plan, never a paid plan; MFA on root and no root access keys; AWS Budgets alert; separate IAM identity for Terraform; GitHub Actions to AWS through OIDC); decide EKS or k3s on EC2 after checking the free plan; Terraform modules; deploy through GitOps; `make cloud-down` runs destroy; review the console after every session; avoid NAT Gateway, idle load balancers and forgotten instances; record cost.
 
 **Gate F8:** release v1.0. Created and destroyed with Terraform within budget.
 

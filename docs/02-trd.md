@@ -49,7 +49,7 @@ In scope: ingestion, storage, forecasting, read API, dashboard, agents, observab
 | NFR-8 | Security | No secrets in the repository | Zero findings | gitleaks in CI |
 | NFR-9 | Security | Least privilege per component | Read-only roles where possible | Review against `05-security-guide.md` |
 | NFR-10 | Observability | Every service exposes health and basic metrics | 100% of services | Dashboard review |
-| NFR-11 | Cost | Cloud spending stays within credits | Budget alert configured | Cloud cost report |
+| NFR-11 | Cost | Cloud spending stays within the AWS free plan | AWS Budgets alert configured; zero unexpected charges | Cost report recorded in `11-memory.md` after each session |
 | NFR-12 | Maintainability | CI runs on every change | Lint, type check, tests and build | Green pipeline required to merge |
 
 ## 4. Interfaces and external integrations
@@ -58,7 +58,7 @@ In scope: ingestion, storage, forecasting, read API, dashboard, agents, observab
 | --- | --- | --- | --- |
 | NOAA ERDDAP | Inbound | HTTPS, griddap dataset `dhw_5km` | Endpoint and variables `[TO VERIFY]` |
 | GitHub | Both | Git, Actions | Source of truth and CI |
-| Azure | Outbound | Terraform provider | Only in phase F8 |
+| AWS | Outbound | Terraform provider; GitHub Actions through OIDC (no long-lived keys) | Only in phase F8 |
 | Language model runtime | Outbound | HTTP, OpenAI-compatible API of Ollama on the host machine | Runs outside the cluster to use the laptop GPU (ADR-006); a paid API is optional and only with a spend limit |
 | Notification channel | Outbound | Email or webhook | `[TO DEFINE]` |
 
@@ -73,7 +73,7 @@ The initial model is in `03-architecture.md`, section 7. All data is public, so 
 | Local core | Docker and Docker Compose with profiles (`core`, `ml`, `agent`, `obs`) so only the services in use run |
 | Local cluster | kind or k3d, ArgoCD, Prometheus, Grafana, Loki, OpenTelemetry collector |
 | Local LLM | Ollama on the host machine using the GPU; Phoenix for LLM traces |
-| Cloud | Azure through Terraform; shut down when idle; budget alert |
+| Cloud | AWS through Terraform (EKS or k3s on EC2, decided in F8); destroyed when idle; AWS Budgets alert |
 
 Deployment is declarative: the cluster is synced from Git by ArgoCD. Nothing is configured by hand in the cluster.
 
@@ -95,7 +95,7 @@ Deployment is declarative: the cluster is synced from Git by ArgoCD. Nothing is 
 | Local machine too small for the whole stack | Slow or crashing cluster | Compose profiles; start services by phase; cap WSL2 memory; lighter tools (Phoenix instead of Langfuse) |
 | Prompt injection through user text or retrieved documents | The agent ignores its rules | Read-only tool allowlist, retrieved text treated as data, injection cases in the evaluation set |
 | Agent returns unsupported statements | Wrong guidance to a user | Read-only data context, citations, evaluation set |
-| Cloud costs | Credits exhausted | Local first, destroy resources, budget alert |
+| Cloud costs | Unexpected AWS charges | Local first, free plan only, destroy resources, AWS Budgets alert, avoid NAT Gateway and idle load balancers |
 
 ## 9. Technical acceptance criteria
 

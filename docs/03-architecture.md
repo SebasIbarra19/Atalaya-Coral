@@ -57,7 +57,8 @@ The core is ingestion, database, API and dashboard. Everything else is added by 
 | Agent tools | MCP server (Python SDK) | Proposed | Standard way to give agents tools; read-only by design (ADR-007) |
 | Vector search | pgvector | Proposed | Extension of the existing PostgreSQL, no extra service (ADR-007) |
 | LLM observability | Arize Phoenix | Proposed | Single container, built on OpenTelemetry (ADR-008) |
-| IaC | Terraform on Azure | Proposed | Student Pack credits |
+| IaC | Terraform | Proposed | Industry standard; appears in job postings |
+| Cloud | AWS (free plan, F8 only) | Decided | Most demanded in the job postings reviewed (ADR-010) |
 | CI | GitHub Actions | Proposed | Already used |
 
 ## 3. Components and responsibilities
@@ -175,7 +176,7 @@ The core is ingestion, database, API and dashboard. Everything else is added by 
 | Local core | Fast development of ingestion, API and dashboard | Docker Compose with profiles |
 | Local LLM | Agent development | Ollama on the host machine, outside the cluster (ADR-006) |
 | Local cluster | Practice Kubernetes, GitOps and observability | kind or k3d |
-| Cloud | Final demonstration | Azure created with Terraform, destroyed when idle |
+| Cloud | Final demonstration | AWS created with Terraform, destroyed when idle |
 
 ## 9. Observability
 
@@ -202,6 +203,7 @@ Each decision lives in `docs/decisions/NNN-title.md` with: context, decision, al
 | ADR-007 | Agent design: MCP tools, RAG with pgvector, structured outputs, no fine-tuning | Proposed |
 | ADR-008 | Phoenix for LLM observability | Proposed |
 | ADR-009 | Compose profiles and a local resource budget | Proposed |
+| ADR-010 | AWS as the cloud provider, free plan only | Decided |
 
 ## Open questions
 

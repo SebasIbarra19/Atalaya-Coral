@@ -93,7 +93,7 @@ IDs match the specification so traceability stays simple. Priority uses MoSCoW: 
 
 - NOAA data stays publicly available at the same endpoints `[TO VERIFY]`.
 - Available hours vary by semester, so there are no dates.
-- Budget is close to zero: local first, cloud with Student Pack credits.
+- Budget is close to zero: local first, cloud on the AWS free plan only in F8.
 - The agents depend on a language model: a small open-weight model served locally by Ollama (Proposed, exact model chosen in F7 by evaluations).
 
 ## 9. Releases
@@ -104,7 +104,7 @@ IDs match the specification so traceability stays simple. Priority uses MoSCoW: 
 | v0.2 | Forecast: RF-7 to RF-9 |
 | v0.3 | MLOps and notifications: RF-10, RF-11 |
 | v0.4 | Agents: RF-12, RF-13 |
-| v1.0 | Everything running in the cloud with Terraform |
+| v1.0 | Everything running on AWS with Terraform |
 
 ## Open questions
 

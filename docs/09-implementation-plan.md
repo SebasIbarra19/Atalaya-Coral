@@ -21,7 +21,7 @@ There are no dates. Available hours vary by semester, so progress is measured by
 | M3a: Forecast | F5 | Baseline and XGBoost with SHAP (release v0.2) | Forecast beats the baseline on the held-out period; leakage test passes | M1 |
 | M3b: MLOps | F6 | Tracked runs, scheduled retraining, drift check, notifications (release v0.3) | A retrain runs on schedule and its result is recorded | M2, M3a |
 | M3c: Agents | F7 | HolmesGPT and the domain agent with evaluations (release v0.4) | Agent evaluation set passes; read-only access verified | M2, M3a |
-| M4: Cloud | F8 | Everything on Azure through Terraform (release v1.0) | Created and destroyed with Terraform within budget | M2, M3b |
+| M4: Cloud | F8 | Everything on AWS through Terraform (release v1.0) | Created and destroyed with Terraform within budget | M2, M3b |
 
 The minimum deliverable is M1 plus M3a. M3a depends only on the core, so it can run before or alongside M2 if the learning order is changed (decision for the owner, logged in `11-memory.md`).
 
@@ -37,7 +37,7 @@ The minimum deliverable is M1 plus M3a. M3a depends only on the core, so it can 
 | F5 | Features; baseline; XGBoost; temporal validation; SHAP; forecasts into the database | Horizon; evaluation window | Leakage; modest results | TC-11 to TC-13 |
 | F6 | MLflow; scheduled retraining; drift check; notifications | Notification channel; drift method | Complexity for little data | TC-14 |
 | F7 | Ollama on the host; MCP server with read-only tools; document corpus into pgvector; domain agent with structured outputs; Phoenix traces; evaluation set in CI; HolmesGPT on the local cluster with read-only access | Exact local model (chosen by evaluations); document corpus | Unsupported answers; prompt injection; VRAM limits | TC-15 to TC-17, TC-21 to TC-25 |
-| F8 | Terraform modules; deploy through GitOps; budget alert; teardown | Region; cost limits | Unexpected cost | Create and destroy cycle |
+| F8 | Prepare AWS access (account, MFA, Budgets, Terraform identity, OIDC); Terraform modules; deploy through GitOps; `make cloud-down`; teardown | Region; EKS or k3s on EC2 (check the free plan at that moment) | Unexpected cost | Create and destroy cycle with zero unexpected charges |
 
 Each phase ends by publishing its result in the repository and updating `11-memory.md`.
 
@@ -67,7 +67,7 @@ Never change the cluster by hand. If a manual change is needed to investigate, r
 
 - [ ] Run F5 before F3 and F4, or after?
 - [ ] License confirmation (repository name decided: Atalaya-Coral).
-- [ ] Cloud region and cost limit.
+- [ ] AWS region and whether the free plan covers EKS or k3s on EC2 is needed `[TO VERIFY at F8]`.
 
 ## Related documents
 
