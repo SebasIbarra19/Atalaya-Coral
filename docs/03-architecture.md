@@ -1,16 +1,16 @@
 ---
 titulo: Architecture
 proyecto: Atalaya (coral reef thermal-stress platform)
-version: 0.1
+version: 0.2
 estado: borrador
-fecha: 2026-10-14
+fecha: 2026-10-19
 duenio: Sebastián Ibarra Herrera
 depende_de: [00-spec.md, 01-prd.md]
 ---
 
 # Architecture
 
-Everything here is Proposed unless marked Decided. Decided items come from `00-spec.md`.
+Everything here is Proposed unless marked Decided. Decided items come from `00-spec.md` and the ADRs in `docs/decisions/`.
 
 ## 1. Overview
 
@@ -37,6 +37,8 @@ flowchart LR
 
 The core is ingestion, database, API and dashboard. Everything else is added by branch and platform layer.
 
+This Mermaid chart is the quick text overview. The detailed, explorable diagram is [`docs/diagrams/architecture.html`](diagrams/architecture.html), generated with Archify from `docs/diagrams/architecture.json` (ADR-014). It follows section 4 (arrows from caller to callee) and links every component to its lines in this document and the ADRs. GitHub shows it as source, so open it locally.
+
 ## 2. Technology stack
 
 | Layer | Technology | Status | Why |
@@ -47,7 +49,7 @@ The core is ingestion, database, API and dashboard. Everything else is added by 
 | API | FastAPI | Proposed | Typed, generates OpenAPI |
 | Dashboard | Next.js (TypeScript) | Proposed | Owner already uses it; keeps focus on data and infrastructure |
 | Model | XGBoost with SHAP | Decided | Replicates the reference study and is explainable |
-| ML tracking | MLflow | Proposed | Comparable history of runs |
+| ML tracking | MLflow from the first trained model (F5) | Decided | Comparable history of runs; adding it later means rebuilding experiments |
 | Containers | Docker | Proposed | Standard and already known |
 | Local cluster | kind or k3d | Proposed | Free and repeatable |
 | GitOps | ArgoCD | Proposed | Git as the source of truth for the cluster |
@@ -70,7 +72,7 @@ The core is ingestion, database, API and dashboard. Everything else is added by 
 | Component | Does | Does not do |
 | --- | --- | --- |
 | Ingestion job | Downloads NOAA data for defined sites, validates it, writes it idempotently, logs each run | Train models or serve users |
-| PostgreSQL | Stores sites, observations, forecasts and run logs | Hold business logic beyond constraints and views |
+| PostgreSQL | Stores sites, observations, forecasts, run logs and document chunks with embeddings (pgvector) | Hold business logic beyond constraints and views |
 | Training and forecast job | Builds features, trains, evaluates temporally, writes forecasts and SHAP values | Download NOAA data |
 | MLflow | Records runs, parameters, metrics and artifacts | Serve predictions |
 | Read API | Exposes sites, history and forecasts in a documented format | Write data (except the admin site catalog, see `04-api-guide.md`) |
@@ -150,7 +152,8 @@ The core is ingestion, database, API and dashboard. Everything else is added by 
 ├── README.md
 ├── Makefile                   # one-command entry points (make up, make test)
 ├── docs/                      # this documentation suite
-│   └── decisions/             # one short ADR per decision
+│   ├── decisions/             # one short ADR per decision
+│   └── diagrams/              # Archify diagrams: JSON source and generated HTML (ADR-014)
 ├── services/
 │   ├── ingestion/             # NOAA download and loading
 │   ├── api/                   # read API
@@ -161,7 +164,7 @@ The core is ingestion, database, API and dashboard. Everything else is added by 
 ├── db/
 │   └── migrations/            # versioned schema changes
 ├── deploy/
-│   ├── compose/               # Docker Compose for the core
+│   ├── compose/               # Docker Compose with profiles (ADR-009)
 │   └── k8s/                   # manifests (ArgoCD syncs this folder)
 ├── infra/
 │   └── terraform/             # local cluster from F3; AWS added in F8
@@ -185,7 +188,7 @@ The core is ingestion, database, API and dashboard. Everything else is added by 
 | --- | --- | --- |
 | Local core | Fast development of ingestion, API and dashboard | Docker Compose with profiles |
 | Local LLM | Agent development | Ollama on the host machine, outside the cluster (ADR-006) |
-| Local cluster | Practice Kubernetes, GitOps and observability | kind or k3d |
+| Local cluster | Practice Kubernetes, GitOps and observability | kind or k3d, created with Terraform (ADR-013) |
 | Cloud | Final demonstration | AWS created with Terraform, destroyed when idle |
 
 ## 9. Observability
@@ -200,7 +203,7 @@ The core is ingestion, database, API and dashboard. Everything else is added by 
 
 ## 10. Architecture decision log
 
-Each decision lives in `docs/decisions/NNN-title.md` with: context, decision, alternatives discarded and why, and status. Initial entries to create in F0:
+Each decision lives in `docs/decisions/NNN-title.md` with: context, decision, alternatives discarded and why, and status. Index:
 
 | ID | Decision | Status |
 | --- | --- | --- |

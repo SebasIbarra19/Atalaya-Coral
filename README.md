@@ -27,7 +27,7 @@ flowchart LR
   ARGO -. deploys .-> API
 ```
 
-Details and stack in [`docs/03-architecture.md`](docs/03-architecture.md). In short: a daily ingestion job fills PostgreSQL, a forecast model (XGBoost with SHAP) writes predictions, a read API serves them to a dashboard and to agents, and everything runs on Kubernetes deployed from Git.
+Detailed, explorable diagram: [`docs/diagrams/architecture.html`](docs/diagrams/architecture.html) (open it locally; GitHub shows HTML as source). Details and stack in [`docs/03-architecture.md`](docs/03-architecture.md). In short: a daily ingestion job fills PostgreSQL, a forecast model (XGBoost with SHAP) writes predictions, a read API serves them to a dashboard and to agents, and everything runs on Kubernetes deployed from Git.
 
 ## Documentation
 
