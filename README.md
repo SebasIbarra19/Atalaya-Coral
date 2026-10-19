@@ -16,7 +16,11 @@ flowchart LR
   TRAIN --> MLF[MLflow]
   DB --> API[Read API]
   API --> DASH[Dashboard]
-  API --> AGENT[Domain agent]
+  API --> MCP[MCP server]
+  DB -. pgvector .-> MCP
+  MCP --> AGENT[Domain agent]
+  LLM[Ollama on host] <--> AGENT
+  AGENT --> PHX[Phoenix]
   OBS[Observability stack] --> HOLMES[HolmesGPT]
   GH[GitHub and CI] --> ARGO[ArgoCD]
   ARGO -. deploys .-> ING
@@ -43,6 +47,10 @@ The Markdown files in this repository are the single source of truth.
 - [`docs/10-tasks.md`](docs/10-tasks.md): tasks
 - [`docs/11-memory.md`](docs/11-memory.md): project memory and decisions
 - [`docs/decisions/`](docs/decisions/): architecture decision records (ADRs)
+
+## Development tools
+
+Not part of the platform, but used to work on it: [lazydocker](https://github.com/jesseduffield/lazydocker) (terminal UI for containers and logs) and, from phase F3, [k9s](https://k9scli.io/) (terminal UI for Kubernetes).
 
 ## How to run
 

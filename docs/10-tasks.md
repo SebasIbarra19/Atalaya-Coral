@@ -134,7 +134,7 @@ depende_de: [00-spec.md, 01-prd.md, 08-testing-guide.md, 09-implementation-plan.
   - Done when: a series and a text summary render for a site
   - Depends on: F2-T03, F2-T07
   - Requirement: RF-6
-- [ ] F2-T09 · Docker Compose for the core and `make up`
+- [ ] F2-T09 · Docker Compose for the core with profiles (`core` by default) and `make up`
   - Done when: one command starts everything on a clean clone (TC-18)
   - Depends on: F2-T08
   - Requirement: RF-14
@@ -147,7 +147,7 @@ depende_de: [00-spec.md, 01-prd.md, 08-testing-guide.md, 09-implementation-plan.
 
 ## Phase F3: Kubernetes and GitOps (flexible, owner explains each piece)
 
-Outline, refine at phase start: Dockerfiles for each service; create local cluster; manifests under `deploy/k8s`; install ArgoCD; sync from Git; choose Helm or Kustomize and record an ADR.
+Outline, refine at phase start: cap WSL2 memory with `.wslconfig` (ADR-009); Dockerfiles for each service; create local cluster; manifests under `deploy/k8s`; install ArgoCD; sync from Git; choose Helm or Kustomize and record an ADR.
 
 **Gate F3:** a change in Git reaches the cluster without manual steps.
 
@@ -175,7 +175,7 @@ Requirements: RF-10, RF-11.
 
 ## Phase F7: Agents, Branch C (mixed; agent logic strict)
 
-Outline, refine at phase start: HolmesGPT with read-only access; domain agent with a data context; evaluation set; guardrails; refusal behavior.
+Outline, refine at phase start: install Ollama on the host and pick a small model by evaluations; MCP server with read-only tools (`get_site_status`, `get_forecast`, `search_docs`); public document corpus and pgvector ingestion; domain agent with structured outputs; Phoenix traces through OpenTelemetry; evaluation set (grounding, refusal, schema, injection) running in CI; guardrails; HolmesGPT with read-only access.
 
 Requirements: RF-12, RF-13.
 

@@ -36,7 +36,7 @@ The minimum deliverable is M1 plus M3a. M3a depends only on the core, so it can 
 | F4 | Metrics, logs and traces for ingestion and API; dashboards and alert rules as code | Alert thresholds after first measurement | Alert noise | A provoked failure raises an alert |
 | F5 | Features; baseline; XGBoost; temporal validation; SHAP; forecasts into the database | Horizon; evaluation window | Leakage; modest results | TC-11 to TC-13 |
 | F6 | MLflow; scheduled retraining; drift check; notifications | Notification channel; drift method | Complexity for little data | TC-14 |
-| F7 | HolmesGPT on the local cluster with read-only access; domain agent with evaluation set | Language model provider | Unsupported answers | TC-15 to TC-17 |
+| F7 | Ollama on the host; MCP server with read-only tools; document corpus into pgvector; domain agent with structured outputs; Phoenix traces; evaluation set in CI; HolmesGPT on the local cluster with read-only access | Exact local model (chosen by evaluations); document corpus | Unsupported answers; prompt injection; VRAM limits | TC-15 to TC-17, TC-21 to TC-25 |
 | F8 | Terraform modules; deploy through GitOps; budget alert; teardown | Region; cost limits | Unexpected cost | Create and destroy cycle |
 
 Each phase ends by publishing its result in the repository and updating `11-memory.md`.
