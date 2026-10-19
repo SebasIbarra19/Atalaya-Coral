@@ -17,8 +17,8 @@ The living document. Update it at the end of every work session. Add entries, ne
 | Item | Value |
 | --- | --- |
 | Current phase | F1 (ingestion and database, strict) |
-| Last completed task | Planned architecture diagram with Archify; ADR-014 and ADR-015; section 4 gaps filled |
-| Next task | Owner reviews; update the diagram to the new section 4 rows; then F1-T00a (install Docker) |
+| Last completed task | Architecture diagram updated to the new section 4 rows (sources pinned to b5b7b31) |
+| Next task | Owner reviews; push and open the PR when the owner decides; then F1-T00a (install Docker) |
 | Blockers | First sites are not decided |
 | Last updated | 2026-10-18 |
 
@@ -71,8 +71,6 @@ The living document. Update it at the end of every work session. Add entries, ne
 - Review of the 13 drafts by the owner.
 - Open: first sites, forecast horizon, notification channel, license confirmation, Python version, migration tool, EKS or k3s on EC2, uncertainty intervals, MLflow artifact storage.
 - `03-architecture.md` section 4 still has two `[TO DEFINE]` items: the protocol between the dashboard and the domain agent, and the step that embeds `doc_chunks` (also what embeds the `search_docs` query).
-- The diagram is pinned to commit 6c3ea42 and does not show the new section 4 rows yet (Sealed Secrets still has no arrow).
-
 ## 5. Lessons learned
 
 - VS Code keeps the PATH from when it was opened; restart it fully after installing a tool. `make` reads the `Makefile` in the current folder.
@@ -102,11 +100,13 @@ The living document. Update it at the end of every work session. Add entries, ne
 | 2026-10-18 | 03-architecture | Section 4: rows for NGINX Ingress, dashboard to domain agent, HolmesGPT to Ollama, the document indexing step and the Sealed Secrets controller (unknown facts marked `[TO DEFINE]`); section 10 lists ADR-014 and 015; two open questions added |
 | 2026-10-18 | decisions | ADR-014 (architecture diagrams with Archify) and ADR-015 (no AI attribution) added |
 | 2026-10-18 | AGENTS.md | Rule 11: no AI attribution, one-line commit messages (ADR-015) |
+| 2026-10-18 | docs/diagrams/ | Diagram updated to the new section 4 rows: Sealed Secrets arrow to the Kubernetes API, Ollama moved to the left outside the cluster; sources pinned to b5b7b31 |
 
 ## 7. Session log
 
 | Date | What was done | What is next |
 | --- | --- | --- |
+| 2026-10-18 | Updated the diagram to the new section 4 rows (Sealed Secrets to Kubernetes API) and pinned its sources to b5b7b31; the document indexing step stays in a card because its component is `[TO DEFINE]`; automated checks passed and captures reviewed | Owner reviews; push and open the PR when the owner decides; then F1-T00a |
 | 2026-10-18 | Removed an AI co-author trailer from the diagram commit before any push; recorded ADR-014 and ADR-015 and added rule 11 to `AGENTS.md`; filled the five section 4 gaps in `03-architecture.md` | Owner reviews; update the diagram to the new section 4 rows and re-pin its sources; push and open the PR when the owner decides; then F1-T00a |
 | 2026-10-18 | Built the planned architecture diagram with Archify in `docs/diagrams/` (all automated checks passed, light and dark captures reviewed). Arrows and protocols come from section 4; additions only where sections 3 and 5 or an ADR state them. Sealed Secrets is drawn without arrows because no document gives its connection. Listed five gaps in section 4 (see section 4 of this file) | Owner reviews the diagram and decides on the section 4 gaps; then F1-T00a |
 | 2026-10-18 | Reviewed DevOps, DevSecOps, MLOps, LLMOps and AIOps against the project; defined the Branch C design and the local resource budget for the development machine; moved the cloud from Azure to AWS; applied the plan adjustments (F1-T00, ingress, secrets, CI supply chain); ADR-006 to 013 | Architecture diagrams as HTML with Archify; then F1-T00a |

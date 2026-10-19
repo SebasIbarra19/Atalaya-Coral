@@ -10,7 +10,7 @@
       "url": "https://github.com/SebasIbarra19/Atalaya-Coral.git",
       "provider": "github",
       "link_mode": "web",
-      "revision": "6c3ea428d2ac7430510cd9e87032bb128b25c5d7"
+      "revision": "b5b7b31e90560b423489cfba901b690fe5007f00"
     },
     "legend": {
       "entries": {
@@ -41,15 +41,15 @@
       "id": "user", "type": "external", "label": "User", "sublabel": "browser",
       "pos": [40, 220], "size": [120, 64],
       "sources": [
-        { "path": "docs/03-architecture.md", "line": 128, "label": "User asks in the dashboard" }
+        { "path": "docs/03-architecture.md", "line": 132, "label": "User asks in the dashboard" }
       ]
     },
     {
       "id": "ingress", "type": "cloud", "label": "NGINX Ingress", "sublabel": "TLS, request limits",
       "pos": [230, 220], "size": [150, 64],
       "sources": [
-        { "path": "docs/03-architecture.md", "line": 61, "label": "Stack: NGINX Ingress" },
-        { "path": "docs/03-architecture.md", "line": 85, "label": "Routes HTTP to API and dashboard" },
+        { "path": "docs/03-architecture.md", "line": 85, "label": "Component: NGINX Ingress" },
+        { "path": "docs/03-architecture.md", "line": 97, "label": "Ingress to read API and dashboard" },
         { "path": "docs/decisions/013-ingress-and-terraform-from-f3.md", "line": 12, "label": "ADR-013 decision" }
       ]
     },
@@ -58,8 +58,8 @@
       "pos": [480, 220], "size": [140, 64],
       "sources": [
         { "path": "docs/03-architecture.md", "line": 77, "label": "Component: dashboard" },
-        { "path": "docs/03-architecture.md", "line": 97, "label": "Dashboard to read API" },
-        { "path": "docs/03-architecture.md", "line": 128, "label": "Question asked in the dashboard" }
+        { "path": "docs/03-architecture.md", "line": 98, "end_line": 99, "label": "Dashboard connections" },
+        { "path": "docs/03-architecture.md", "line": 132, "label": "Question asked in the dashboard" }
       ]
     },
     {
@@ -76,7 +76,7 @@
       "pos": [980, 220], "size": [170, 64],
       "sources": [
         { "path": "docs/03-architecture.md", "line": 73, "label": "Component: PostgreSQL" },
-        { "path": "docs/03-architecture.md", "line": 170, "end_line": 176, "label": "Initial data model" },
+        { "path": "docs/03-architecture.md", "line": 174, "end_line": 180, "label": "Initial data model" },
         { "path": "docs/decisions/007-agent-design-mcp-rag.md", "line": 13, "label": "ADR-007 pgvector retrieval" }
       ]
     },
@@ -102,7 +102,7 @@
       "pos": [720, 380], "size": [140, 64],
       "sources": [
         { "path": "docs/03-architecture.md", "line": 79, "label": "Component: MCP server" },
-        { "path": "docs/03-architecture.md", "line": 98, "end_line": 100, "label": "MCP server connections" },
+        { "path": "docs/03-architecture.md", "line": 100, "end_line": 102, "label": "MCP server connections" },
         { "path": "docs/decisions/007-agent-design-mcp-rag.md", "line": 12, "label": "ADR-007 read-only tool allowlist" }
       ]
     },
@@ -112,7 +112,7 @@
       "sources": [
         { "path": "docs/03-architecture.md", "line": 54, "label": "Stack: observability" },
         { "path": "docs/03-architecture.md", "line": 82, "label": "Component: observability stack" },
-        { "path": "docs/03-architecture.md", "line": 103, "label": "Services to observability stack" }
+        { "path": "docs/03-architecture.md", "line": 106, "label": "Services to observability stack" }
       ]
     },
     {
@@ -120,8 +120,8 @@
       "pos": [1260, 380], "size": [150, 64],
       "sources": [
         { "path": "docs/03-architecture.md", "line": 84, "label": "Component: ArgoCD" },
-        { "path": "docs/03-architecture.md", "line": 105, "label": "ArgoCD to GitHub" },
-        { "path": "docs/03-architecture.md", "line": 136, "end_line": 139, "label": "Flow: deployment" }
+        { "path": "docs/03-architecture.md", "line": 108, "label": "ArgoCD to GitHub" },
+        { "path": "docs/03-architecture.md", "line": 140, "end_line": 143, "label": "Flow: deployment" }
       ]
     },
     {
@@ -129,15 +129,16 @@
       "pos": [1545, 380], "size": [180, 64],
       "sources": [
         { "path": "docs/03-architecture.md", "line": 66, "label": "Stack: GitHub Actions CI" },
-        { "path": "docs/03-architecture.md", "line": 136, "end_line": 137, "label": "Flow: commit and CI" },
+        { "path": "docs/03-architecture.md", "line": 140, "end_line": 141, "label": "Flow: commit and CI" },
         { "path": "docs/decisions/012-ci-supply-chain.md", "line": 12, "end_line": 16, "label": "ADR-012 CI rules" }
       ]
     },
     {
       "id": "sealed_secrets", "type": "security", "label": "Sealed Secrets", "sublabel": "decrypts secrets from Git",
-      "pos": [225, 540], "size": [160, 64],
+      "pos": [1255, 700], "size": [160, 64],
       "sources": [
         { "path": "docs/03-architecture.md", "line": 86, "label": "Component: Sealed Secrets controller" },
+        { "path": "docs/03-architecture.md", "line": 109, "label": "Sealed Secrets to Kubernetes API" },
         { "path": "docs/decisions/011-sealed-secrets.md", "line": 12, "label": "ADR-011 decision" }
       ]
     },
@@ -146,7 +147,7 @@
       "pos": [475, 540], "size": [150, 64],
       "sources": [
         { "path": "docs/03-architecture.md", "line": 78, "label": "Component: domain agent" },
-        { "path": "docs/03-architecture.md", "line": 126, "end_line": 132, "label": "Flow: ask the agent" },
+        { "path": "docs/03-architecture.md", "line": 130, "end_line": 136, "label": "Flow: ask the agent" },
         { "path": "docs/decisions/007-agent-design-mcp-rag.md", "line": 12, "end_line": 15, "label": "ADR-007 decision" }
       ]
     },
@@ -155,7 +156,7 @@
       "pos": [725, 540], "size": [130, 64],
       "sources": [
         { "path": "docs/03-architecture.md", "line": 81, "label": "Component: Phoenix" },
-        { "path": "docs/03-architecture.md", "line": 102, "label": "Agents to Phoenix" },
+        { "path": "docs/03-architecture.md", "line": 105, "label": "Agents to Phoenix" },
         { "path": "docs/decisions/008-phoenix-llm-observability.md", "line": 12, "label": "ADR-008 decision" }
       ]
     },
@@ -164,15 +165,17 @@
       "pos": [990, 540], "size": [150, 64],
       "sources": [
         { "path": "docs/03-architecture.md", "line": 83, "label": "Component: HolmesGPT" },
-        { "path": "docs/03-architecture.md", "line": 102, "end_line": 104, "label": "HolmesGPT connections" },
-        { "path": "docs/decisions/006-local-llm-ollama-outside-cluster.md", "line": 8, "label": "ADR-006: HolmesGPT needs a model" }
+        { "path": "docs/03-architecture.md", "line": 104, "end_line": 105, "label": "HolmesGPT to Ollama and Phoenix" },
+        { "path": "docs/03-architecture.md", "line": 107, "label": "HolmesGPT read-only access" }
       ]
     },
     {
       "id": "k8s_api", "type": "cloud", "label": "Kubernetes API", "sublabel": "cluster state",
       "pos": [1260, 540], "size": [150, 64],
       "sources": [
-        { "path": "docs/03-architecture.md", "line": 104, "label": "HolmesGPT reads the Kubernetes API" }
+        { "path": "docs/03-architecture.md", "line": 107, "label": "HolmesGPT reads the Kubernetes API" },
+        { "path": "docs/03-architecture.md", "line": 109, "label": "Sealed Secrets writes Secrets" },
+        { "path": "docs/03-architecture.md", "line": 143, "label": "ArgoCD syncs the cluster" }
       ]
     },
     {
@@ -180,15 +183,15 @@
       "pos": [1560, 540], "size": [150, 64],
       "sources": [
         { "path": "docs/03-architecture.md", "line": 63, "label": "Stack: image registry" },
-        { "path": "docs/03-architecture.md", "line": 137, "label": "CI pushes images to GHCR" }
+        { "path": "docs/03-architecture.md", "line": 141, "label": "CI pushes images to GHCR" }
       ]
     },
     {
       "id": "ollama", "type": "external", "label": "Ollama on the host", "sublabel": "LLM and embedding models",
-      "pos": [470, 700], "size": [160, 64],
+      "pos": [25, 700], "size": [150, 64],
       "sources": [
         { "path": "docs/03-architecture.md", "line": 80, "label": "Component: Ollama (host)" },
-        { "path": "docs/03-architecture.md", "line": 101, "label": "Domain agent to Ollama" },
+        { "path": "docs/03-architecture.md", "line": 104, "label": "Agents to Ollama" },
         { "path": "docs/decisions/006-local-llm-ollama-outside-cluster.md", "line": 12, "label": "ADR-006 decision" }
       ]
     }
@@ -215,7 +218,7 @@
     { "id": "agent-to-mcp", "from": "agent", "to": "mcp", "label": "MCP tools", "fromSide": "top", "toSide": "bottom" },
     { "id": "mcp-to-api", "from": "mcp", "to": "read_api", "label": "HTTPS, read-only" },
     { "id": "mcp-to-postgres", "from": "mcp", "to": "postgres", "label": "SQL, similarity search", "fromSide": "top", "toSide": "bottom" },
-    { "id": "agent-to-ollama", "from": "agent", "to": "ollama", "label": "HTTP, OpenAI API" },
+    { "id": "agent-to-ollama", "from": "agent", "to": "ollama", "label": "HTTP, OpenAI API", "fromSide": "left", "toSide": "top" },
     { "id": "agent-to-phoenix", "from": "agent", "to": "phoenix", "label": "OTel traces", "variant": "dashed" },
     { "id": "holmes-to-phoenix", "from": "holmesgpt", "to": "phoenix", "label": "OTel traces", "variant": "dashed" },
     { "id": "holmes-to-observability", "from": "holmesgpt", "to": "observability", "label": "read-only: Prometheus, Loki" },
@@ -223,6 +226,7 @@
     { "id": "holmes-to-ollama", "from": "holmesgpt", "to": "ollama", "label": "LLM calls", "fromSide": "bottom", "toSide": "right" },
     { "id": "argocd-to-github", "from": "argocd", "to": "github", "label": "pulls manifests" },
     { "id": "argocd-to-k8s", "from": "argocd", "to": "k8s_api", "label": "syncs cluster" },
+    { "id": "sealed-to-k8s", "from": "sealed_secrets", "to": "k8s_api", "label": "writes Secrets" },
     { "id": "github-to-ghcr", "from": "github", "to": "ghcr", "label": "pushes scanned images" }
   ],
   "cards": [
@@ -252,7 +256,7 @@
         "MCP tools: get_site_status, get_forecast, search_docs",
         "Answers are JSON with text, sources and data used, validated against a schema (ADR-007)",
         "No fine-tuning; the model is chosen in F7 with the evaluation set (ADR-006)",
-        "TO DEFINE: dashboard-to-agent protocol and the step that embeds doc_chunks"
+        "TO DEFINE: dashboard-to-agent protocol, the step that embeds doc_chunks (not drawn) and what embeds the search_docs query"
       ]
     },
     {
