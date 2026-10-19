@@ -103,7 +103,7 @@ Numeric targets are set once a first measurement exists, not before. Detail live
 | --- | --- | --- |
 | Reproducibility | The whole system starts from scratch with one command, no hidden manual steps | A clean clone on another machine, following only the README |
 | Infrastructure as code | Containers, Kubernetes manifests and Terraform versioned in Git | Nothing is configured by hand in the cluster |
-| Security | No secrets in the repository, least privilege, secret scanner in CI | gitleaks and review before each publication |
+| Security | No secrets in the repository, least privilege, secret, code and image scanning in CI | gitleaks, CodeQL, Trivy and review before each publication |
 | Observability | Metrics, logs and traces for each service, with alerts on ingestion and the model | Dashboards and a provoked failure that raises an alert |
 | Reliability | Ingestion tolerates network failures and missing data without corrupting the database | Tests with simulated failures |
 | Data quality | Validate ranges and dates before storing, and warn if a day arrives empty | Automated tests and a missing-data alert |
@@ -133,11 +133,16 @@ Four choices are decided. The rest are proposals confirmed when each phase is re
 | Scheduled ingestion | Kubernetes CronJob | Proposed | Airflow: too heavy for one daily task |
 | API | FastAPI | Proposed | Next.js API routes: would mix data and presentation |
 | Dashboard | Next.js | Proposed | Streamlit or Grafana: fast, but show less of the owner's own code |
-| ML tracking | MLflow | Proposed | Loose files: no comparable history |
+| ML tracking | MLflow from the first trained model (F5) | Decided | Loose files: no comparable history; adding it later means rebuilding experiments |
 | Containers and local cluster | Docker, and kind or k3d | Proposed | Minikube: heavier |
 | GitOps | ArgoCD | Proposed | Flux: valid alternative, may be compared later |
 | Observability | Prometheus, Grafana, Loki and OpenTelemetry | Proposed | Paid services: outside the budget |
-| Infrastructure as code | Terraform | Proposed | Pulumi: valid, but Terraform appeared among the skills seen in job postings |
+| Infrastructure as code | Terraform, from F3 for the local cluster and in F8 for AWS (ADR-013) | Decided | Pulumi: valid, but Terraform appeared among the skills seen in job postings |
+| Configuration management | None; Kubernetes and Terraform are already declarative (ADR-013) | Decided | Ansible: would be added only for the label, with no real use |
+| Ingress | NGINX Ingress (ADR-013) | Decided | Traefik: valid, but NGINX appears more in job postings |
+| Cluster secrets | Sealed Secrets (ADR-011) | Decided | Plain Kubernetes Secrets in Git: unsafe; External Secrets: needs a paid secret store |
+| CI security | gitleaks, CodeQL and Trivy, with every action pinned by full commit hash (ADR-012) | Decided | Actions pinned by tag: a moved tag can run malicious code |
+| Image registry | GitHub Container Registry (GHCR) | Proposed | Docker Hub: pull limits; AWS ECR: only exists from F8 |
 | Cloud provider | AWS on the free plan, only in F8 (ADR-010) | Decided | Azure through the Student Pack: AWS appears more often in the job postings reviewed |
 | CI | GitHub Actions | Proposed | Other providers: already in use |
 | Language model | Small open-weight model served by Ollama on the host machine; exact model chosen in F7 by evaluations (ADR-006) | Proposed | Paid API by default: billing risk; may be compared later only with a provider spend limit |

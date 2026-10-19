@@ -97,6 +97,8 @@ Expand this table when a phase begins. Every Must requirement in the PRD needs a
 | Type check | mypy or pyright | `make typecheck` |
 | Frontend tests | Vitest | `make test-web` |
 | End to end | Playwright | `make e2e` |
+| Load test | k6 | `make load` |
+| Code and image scanning | CodeQL, Trivy | CI only |
 | Secret scan | gitleaks | `make scan` |
 | Agent evaluations | Runner script | `make eval` |
 | Everything | | `make check` |

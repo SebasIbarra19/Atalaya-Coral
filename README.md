@@ -4,7 +4,7 @@ Atalaya is an early-warning platform for coral reef thermal stress in Costa Rica
 
 It is a learning and portfolio project. It does not replace official NOAA alerts.
 
-**Status:** Phase F0 (repository and documentation). Nothing runs yet.
+**Status:** Phase F1 (environment, ingestion and database). Nothing runs yet.
 
 ## Planned architecture
 

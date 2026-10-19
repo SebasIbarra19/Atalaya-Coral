@@ -57,7 +57,11 @@ The core is ingestion, database, API and dashboard. Everything else is added by 
 | Agent tools | MCP server (Python SDK) | Proposed | Standard way to give agents tools; read-only by design (ADR-007) |
 | Vector search | pgvector | Proposed | Extension of the existing PostgreSQL, no extra service (ADR-007) |
 | LLM observability | Arize Phoenix | Proposed | Single container, built on OpenTelemetry (ADR-008) |
-| IaC | Terraform | Proposed | Industry standard; appears in job postings |
+| IaC | Terraform (local cluster from F3, AWS in F8) | Decided | Industry standard; practiced for free before the cloud (ADR-013) |
+| Ingress | NGINX Ingress | Decided | Widely used reverse proxy for Kubernetes (ADR-013) |
+| Cluster secrets | Sealed Secrets | Decided | Free, fits GitOps: encrypted secrets can live in Git (ADR-011) |
+| Image registry | GHCR | Proposed | Free with the repository; images built and pushed from CI |
+| CI security | gitleaks, CodeQL, Trivy | Decided | Secret, code and image scanning with pinned actions (ADR-012) |
 | Cloud | AWS (free plan, F8 only) | Decided | Most demanded in the job postings reviewed (ADR-010) |
 | CI | GitHub Actions | Proposed | Already used |
 
@@ -78,6 +82,8 @@ The core is ingestion, database, API and dashboard. Everything else is added by 
 | Observability stack | Collects metrics, logs and traces and fires alerts | Store business data |
 | HolmesGPT | Investigates alerts with read-only access | Change cluster state |
 | ArgoCD | Syncs the cluster to what is in Git | Build images |
+| NGINX Ingress | Routes HTTP traffic to the API and dashboard; TLS and request limits | Hold application logic |
+| Sealed Secrets controller | Decrypts sealed secrets from Git into Kubernetes Secrets | Store the private key in Git |
 
 ## 4. How the parts connect
 
@@ -128,7 +134,7 @@ The core is ingestion, database, API and dashboard. Everything else is added by 
 **Deployment**
 
 1. A commit lands on the main branch.
-2. CI runs lint, tests and builds images.
+2. CI runs lint, tests, CodeQL and gitleaks, builds images, scans them with Trivy and pushes them to GHCR.
 3. A manifest change in Git is detected by ArgoCD.
 4. ArgoCD syncs the cluster.
 
@@ -154,7 +160,7 @@ The core is ingestion, database, API and dashboard. Everything else is added by 
 │   ├── compose/               # Docker Compose for the core
 │   └── k8s/                   # manifests (ArgoCD syncs this folder)
 ├── infra/
-│   └── terraform/             # cloud, added in phase F8
+│   └── terraform/             # local cluster from F3; AWS added in F8
 ├── observability/             # dashboards and alert rules as code
 └── .github/workflows/         # CI
 ```
@@ -204,6 +210,10 @@ Each decision lives in `docs/decisions/NNN-title.md` with: context, decision, al
 | ADR-008 | Phoenix for LLM observability | Proposed |
 | ADR-009 | Compose profiles and a local resource budget | Proposed |
 | ADR-010 | AWS as the cloud provider, free plan only | Decided |
+| ADR-011 | Sealed Secrets for cluster secrets | Decided |
+| ADR-012 | CI supply chain rules | Decided |
+| ADR-013 | NGINX Ingress and Terraform from F3; no Ansible | Decided |
+| Pending | Migration tool (Alembic or plain SQL), decided in F1-T00e | Open |
 
 ## Open questions
 

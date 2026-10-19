@@ -30,12 +30,12 @@ The minimum deliverable is M1 plus M3a. M3a depends only on the core, so it can 
 | Phase | Technical order | Prior decisions needed | Main risk | Verified by |
 | --- | --- | --- | --- | --- |
 | F0 | Create repository, README skeleton, `docs/`, Makefile, minimal CI, secret scan, ADRs 001 to 005 | License confirmation | Over-engineering the setup | CI green on an empty project |
-| F1 | Choose sites; study the ERDDAP dataset; schema migrations; ingestion with idempotent writes and run log; backfill | Sites; exact variables; start year | Coarse pixels for small reefs; NOAA schema surprises | TC-1 to TC-6 |
-| F2 | Read API with contract tests; dashboard with all states; Docker Compose; `make up` | API conventions; dashboard overview (map or list) | Mixing data and presentation | TC-7 to TC-10, TC-18 |
-| F3 | Dockerfiles; local cluster; manifests; ArgoCD syncing `deploy/k8s` | Helm or Kustomize | Local resource limits | A change in Git reaches the cluster |
+| F1 | Prepare environment and access (F1-T00: Docker, Python, local PostgreSQL, database roles, migration tool, real lint and tests, CI pinned by hash, CodeQL); choose sites; study the ERDDAP dataset; schema migrations; ingestion with idempotent writes and run log; backfill; container scanned with Trivy | Python version; migration tool; sites; exact variables; start year | Coarse pixels for small reefs; NOAA schema surprises | TC-1 to TC-6 |
+| F2 | Read API with contract tests; dashboard with all states; Docker Compose with profiles; `make up`; load test with k6 to measure API limits | API conventions; dashboard overview (map or list) | Mixing data and presentation | TC-7 to TC-10, TC-18 |
+| F3 | Dockerfiles; images built in CI, scanned with Trivy and pushed to GHCR; Terraform creates the local cluster and installs NGINX Ingress, ArgoCD and Sealed Secrets; manifests with NetworkPolicies and Pod Security; ArgoCD syncing `deploy/k8s` | Helm or Kustomize | Local resource limits | A change in Git reaches the cluster |
 | F4 | Metrics, logs and traces for ingestion and API; dashboards and alert rules as code | Alert thresholds after first measurement | Alert noise | A provoked failure raises an alert |
-| F5 | Features; baseline; XGBoost; temporal validation; SHAP; forecasts into the database | Horizon; evaluation window | Leakage; modest results | TC-11 to TC-13 |
-| F6 | MLflow; scheduled retraining; drift check; notifications | Notification channel; drift method | Complexity for little data | TC-14 |
+| F5 | MLflow from the first model; features computed by the same code in training and inference, with a test; baseline; XGBoost; temporal validation; SHAP; forecasts into the database | Horizon; evaluation window; uncertainty intervals or not | Leakage; modest results | TC-11 to TC-13 |
+| F6 | Promotion rule (a new model replaces the current one only if it beats it on the test period) and rollback; forecast quality monitoring against later observations, with an alert if the error gets worse than the baseline; drift check; retraining on schedule, on drift or on quality drop; small training quality gate in CI; notifications; orchestration with CronJob plus MLflow (Argo Workflows optional) | Notification channel; drift method (KS or PSI, Evidently optional); MLflow artifact storage (disk or MinIO locally, S3 on AWS); ADR for batch forecasts versus online serving | Complexity for little data | TC-14 |
 | F7 | Ollama on the host; MCP server with read-only tools; document corpus into pgvector; domain agent with structured outputs; Phoenix traces; evaluation set in CI; HolmesGPT on the local cluster with read-only access | Exact local model (chosen by evaluations); document corpus | Unsupported answers; prompt injection; VRAM limits | TC-15 to TC-17, TC-21 to TC-25 |
 | F8 | Prepare AWS access (account, MFA, Budgets, Terraform identity, OIDC); Terraform modules; deploy through GitOps; `make cloud-down`; teardown | Region; EKS or k3s on EC2 (check the free plan at that moment) | Unexpected cost | Create and destroy cycle with zero unexpected charges |
 
@@ -44,7 +44,7 @@ Each phase ends by publishing its result in the repository and updating `11-memo
 ## 3. Environments and deployment step by step
 
 1. **Local core:** `make up` starts the Compose stack (database, ingestion, API, dashboard).
-2. **Local cluster:** create the cluster, install ArgoCD, point it at `deploy/k8s`, and let it sync.
+2. **Local cluster:** create the cluster with Terraform (NGINX Ingress, ArgoCD, Sealed Secrets), point ArgoCD at `deploy/k8s`, and let it sync.
 3. **Observability:** deploy the stack through GitOps; import dashboards and alert rules from `observability/`.
 4. **Cloud:** run Terraform for the infrastructure, then let ArgoCD in the cloud cluster sync the same manifests with cloud overlays.
 5. **Teardown:** destroy cloud resources when idle; record the cost in `11-memory.md`.
@@ -66,6 +66,9 @@ Never change the cluster by hand. If a manual change is needed to investigate, r
 ## Open questions
 
 - [ ] Run F5 before F3 and F4, or after?
+- [ ] Python version and migration tool (F1-T00b, F1-T00e).
+- [ ] Forecasts with uncertainty intervals or without (the spec promises them to researchers, RF-8 does not require them; fix whichever document is wrong).
+- [ ] MLflow artifact storage.
 - [ ] License confirmation (repository name decided: Atalaya-Coral).
 - [ ] AWS region and whether the free plan covers EKS or k3s on EC2 is needed `[TO VERIFY at F8]`.
 
