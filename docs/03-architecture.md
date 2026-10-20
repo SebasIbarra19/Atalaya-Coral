@@ -44,7 +44,7 @@ This Mermaid chart is the quick text overview. The detailed, explorable diagram 
 | Layer | Technology | Status | Why |
 | --- | --- | --- | --- |
 | Data source | NOAA Coral Reef Watch 5 km via ERDDAP | Decided | Public, daily, global |
-| Language (data and ML) | Python | Proposed | Ecosystem for data and ML; owner already uses it |
+| Language (data and ML) | Python 3.14 with uv | Decided | Ecosystem for data and ML; newest version the ML stack supports (ADR-016) |
 | Database | PostgreSQL | Proposed | Relational, solid for time series at this volume |
 | API | FastAPI | Proposed | Typed, generates OpenAPI |
 | Dashboard | Next.js (TypeScript) | Proposed | Owner already uses it; keeps focus on data and infrastructure |
@@ -222,6 +222,7 @@ Each decision lives in `docs/decisions/NNN-title.md` with: context, decision, al
 | ADR-013 | NGINX Ingress and Terraform from F3; no Ansible | Decided |
 | ADR-014 | Architecture diagrams as HTML with Archify | Decided |
 | ADR-015 | No AI attribution in the repository | Decided |
+| ADR-016 | Python 3.14 managed with uv | Decided |
 | Pending | Migration tool (Alembic or plain SQL), decided in F1-T00e | Open |
 
 ## Open questions

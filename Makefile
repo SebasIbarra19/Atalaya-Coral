@@ -1,4 +1,8 @@
-.PHONY: up test lint check scan
+.PHONY: setup up test lint check scan
+
+setup:
+	uv sync --locked
+	uv run python --version
 
 up:
 	@echo "[stub] will start the local core stack (database, ingestion, API, dashboard). Defined in F2-T09."

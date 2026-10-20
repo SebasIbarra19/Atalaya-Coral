@@ -59,7 +59,7 @@ F1-T00 prepares the environment and access (flexible: the owner runs each step a
   - Done when: `docker run hello-world` works in Ubuntu without `sudo`, `docker compose version` answers, and `lazydocker` shows the finished container
   - Depends on: none
   - Requirement: RF-14
-- [ ] F1-T00b · Pin the Python version, create a virtual environment and a dependency file with pinned versions
+- [x] F1-T00b · Pin the Python version, create a virtual environment and a dependency file with pinned versions
   - Done when: the version is written in `06-code-style-guide.md` and `make` uses it
   - Depends on: none
   - Requirement: NFR-1

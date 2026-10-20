@@ -128,7 +128,7 @@ Four choices are decided. The rest are proposals confirmed when each phase is re
 | Model | XGBoost with SHAP, replicating Arcodia et al. (2025), starting from a baseline | Decided | Neural networks: more complex and less explainable at this data size (Proposed) |
 | Environment | Local cluster first, cloud afterwards | Decided | Cloud from the start: adds billing risk while learning |
 | Operations agent | HolmesGPT | Decided | k8sgpt: another LLM-based option to compare later |
-| Data and ML language | Python | Proposed | R: not the owner's stack |
+| Data and ML language | Python 3.14 managed with uv (ADR-016) | Decided | R: not the owner's stack; Python 3.15: too new for the compiled ML libraries |
 | Database | PostgreSQL | Proposed | A specialized time-series database: evaluated if volume demands it |
 | Scheduled ingestion | Kubernetes CronJob | Proposed | Airflow: too heavy for one daily task |
 | API | FastAPI | Proposed | Next.js API routes: would mix data and presentation |

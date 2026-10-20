@@ -25,7 +25,8 @@ Tools and versions here are Proposed until approved. Rules that can be automated
 
 | Area | Standard | Enforced by |
 | --- | --- | --- |
-| Python version | `[TO DEFINE]` (a currently supported release) | CI matrix |
+| Python version | 3.14, pinned in `.python-version` (ADR-016) | `uv sync --locked` in CI and Docker |
+| Python environment and dependencies | uv: `pyproject.toml` plus a committed `uv.lock`; add packages with `uv add`; install with `make setup` (`uv sync --locked`); `.venv` is never committed | CI fails if the lockfile is out of date |
 | Python formatting and linting | Ruff (format and lint) | pre-commit, CI |
 | Python typing | Type hints on all public functions; mypy or pyright in strict-ish mode `[TO DEFINE]` | CI |
 | Python tests | pytest | CI |
@@ -130,7 +131,8 @@ The last example describes a behavior to confirm in F1 `[TO VERIFY]`.
 
 ## Open questions
 
-- [ ] Python version and type checker.
+- [x] Python version: 3.14 with uv (ADR-016, 2026-10-19).
+- [ ] Type checker.
 - [ ] Line length and SQL keyword case.
 - [ ] Commit message enforcement.
 
