@@ -69,6 +69,7 @@ If the project ever stores personal data (for example user accounts), this secti
 
 - Pin versions and commit lockfiles.
 - Dependabot proposes updates (`.github/dependabot.yml`, starting with GitHub Actions); the owner reviews and approves each one.
+- CodeQL (`.github/workflows/codeql.yml`) analyzes the Python code and the workflow files on every pull request, on `main` and weekly. Only that job has `security-events: write`, to upload results to Code scanning.
 - The CI secret scan runs the gitleaks binary (pinned version, SHA-256 checked) instead of `gitleaks-action`, so the scanner job needs no token. Checkout never persists credentials.
 - CI supply chain (ADR-012): every third-party action is pinned by full commit hash, never by tag; versions are pinned and updated on purpose after review; scanner jobs get only `contents: read` and no secrets; `pull_request_target` is not used in those jobs.
 - Context: in March 2026 `trivy-action`, `setup-trivy` and Trivy v0.69.4 were compromised to steal CI secrets and cloud credentials. Known safe versions are re-verified at the moment of use. If a bad version ever runs, every pipeline secret is rotated.

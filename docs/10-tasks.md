@@ -83,7 +83,7 @@ F1-T00 prepares the environment and access (flexible: the owner runs each step a
   - Done when: no `uses:` points to a tag (ADR-012)
   - Depends on: none
   - Requirement: NFR-13
-- [ ] F1-T00h · Add CodeQL to CI (official action pinned by hash)
+- [x] F1-T00h · Add CodeQL to CI (official action pinned by hash)
   - Done when: the analysis runs on every pull request
   - Depends on: F1-T00g
   - Requirement: NFR-13
