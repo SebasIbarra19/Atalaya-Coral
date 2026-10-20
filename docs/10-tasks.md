@@ -79,7 +79,7 @@ F1-T00 prepares the environment and access (flexible: the owner runs each step a
   - Done when: CI runs real tests
   - Depends on: F1-T00b
   - Requirement: NFR-12
-- [ ] F1-T00g · Pin every GitHub Action in CI by full commit hash and set minimal permissions per job
+- [x] F1-T00g · Pin every GitHub Action in CI by full commit hash and set minimal permissions per job
   - Done when: no `uses:` points to a tag (ADR-012)
   - Depends on: none
   - Requirement: NFR-13

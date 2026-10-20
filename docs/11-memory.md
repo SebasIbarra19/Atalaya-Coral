@@ -17,7 +17,7 @@ The living document. Update it at the end of every work session. Add entries, ne
 | Item | Value |
 | --- | --- |
 | Current phase | F1 (ingestion and database, strict) |
-| Last completed task | F1-T00e: plain SQL migrations with dbmate (ADR-017, 2026-10-20) |
+| Last completed task | F1-T00g: CI actions pinned by hash, minimal permissions (2026-10-20) |
 | Next task | F1-T00f (Ruff and pytest real in `make lint`, `make test`, the hook and CI) |
 | Blockers | First sites are not decided |
 | Last updated | 2026-10-20 |
@@ -62,6 +62,7 @@ The living document. Update it at the end of every work session. Add entries, ne
 | 2026-10-18 | gitleaks, CodeQL and Trivy in CI with supply chain rules (ADR-012) | DevSecOps; the March 2026 Trivy incident shows actions must be pinned | Actions pinned by tag; no scanners |
 | 2026-10-18 | MLflow from the first trained model; Dependabot with owner approval | Avoid rebuilding experiments; reviewed updates | MLflow only in F6; automatic merges |
 | 2026-10-18 | Architecture diagrams as HTML with the Archify skill (next task) | Richer, interactive diagrams for the portfolio | Mermaid only |
+| 2026-10-20 | CI hardened (ADR-012): `actions/checkout` pinned to the v7.0.1 commit hash, `permissions: {}` at the top and `contents: read` per job, `persist-credentials: false`, gitleaks run as a pinned binary with checksum instead of `gitleaks-action` (no `GITHUB_TOKEN` in the scanner job), Dependabot for GitHub Actions | Scanner jobs without secrets; tags can move, hashes cannot | Keeping `gitleaks-action@v2` with a token; pinning by tag |
 | 2026-10-20 | Plain SQL migrations with dbmate, run as the administrator, `db/schema.sql` committed (ADR-017) | No ORM in the project; learn SQL in strict mode; small runner for Kubernetes; matches `06-code-style-guide.md` | Alembic; golang-migrate; Flyway |
 | 2026-10-20 | Database roles created by an init script (`deploy/compose/initdb/10-roles.sh`) with passwords from `.env`; schema `atalaya`; `ALTER DEFAULT PRIVILEGES` so future tables get the grants | Reproducible from a clean clone; no per-migration grants; least privilege | Roles created by hand only; roles inside migrations |
 | 2026-10-19 | Local database: PostgreSQL 18 from the `pgvector/pgvector:pg18` image pinned by digest, in `deploy/compose/compose.yaml` under the `core` profile, port bound to 127.0.0.1, named volume | pgvector is needed in Branch C, so no image change later; digest pinning follows ADR-012; local-only port is least privilege | Plain `postgres:18` image; PostgreSQL 19 (not confirmed released); port open on all interfaces |
@@ -118,6 +119,7 @@ The living document. Update it at the end of every work session. Add entries, ne
 | 2026-10-18 | 03-architecture | Section 4: rows for NGINX Ingress, dashboard to domain agent, HolmesGPT to Ollama, the document indexing step and the Sealed Secrets controller (unknown facts marked `[TO DEFINE]`); section 10 lists ADR-014 and 015; two open questions added |
 | 2026-10-18 | decisions | ADR-014 (architecture diagrams with Archify) and ADR-015 (no AI attribution) added |
 | 2026-10-18 | AGENTS.md | Rule 11: no AI attribution, one-line commit messages (ADR-015) |
+| 2026-10-20 | .github/workflows/ci.yml, .github/dependabot.yml, 05-security, 10-tasks | Actions pinned by hash, per-job permissions, gitleaks binary in CI, Dependabot; F1-T00g checked |
 | 2026-10-20 | 03-architecture, 06-code-style, 09-plan, 10-tasks, decisions | Migration tool decided (ADR-017); `db/schema.sql` in the repository tree; F1-T00e checked |
 | 2026-10-20 | deploy/compose, Makefile, .env.example, 03-architecture, 05-security, 10-tasks | Roles init script, `make db-reset`, role credentials in `.env.example`, schema `atalaya` noted, roles described in the security guide; F1-T00d checked |
 | 2026-10-19 | deploy/compose, Makefile, .env.example, 03-architecture, 10-tasks | Compose file for the local database, `make db-up`, `db-down`, `db-logs`; password generation hint; database row names PostgreSQL 18 with pgvector; F1-T00c checked |
@@ -130,6 +132,7 @@ The living document. Update it at the end of every work session. Add entries, ne
 
 | Date | What was done | What is next |
 | --- | --- | --- |
+| 2026-10-20 | F1-T00g done: CI actions pinned by full commit hash, minimal permissions per job, gitleaks as a pinned binary, `.github/dependabot.yml`; job names unchanged, so the ruleset needs no change. Verified only when the pull request runs | F1-T00f |
 | 2026-10-20 | F1-T00e done: compared Alembic and plain SQL runners; chose dbmate; ADR-017. Installed dbmate 2.37.0 (no published checksum: SHA-256 matched an independent download and the GitHub release page) and `postgresql-client-18` from the PGDG repository (`pg_dump` 18.6); `?sslmode=disable` on local URLs; `db/migrations/` created; `make migrate-status` connects | F1-T00f (real lint and tests) |
 | 2026-10-20 | F1-T00d done: init script creates `atalaya_ingest` and `atalaya_api` with schema `atalaya` and default privileges; `make db-reset`; verified: ingestion inserts, API reads, API insert fails with `permission denied for table`, ingestion `create table` fails with `permission denied for schema` | F1-T00e (migration tool and ADR) |
 | 2026-10-19 | F1-T00c done: `deploy/compose/compose.yaml` with the `db` service (profile `core`, healthcheck, named volume, local-only port), `make db-up`, `db-down`, `db-logs`; real `.env` with a generated hex password, confirmed ignored by Git; connected with `psql` using the owner's credentials (PostgreSQL 18.6); image pinned by digest | F1-T00d (database roles) |

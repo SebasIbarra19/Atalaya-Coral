@@ -1,0 +1,10 @@
+# Dependabot proposes updates; the owner reviews and approves each one (ADR-012).
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    # Keeps actions pinned by full commit hash and updates the version comment.
+    commit-message:
+      prefix: ci
