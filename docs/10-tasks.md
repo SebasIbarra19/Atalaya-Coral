@@ -67,7 +67,7 @@ F1-T00 prepares the environment and access (flexible: the owner runs each step a
   - Done when: a client connects with the owner's own user and password, and `.env` is still ignored by Git
   - Depends on: F1-T00a
   - Requirement: NFR-8
-- [ ] F1-T00d · Database roles: one with write access for ingestion and one read-only for the API
+- [x] F1-T00d · Database roles: one with write access for ingestion and one read-only for the API
   - Done when: the read-only role fails when it tries to write
   - Depends on: F1-T00c
   - Requirement: NFR-9

@@ -16,12 +16,17 @@ services:
       POSTGRES_USER: ${POSTGRES_USER:?set POSTGRES_USER in .env}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
       POSTGRES_DB: ${POSTGRES_DB:?set POSTGRES_DB in .env}
+      # Used only by initdb/10-roles.sh on the first start of an empty volume.
+      ATALAYA_INGEST_PASSWORD: ${ATALAYA_INGEST_PASSWORD:?set ATALAYA_INGEST_PASSWORD in .env}
+      ATALAYA_API_PASSWORD: ${ATALAYA_API_PASSWORD:?set ATALAYA_API_PASSWORD in .env}
     ports:
       # Only reachable from this machine, never from the network.
       - "127.0.0.1:5432:5432"
     volumes:
       # PostgreSQL 18 images keep their data under /var/lib/postgresql.
       - db-data:/var/lib/postgresql
+      # Init scripts run only when the data volume is empty (make db-reset).
+      - ./initdb:/docker-entrypoint-initdb.d:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
       interval: 5s

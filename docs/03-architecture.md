@@ -174,6 +174,8 @@ This Mermaid chart is the quick text overview. The detailed, explorable diagram 
 
 ## 7. Data model (initial, Proposed)
 
+All tables live in schema `atalaya`, owned by the administrator role. Role grants are in `05-security-guide.md`, section 3.
+
 | Entity | Key fields | Rules |
 | --- | --- | --- |
 | `sites` | id, name, latitude, longitude, active | Unique name; coordinates validated |

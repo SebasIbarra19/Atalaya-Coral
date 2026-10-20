@@ -1,4 +1,4 @@
-.PHONY: setup db-up db-down db-logs up test lint check scan
+.PHONY: setup db-up db-down db-logs db-reset up test lint check scan
 
 COMPOSE := docker compose -f deploy/compose/compose.yaml --env-file .env
 
@@ -15,6 +15,14 @@ db-down:
 
 db-logs:
 	$(COMPOSE) --profile core logs -f db
+
+# Deletes the local database volume and recreates it, so the init scripts run again.
+db-reset:
+	@echo "This deletes ALL local database data. Press Ctrl+C within 5 seconds to cancel."
+	@sleep 5
+	$(COMPOSE) --profile core down -v
+	$(COMPOSE) --profile core up -d db
+	$(COMPOSE) --profile core ps
 
 up:
 	@echo "[stub] will start the local core stack (database, ingestion, API, dashboard). Defined in F2-T09."

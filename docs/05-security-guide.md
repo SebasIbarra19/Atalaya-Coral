@@ -29,7 +29,7 @@ This guide defines how the platform is kept safe, even though it only handles pu
 | --- | --- |
 | Public read endpoints | No credential; protected by rate limits (see `04-api-guide.md`) |
 | Admin endpoints | API key, checked on every request in the API layer, not only at the ingress |
-| Database roles | Separate roles: ingestion (write observations), training (write forecasts), API (read-only) |
+| Database roles | Separate roles, created by `deploy/compose/initdb/10-roles.sh`: administrator (owns schema `atalaya`, runs migrations), `atalaya_ingest` (select, insert, update; no delete, no DDL), `atalaya_api` (read-only). Default privileges give every new table these grants. A training role (write forecasts) is added in F5 |
 | Kubernetes | One service account per workload; HolmesGPT and the domain agent get read-only roles; NetworkPolicies allow only the traffic each workload needs; Pod Security standards enforced per namespace |
 | GitHub | Ruleset `protect-main` on the main branch; no direct pushes (done in F0) |
 | Cloud | MFA on the AWS root account and no access keys for it; separate IAM identity for Terraform; GitHub Actions uses OIDC, never long-lived keys; no personal admin credentials inside the cluster |
