@@ -55,8 +55,8 @@ depende_de: [00-spec.md, 01-prd.md, 08-testing-guide.md, 09-implementation-plan.
 
 F1-T00 prepares the environment and access (flexible: the owner runs each step and must understand it).
 
-- [ ] F1-T00a · Install Docker on Windows
-  - Done when: `docker run hello-world` works
+- [x] F1-T00a · Install Docker Engine inside WSL2 (Ubuntu, no Docker Desktop) and lazydocker
+  - Done when: `docker run hello-world` works in Ubuntu without `sudo`, `docker compose version` answers, and `lazydocker` shows the finished container
   - Depends on: none
   - Requirement: RF-14
 - [ ] F1-T00b · Pin the Python version, create a virtual environment and a dependency file with pinned versions

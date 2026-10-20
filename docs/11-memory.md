@@ -17,10 +17,10 @@ The living document. Update it at the end of every work session. Add entries, ne
 | Item | Value |
 | --- | --- |
 | Current phase | F1 (ingestion and database, strict) |
-| Last completed task | Architecture diagram updated to the new section 4 rows (sources pinned to b5b7b31) |
-| Next task | Owner reviews; push and open the PR when the owner decides; then F1-T00a (install Docker) |
+| Last completed task | F1-T00a: Docker Engine in WSL2 Ubuntu (no Docker Desktop), Compose plugin, lazydocker v0.25.2 (2026-10-19) |
+| Next task | VS Code WSL extension (open the repository from Ubuntu); then F1-T00b (Python version and virtual environment) |
 | Blockers | First sites are not decided |
-| Last updated | 2026-10-18 |
+| Last updated | 2026-10-19 |
 
 ## 2. Completed
 
@@ -62,6 +62,7 @@ The living document. Update it at the end of every work session. Add entries, ne
 | 2026-10-18 | gitleaks, CodeQL and Trivy in CI with supply chain rules (ADR-012) | DevSecOps; the March 2026 Trivy incident shows actions must be pinned | Actions pinned by tag; no scanners |
 | 2026-10-18 | MLflow from the first trained model; Dependabot with owner approval | Avoid rebuilding experiments; reviewed updates | MLflow only in F6; automatic merges |
 | 2026-10-18 | Architecture diagrams as HTML with the Archify skill (next task) | Richer, interactive diagrams for the portfolio | Mermaid only |
+| 2026-10-19 | Docker Engine inside WSL2 Ubuntu instead of Docker Desktop; lazydocker as the visual interface | Fully open source, no Desktop license terms, lighter on RAM, and real Linux practice; kind and k3d run on the same engine | Docker Desktop |
 | 2026-10-18 | lazydocker and k9s as personal development tools | Faster inspection of containers and the cluster | Only raw `docker` and `kubectl` commands |
 | 2026-10-18 | Diagrams are Archify HTML plus JSON source in `docs/diagrams/`, built only from the documents, arrows from caller to callee, delivery receipts not committed (ADR-014) | Explorable diagrams a reviewer can check line by line | Mermaid only; output in `.archify/`; arrows in the direction of the data |
 | 2026-10-18 | No AI attribution in commits, pull requests or files; one-line commit messages (ADR-015) | The owner is the only author of record, as decided on 2026-10-10 | Co-author trailer on AI-assisted commits |
@@ -80,6 +81,9 @@ The living document. Update it at the end of every work session. Add entries, ne
 - Run `git status` before every commit: anything staged goes into the commit (a test line slipped into PR #2 and was reverted in the same PR).
 - Ruleset required checks match job names; renaming a job requires updating the ruleset.
 - Kubernetes itself is free; a local cluster (kind or k3d) is real Kubernetes. Only managed cloud clusters and their machines cost money (F8).
+- `wsl --status` shows the default WSL version for new distributions, not installed ones; `wsl --list --verbose` lists what is installed.
+- A fresh WSL distribution can fail with `Wsl/Service/E_UNEXPECTED`; `wsl --shutdown`, `wsl --update` or a reboot clears it.
+- Being in the `docker` group is equivalent to root on that machine: fine on a personal development machine, handled with care on servers.
 - On this laptop, RAM (16 GB) limits the local stack more than the GPU does; XGBoost needs no GPU at this data size.
 
 ## 6. Document changes
@@ -100,12 +104,15 @@ The living document. Update it at the end of every work session. Add entries, ne
 | 2026-10-18 | 03-architecture | Section 4: rows for NGINX Ingress, dashboard to domain agent, HolmesGPT to Ollama, the document indexing step and the Sealed Secrets controller (unknown facts marked `[TO DEFINE]`); section 10 lists ADR-014 and 015; two open questions added |
 | 2026-10-18 | decisions | ADR-014 (architecture diagrams with Archify) and ADR-015 (no AI attribution) added |
 | 2026-10-18 | AGENTS.md | Rule 11: no AI attribution, one-line commit messages (ADR-015) |
+| 2026-10-19 | 10-tasks | F1-T00a installs Docker Engine inside WSL2 (no Docker Desktop) and lazydocker, used from F1-T00c to inspect the PostgreSQL container and its logs |
+| 2026-10-19 | 03-architecture, README | Review: link to the Archify diagram; MLflow row aligned with the spec (Decided, from F5); PostgreSQL stores `doc_chunks`; `docs/diagrams/` and Compose profiles in the repository tree; local cluster created with Terraform; decision log intro updated. No component or connection changed, so the diagram needs no regeneration |
 | 2026-10-18 | docs/diagrams/ | Diagram updated to the new section 4 rows: Sealed Secrets arrow to the Kubernetes API, Ollama moved to the left outside the cluster; sources pinned to b5b7b31 |
 
 ## 7. Session log
 
 | Date | What was done | What is next |
 | --- | --- | --- |
+| 2026-10-19 | F1-T00a done: Ubuntu installed in WSL2 (systemd on by default), Docker Engine from the official apt repository with the Compose and buildx plugins, user added to the `docker` group, `hello-world` ran without `sudo`, lazydocker v0.25.2 installed from the release tarball after a SHA-256 check | VS Code WSL extension; F1-T00b |
 | 2026-10-18 | Updated the diagram to the new section 4 rows (Sealed Secrets to Kubernetes API) and pinned its sources to b5b7b31; the document indexing step stays in a card because its component is `[TO DEFINE]`; automated checks passed and captures reviewed | Owner reviews; push and open the PR when the owner decides; then F1-T00a |
 | 2026-10-18 | Removed an AI co-author trailer from the diagram commit before any push; recorded ADR-014 and ADR-015 and added rule 11 to `AGENTS.md`; filled the five section 4 gaps in `03-architecture.md` | Owner reviews; update the diagram to the new section 4 rows and re-pin its sources; push and open the PR when the owner decides; then F1-T00a |
 | 2026-10-18 | Built the planned architecture diagram with Archify in `docs/diagrams/` (all automated checks passed, light and dark captures reviewed). Arrows and protocols come from section 4; additions only where sections 3 and 5 or an ADR state them. Sealed Secrets is drawn without arrows because no document gives its connection. Listed five gaps in section 4 (see section 4 of this file) | Owner reviews the diagram and decides on the section 4 gaps; then F1-T00a |
