@@ -1,0 +1,33 @@
+# Local development stack (ADR-009: profiles keep only the services in use running).
+# Run from the repository root:
+#   docker compose -f deploy/compose/compose.yaml --env-file .env --profile core up -d
+# Values come from .env (never committed). See .env.example.
+
+name: atalaya
+
+services:
+  db:
+    profiles: ["core"]
+    # PostgreSQL 18 with the pgvector extension available (needed in Branch C, ADR-007).
+    # Pinned by digest (ADR-012): a tag can change content, a digest cannot.
+    # To update: pull the new pg18 tag, read its digest, review, then replace it here.
+    image: pgvector/pgvector:pg18@sha256:2358fcba361ed2233a5ed81b5fe4ca779ccb304120ce531a3bf51c0ed7e2bc11
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:?set POSTGRES_USER in .env}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: ${POSTGRES_DB:?set POSTGRES_DB in .env}
+    ports:
+      # Only reachable from this machine, never from the network.
+      - "127.0.0.1:5432:5432"
+    volumes:
+      # PostgreSQL 18 images keep their data under /var/lib/postgresql.
+      - db-data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+
+volumes:
+  db-data:

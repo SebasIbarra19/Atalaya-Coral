@@ -1,8 +1,20 @@
-.PHONY: setup up test lint check scan
+.PHONY: setup db-up db-down db-logs up test lint check scan
+
+COMPOSE := docker compose -f deploy/compose/compose.yaml --env-file .env
 
 setup:
 	uv sync --locked
 	uv run python --version
+
+db-up:
+	$(COMPOSE) --profile core up -d db
+	$(COMPOSE) --profile core ps
+
+db-down:
+	$(COMPOSE) --profile core down
+
+db-logs:
+	$(COMPOSE) --profile core logs -f db
 
 up:
 	@echo "[stub] will start the local core stack (database, ingestion, API, dashboard). Defined in F2-T09."

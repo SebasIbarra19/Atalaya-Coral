@@ -45,7 +45,7 @@ This Mermaid chart is the quick text overview. The detailed, explorable diagram 
 | --- | --- | --- | --- |
 | Data source | NOAA Coral Reef Watch 5 km via ERDDAP | Decided | Public, daily, global |
 | Language (data and ML) | Python 3.14 with uv | Decided | Ecosystem for data and ML; newest version the ML stack supports (ADR-016) |
-| Database | PostgreSQL | Proposed | Relational, solid for time series at this volume |
+| Database | PostgreSQL 18 (`pgvector/pgvector` image, pinned by digest) | Proposed | Relational, solid for time series at this volume |
 | API | FastAPI | Proposed | Typed, generates OpenAPI |
 | Dashboard | Next.js (TypeScript) | Proposed | Owner already uses it; keeps focus on data and infrastructure |
 | Model | XGBoost with SHAP | Decided | Replicates the reference study and is explainable |

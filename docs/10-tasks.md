@@ -63,7 +63,7 @@ F1-T00 prepares the environment and access (flexible: the owner runs each step a
   - Done when: the version is written in `06-code-style-guide.md` and `make` uses it
   - Depends on: none
   - Requirement: NFR-1
-- [ ] F1-T00c · Local PostgreSQL in a minimal Compose file and a real `.env` created from `.env.example`
+- [x] F1-T00c · Local PostgreSQL in a minimal Compose file and a real `.env` created from `.env.example`
   - Done when: a client connects with the owner's own user and password, and `.env` is still ignored by Git
   - Depends on: F1-T00a
   - Requirement: NFR-8
