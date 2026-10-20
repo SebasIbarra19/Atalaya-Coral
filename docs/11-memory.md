@@ -17,8 +17,8 @@ The living document. Update it at the end of every work session. Add entries, ne
 | Item | Value |
 | --- | --- |
 | Current phase | F1 (ingestion and database, strict) |
-| Last completed task | F1-T00g: CI actions pinned by hash, minimal permissions (2026-10-20) |
-| Next task | F1-T00f (Ruff and pytest real in `make lint`, `make test`, the hook and CI) |
+| Last completed task | F1-T00f: Ruff and pytest real in `make lint`, `make test`, the versioned hook and CI (2026-10-20) |
+| Next task | F1-T00h (CodeQL in CI); then open the F1-T00 pull request |
 | Blockers | First sites are not decided |
 | Last updated | 2026-10-20 |
 
@@ -62,6 +62,7 @@ The living document. Update it at the end of every work session. Add entries, ne
 | 2026-10-18 | gitleaks, CodeQL and Trivy in CI with supply chain rules (ADR-012) | DevSecOps; the March 2026 Trivy incident shows actions must be pinned | Actions pinned by tag; no scanners |
 | 2026-10-18 | MLflow from the first trained model; Dependabot with owner approval | Avoid rebuilding experiments; reviewed updates | MLflow only in F6; automatic merges |
 | 2026-10-18 | Architecture diagrams as HTML with the Archify skill (next task) | Richer, interactive diagrams for the portfolio | Mermaid only |
+| 2026-10-20 | Ruff (E, F, I, B, UP) and pytest as uv dev dependencies; `make lint`, `make test`, `make format`; pre-commit hook moved to the versioned `.githooks/` and enabled with `make hooks`; CI installs uv by checksum and runs `uv sync --locked`; Dependabot also watches uv | Same commands locally, in the hook and in CI; a hook in `.git/hooks/` is lost on a new clone | Unversioned hook; `astral-sh/setup-uv` action (one more third-party action) |
 | 2026-10-20 | CI hardened (ADR-012): `actions/checkout` pinned to the v7.0.1 commit hash, `permissions: {}` at the top and `contents: read` per job, `persist-credentials: false`, gitleaks run as a pinned binary with checksum instead of `gitleaks-action` (no `GITHUB_TOKEN` in the scanner job), Dependabot for GitHub Actions | Scanner jobs without secrets; tags can move, hashes cannot | Keeping `gitleaks-action@v2` with a token; pinning by tag |
 | 2026-10-20 | Plain SQL migrations with dbmate, run as the administrator, `db/schema.sql` committed (ADR-017) | No ORM in the project; learn SQL in strict mode; small runner for Kubernetes; matches `06-code-style-guide.md` | Alembic; golang-migrate; Flyway |
 | 2026-10-20 | Database roles created by an init script (`deploy/compose/initdb/10-roles.sh`) with passwords from `.env`; schema `atalaya`; `ALTER DEFAULT PRIVILEGES` so future tables get the grants | Reproducible from a clean clone; no per-migration grants; least privilege | Roles created by hand only; roles inside migrations |
@@ -87,6 +88,9 @@ The living document. Update it at the end of every work session. Add entries, ne
 - Ruleset required checks match job names; renaming a job requires updating the ruleset.
 - Kubernetes itself is free; a local cluster (kind or k3d) is real Kubernetes. Only managed cloud clusters and their machines cost money (F8).
 - Ubuntu in WSL is a separate machine: it needs its own Git identity, its own gitleaks for the pre-commit hook and `core.fileMode false` for a repository on the Windows disk. Never bypass the hook with `--no-verify`.
+- Ruff also formats Python blocks inside Markdown, so code examples in the docs must follow PEP 8 (two blank lines between functions).
+- pytest fails when it collects no tests; the first tests make CI meaningful.
+- The hook now needs `make` and `uv`, so commits are made from WSL Ubuntu, not PowerShell.
 - `source .env` leaves the variables alive in that terminal, and they override later edits to the file (dbmate gives the shell variable priority); `unset` them or open a new terminal.
 - dbmate's Postgres driver requires SSL unless the URL says `sslmode=disable`; the local database has no SSL.
 - In WSL, `Permission denied` for a command often means it is not installed in Ubuntu: the search reaches Windows folders on the `PATH` that Linux cannot read.
@@ -119,6 +123,7 @@ The living document. Update it at the end of every work session. Add entries, ne
 | 2026-10-18 | 03-architecture | Section 4: rows for NGINX Ingress, dashboard to domain agent, HolmesGPT to Ollama, the document indexing step and the Sealed Secrets controller (unknown facts marked `[TO DEFINE]`); section 10 lists ADR-014 and 015; two open questions added |
 | 2026-10-18 | decisions | ADR-014 (architecture diagrams with Archify) and ADR-015 (no AI attribution) added |
 | 2026-10-18 | AGENTS.md | Rule 11: no AI attribution, one-line commit messages (ADR-015) |
+| 2026-10-20 | pyproject.toml, uv.lock, Makefile, tests/, .githooks/, ci.yml, dependabot.yml, 06-code-style, 10-tasks | Real lint and tests, versioned hook, uv in CI, Dependabot for uv, code example fixed to PEP 8; F1-T00f checked |
 | 2026-10-20 | .github/workflows/ci.yml, .github/dependabot.yml, 05-security, 10-tasks | Actions pinned by hash, per-job permissions, gitleaks binary in CI, Dependabot; F1-T00g checked |
 | 2026-10-20 | 03-architecture, 06-code-style, 09-plan, 10-tasks, decisions | Migration tool decided (ADR-017); `db/schema.sql` in the repository tree; F1-T00e checked |
 | 2026-10-20 | deploy/compose, Makefile, .env.example, 03-architecture, 05-security, 10-tasks | Roles init script, `make db-reset`, role credentials in `.env.example`, schema `atalaya` noted, roles described in the security guide; F1-T00d checked |
@@ -132,6 +137,7 @@ The living document. Update it at the end of every work session. Add entries, ne
 
 | Date | What was done | What is next |
 | --- | --- | --- |
+| 2026-10-20 | F1-T00f done: `uv add --dev ruff pytest` (Ruff 0.17.1, pytest 9.1.1); two environment tests (pinned Python version, no real passwords in `.env.example`); `make lint` and `make test` pass; versioned hook enabled; CI updated (verified when the pull request runs) | F1-T00h (CodeQL); then the F1-T00 pull request |
 | 2026-10-20 | F1-T00g done: CI actions pinned by full commit hash, minimal permissions per job, gitleaks as a pinned binary, `.github/dependabot.yml`; job names unchanged, so the ruleset needs no change. Verified only when the pull request runs | F1-T00f |
 | 2026-10-20 | F1-T00e done: compared Alembic and plain SQL runners; chose dbmate; ADR-017. Installed dbmate 2.37.0 (no published checksum: SHA-256 matched an independent download and the GitHub release page) and `postgresql-client-18` from the PGDG repository (`pg_dump` 18.6); `?sslmode=disable` on local URLs; `db/migrations/` created; `make migrate-status` connects | F1-T00f (real lint and tests) |
 | 2026-10-20 | F1-T00d done: init script creates `atalaya_ingest` and `atalaya_api` with schema `atalaya` and default privileges; `make db-reset`; verified: ingestion inserts, API reads, API insert fails with `permission denied for table`, ingestion `create table` fails with `permission denied for schema` | F1-T00e (migration tool and ADR) |

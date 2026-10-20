@@ -39,9 +39,24 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+    env:
+      UV_VERSION: 0.13.3
+      # SHA-256 of uv-x86_64-unknown-linux-gnu.tar.gz from its release .sha256 file.
+      UV_SHA256: e4f169ec380f1793b898a6f1fcbacd22db25cf7ca0349a6e96ffb85b69998d04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
+      - name: Install uv (pinned version, checksum verified)
+        run: |
+          set -euo pipefail
+          file="uv-x86_64-unknown-linux-gnu.tar.gz"
+          curl -fsSLo "$file" "https://github.com/astral-sh/uv/releases/download/${UV_VERSION}/${file}"
+          echo "${UV_SHA256}  ${file}" | sha256sum --check
+          tar -xzf "$file" --strip-components=1
+          sudo mv uv uvx /usr/local/bin/
+          uv --version
+      - name: Install Python and dependencies from the lockfile (ADR-016)
+        run: uv sync --locked
       - name: Run lint and tests (secret scan runs in its own job)
         run: make lint test

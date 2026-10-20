@@ -75,7 +75,7 @@ F1-T00 prepares the environment and access (flexible: the owner runs each step a
   - Done when: the ADR exists. Blocks F1-T03
   - Depends on: F1-T00b
   - Requirement: governance
-- [ ] F1-T00f · Make `make lint` and `make test` real (Ruff and pytest) and add them to the hook and to CI with Python
+- [x] F1-T00f · Make `make lint` and `make test` real (Ruff and pytest) and add them to the hook and to CI with Python
   - Done when: CI runs real tests
   - Depends on: F1-T00b
   - Requirement: NFR-12

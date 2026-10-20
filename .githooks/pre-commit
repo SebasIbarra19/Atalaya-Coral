@@ -1,0 +1,8 @@
+#!/bin/sh
+# Versioned pre-commit hook. Enable once per clone with: make hooks
+# Runs inside WSL Ubuntu, where gitleaks, uv and make are installed.
+set -eu
+
+gitleaks git --pre-commit --staged --redact --verbose
+make lint
+make test

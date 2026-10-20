@@ -1,10 +1,18 @@
-.PHONY: setup db-up db-down db-logs db-reset migrate-new migrate-up migrate-down migrate-status up test lint check scan
+.PHONY: setup hooks format db-up db-down db-logs db-reset migrate-new migrate-up migrate-down migrate-status up test lint check scan
 
 COMPOSE := docker compose -f deploy/compose/compose.yaml --env-file .env
 
 setup:
 	uv sync --locked
 	uv run python --version
+
+# Enables the versioned Git hooks in .githooks/ for this clone.
+hooks:
+	git config core.hooksPath .githooks
+
+format:
+	uv run ruff format .
+	uv run ruff check --fix .
 
 db-up:
 	$(COMPOSE) --profile core up -d db
@@ -42,13 +50,14 @@ up:
 	@echo "[stub] will start the local core stack (database, ingestion, API, dashboard). Defined in F2-T09."
 
 test:
-	@echo "[stub] will run the test suites. Defined when the first tests exist (F1)."
+	uv run pytest
 
 lint:
-	@echo "[stub] will run formatters and linters. Defined in F1."
+	uv run ruff format --check .
+	uv run ruff check .
 
 scan:
 		gitleaks git --redact --verbose 
 
 check: lint test scan
-	@echo "[stub] check finished (all targets are still stubs)."
+	@echo "check finished: lint, tests and secret scan passed"

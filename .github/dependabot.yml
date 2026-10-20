@@ -8,3 +8,10 @@ updates:
     # Keeps actions pinned by full commit hash and updates the version comment.
     commit-message:
       prefix: ci
+
+  - package-ecosystem: uv
+    directory: /
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: build
