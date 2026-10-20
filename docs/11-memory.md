@@ -17,10 +17,10 @@ The living document. Update it at the end of every work session. Add entries, ne
 | Item | Value |
 | --- | --- |
 | Current phase | F1 (ingestion and database, strict) |
-| Last completed task | F1-T00a: Docker Engine in WSL2 Ubuntu (no Docker Desktop), Compose plugin, lazydocker v0.25.2 (2026-10-19) |
-| Next task | VS Code WSL extension (open the repository from Ubuntu); then F1-T00b (Python version and virtual environment) |
+| Last completed task | F1-T00h: CodeQL for Python and workflows (2026-10-20); F1-T00 complete pending the pull request |
+| Next task | Open the F1-T00 pull request and confirm CI and CodeQL; then F1-T01 (decide the first sites) |
 | Blockers | First sites are not decided |
-| Last updated | 2026-10-19 |
+| Last updated | 2026-10-20 |
 
 ## 2. Completed
 
@@ -62,6 +62,13 @@ The living document. Update it at the end of every work session. Add entries, ne
 | 2026-10-18 | gitleaks, CodeQL and Trivy in CI with supply chain rules (ADR-012) | DevSecOps; the March 2026 Trivy incident shows actions must be pinned | Actions pinned by tag; no scanners |
 | 2026-10-18 | MLflow from the first trained model; Dependabot with owner approval | Avoid rebuilding experiments; reviewed updates | MLflow only in F6; automatic merges |
 | 2026-10-18 | Architecture diagrams as HTML with the Archify skill (next task) | Richer, interactive diagrams for the portfolio | Mermaid only |
+| 2026-10-20 | CodeQL in its own workflow (`codeql.yml`): Python and GitHub Actions workflows, on pull requests, on `main` and weekly; `security-events: write` only in that job; `github/codeql-action` pinned to the v4.39.0 commit hash | Static analysis of code and of the CI itself; results in the Security tab | CodeQL default setup in repository settings (not versioned in Git); a job inside `ci.yml` |
+| 2026-10-20 | Ruff (E, F, I, B, UP) and pytest as uv dev dependencies; `make lint`, `make test`, `make format`; pre-commit hook moved to the versioned `.githooks/` and enabled with `make hooks`; CI installs uv by checksum and runs `uv sync --locked`; Dependabot also watches uv | Same commands locally, in the hook and in CI; a hook in `.git/hooks/` is lost on a new clone | Unversioned hook; `astral-sh/setup-uv` action (one more third-party action) |
+| 2026-10-20 | CI hardened (ADR-012): `actions/checkout` pinned to the v7.0.1 commit hash, `permissions: {}` at the top and `contents: read` per job, `persist-credentials: false`, gitleaks run as a pinned binary with checksum instead of `gitleaks-action` (no `GITHUB_TOKEN` in the scanner job), Dependabot for GitHub Actions | Scanner jobs without secrets; tags can move, hashes cannot | Keeping `gitleaks-action@v2` with a token; pinning by tag |
+| 2026-10-20 | Plain SQL migrations with dbmate, run as the administrator, `db/schema.sql` committed (ADR-017) | No ORM in the project; learn SQL in strict mode; small runner for Kubernetes; matches `06-code-style-guide.md` | Alembic; golang-migrate; Flyway |
+| 2026-10-20 | Database roles created by an init script (`deploy/compose/initdb/10-roles.sh`) with passwords from `.env`; schema `atalaya`; `ALTER DEFAULT PRIVILEGES` so future tables get the grants | Reproducible from a clean clone; no per-migration grants; least privilege | Roles created by hand only; roles inside migrations |
+| 2026-10-19 | Local database: PostgreSQL 18 from the `pgvector/pgvector:pg18` image pinned by digest, in `deploy/compose/compose.yaml` under the `core` profile, port bound to 127.0.0.1, named volume | pgvector is needed in Branch C, so no image change later; digest pinning follows ADR-012; local-only port is least privilege | Plain `postgres:18` image; PostgreSQL 19 (not confirmed released); port open on all interfaces |
+| 2026-10-19 | Python 3.14 managed with uv; committed `uv.lock`; installs with `uv sync --locked` (ADR-016) | Newest version the ML stack supports (SHAP depends on Numba); one tool for Python, environment and lockfile | Python 3.15 (too new); 3.13 (security-only); pip with venv and pip-tools; Poetry |
 | 2026-10-19 | Docker Engine inside WSL2 Ubuntu instead of Docker Desktop; lazydocker as the visual interface | Fully open source, no Desktop license terms, lighter on RAM, and real Linux practice; kind and k3d run on the same engine | Docker Desktop |
 | 2026-10-18 | lazydocker and k9s as personal development tools | Faster inspection of containers and the cluster | Only raw `docker` and `kubectl` commands |
 | 2026-10-18 | Diagrams are Archify HTML plus JSON source in `docs/diagrams/`, built only from the documents, arrows from caller to callee, delivery receipts not committed (ADR-014) | Explorable diagrams a reviewer can check line by line | Mermaid only; output in `.archify/`; arrows in the direction of the data |
@@ -70,7 +77,7 @@ The living document. Update it at the end of every work session. Add entries, ne
 ## 4. In progress and blockers
 
 - Review of the 13 drafts by the owner.
-- Open: first sites, forecast horizon, notification channel, license confirmation, Python version, migration tool, EKS or k3s on EC2, uncertainty intervals, MLflow artifact storage.
+- Open: first sites, forecast horizon, notification channel, license confirmation, EKS or k3s on EC2, uncertainty intervals, MLflow artifact storage.
 - `03-architecture.md` section 4 still has two `[TO DEFINE]` items: the protocol between the dashboard and the domain agent, and the step that embeds `doc_chunks` (also what embeds the `search_docs` query).
 ## 5. Lessons learned
 
@@ -81,6 +88,19 @@ The living document. Update it at the end of every work session. Add entries, ne
 - Run `git status` before every commit: anything staged goes into the commit (a test line slipped into PR #2 and was reverted in the same PR).
 - Ruleset required checks match job names; renaming a job requires updating the ruleset.
 - Kubernetes itself is free; a local cluster (kind or k3d) is real Kubernetes. Only managed cloud clusters and their machines cost money (F8).
+- Ubuntu in WSL is a separate machine: it needs its own Git identity, its own gitleaks for the pre-commit hook and `core.fileMode false` for a repository on the Windows disk. Never bypass the hook with `--no-verify`.
+- Ruff also formats Python blocks inside Markdown, so code examples in the docs must follow PEP 8 (two blank lines between functions).
+- pytest fails when it collects no tests; the first tests make CI meaningful.
+- The hook now needs `make` and `uv`, so commits are made from WSL Ubuntu, not PowerShell.
+- `source .env` leaves the variables alive in that terminal, and they override later edits to the file (dbmate gives the shell variable priority); `unset` them or open a new terminal.
+- dbmate's Postgres driver requires SSL unless the URL says `sslmode=disable`; the local database has no SSL.
+- In WSL, `Permission denied` for a command often means it is not installed in Ubuntu: the search reaches Windows folders on the `PATH` that Linux cannot read.
+- Git does not track empty folders; `db/migrations/.gitkeep` keeps the migrations folder in the repository.
+- Init scripts in `/docker-entrypoint-initdb.d` run only on an empty data volume; `make db-reset` recreates it.
+- VS Code colors a heredoc (`<<'SQL'`) as one text block; it is not commented out.
+- `psql` opens long output in a pager (`less`); `q` exits, and `\pset pager off` in `~/.psqlrc` disables it.
+- A `DATABASE_URL` breaks with stray spaces, Windows line endings or passwords with `/`, `+` or `=`; hex passwords avoid the last problem.
+- uv cannot hardlink between Linux and the Windows disk; `UV_LINK_MODE=copy` avoids the warning.
 - `wsl --status` shows the default WSL version for new distributions, not installed ones; `wsl --list --verbose` lists what is installed.
 - A fresh WSL distribution can fail with `Wsl/Service/E_UNEXPECTED`; `wsl --shutdown`, `wsl --update` or a reboot clears it.
 - Being in the `docker` group is equivalent to root on that machine: fine on a personal development machine, handled with care on servers.
@@ -104,6 +124,13 @@ The living document. Update it at the end of every work session. Add entries, ne
 | 2026-10-18 | 03-architecture | Section 4: rows for NGINX Ingress, dashboard to domain agent, HolmesGPT to Ollama, the document indexing step and the Sealed Secrets controller (unknown facts marked `[TO DEFINE]`); section 10 lists ADR-014 and 015; two open questions added |
 | 2026-10-18 | decisions | ADR-014 (architecture diagrams with Archify) and ADR-015 (no AI attribution) added |
 | 2026-10-18 | AGENTS.md | Rule 11: no AI attribution, one-line commit messages (ADR-015) |
+| 2026-10-20 | .github/workflows/codeql.yml, 05-security, 10-tasks | CodeQL workflow added; F1-T00h checked |
+| 2026-10-20 | pyproject.toml, uv.lock, Makefile, tests/, .githooks/, ci.yml, dependabot.yml, 06-code-style, 10-tasks | Real lint and tests, versioned hook, uv in CI, Dependabot for uv, code example fixed to PEP 8; F1-T00f checked |
+| 2026-10-20 | .github/workflows/ci.yml, .github/dependabot.yml, 05-security, 10-tasks | Actions pinned by hash, per-job permissions, gitleaks binary in CI, Dependabot; F1-T00g checked |
+| 2026-10-20 | 03-architecture, 06-code-style, 09-plan, 10-tasks, decisions | Migration tool decided (ADR-017); `db/schema.sql` in the repository tree; F1-T00e checked |
+| 2026-10-20 | deploy/compose, Makefile, .env.example, 03-architecture, 05-security, 10-tasks | Roles init script, `make db-reset`, role credentials in `.env.example`, schema `atalaya` noted, roles described in the security guide; F1-T00d checked |
+| 2026-10-19 | deploy/compose, Makefile, .env.example, 03-architecture, 10-tasks | Compose file for the local database, `make db-up`, `db-down`, `db-logs`; password generation hint; database row names PostgreSQL 18 with pgvector; F1-T00c checked |
+| 2026-10-19 | 00-spec, 03-architecture, 06-code-style, 10-tasks, Makefile, decisions | Python 3.14 with uv decided (ADR-016); `make setup` runs `uv sync --locked`; F1-T00b checked |
 | 2026-10-19 | 10-tasks | F1-T00a installs Docker Engine inside WSL2 (no Docker Desktop) and lazydocker, used from F1-T00c to inspect the PostgreSQL container and its logs |
 | 2026-10-19 | 03-architecture, README | Review: link to the Archify diagram; MLflow row aligned with the spec (Decided, from F5); PostgreSQL stores `doc_chunks`; `docs/diagrams/` and Compose profiles in the repository tree; local cluster created with Terraform; decision log intro updated. No component or connection changed, so the diagram needs no regeneration |
 | 2026-10-18 | docs/diagrams/ | Diagram updated to the new section 4 rows: Sealed Secrets arrow to the Kubernetes API, Ollama moved to the left outside the cluster; sources pinned to b5b7b31 |
@@ -112,6 +139,13 @@ The living document. Update it at the end of every work session. Add entries, ne
 
 | Date | What was done | What is next |
 | --- | --- | --- |
+| 2026-10-20 | F1-T00h done: `.github/workflows/codeql.yml` (Python and Actions, pinned by hash, minimal permissions). Verified only when the pull request runs | Open the F1-T00 pull request; check the CI and CodeQL runs; decide whether CodeQL becomes a required check |
+| 2026-10-20 | F1-T00f done: `uv add --dev ruff pytest` (Ruff 0.17.1, pytest 9.1.1); two environment tests (pinned Python version, no real passwords in `.env.example`); `make lint` and `make test` pass; versioned hook enabled; CI updated (verified when the pull request runs) | F1-T00h (CodeQL); then the F1-T00 pull request |
+| 2026-10-20 | F1-T00g done: CI actions pinned by full commit hash, minimal permissions per job, gitleaks as a pinned binary, `.github/dependabot.yml`; job names unchanged, so the ruleset needs no change. Verified only when the pull request runs | F1-T00f |
+| 2026-10-20 | F1-T00e done: compared Alembic and plain SQL runners; chose dbmate; ADR-017. Installed dbmate 2.37.0 (no published checksum: SHA-256 matched an independent download and the GitHub release page) and `postgresql-client-18` from the PGDG repository (`pg_dump` 18.6); `?sslmode=disable` on local URLs; `db/migrations/` created; `make migrate-status` connects | F1-T00f (real lint and tests) |
+| 2026-10-20 | F1-T00d done: init script creates `atalaya_ingest` and `atalaya_api` with schema `atalaya` and default privileges; `make db-reset`; verified: ingestion inserts, API reads, API insert fails with `permission denied for table`, ingestion `create table` fails with `permission denied for schema` | F1-T00e (migration tool and ADR) |
+| 2026-10-19 | F1-T00c done: `deploy/compose/compose.yaml` with the `db` service (profile `core`, healthcheck, named volume, local-only port), `make db-up`, `db-down`, `db-logs`; real `.env` with a generated hex password, confirmed ignored by Git; connected with `psql` using the owner's credentials (PostgreSQL 18.6); image pinned by digest | F1-T00d (database roles) |
+| 2026-10-19 | F1-T00a merged (PR #8). F1-T00b done: gitleaks 8.30.1 installed in Ubuntu for the pre-commit hook, Git identity and Windows credential manager configured in WSL, `core.fileMode false`; uv 0.13.3 from the release tarball after a SHA-256 check; Python 3.14.8; `uv init --bare`, `uv python pin`, `uv sync`; `make setup`; ADR-016 | F1-T00c |
 | 2026-10-19 | F1-T00a done: Ubuntu installed in WSL2 (systemd on by default), Docker Engine from the official apt repository with the Compose and buildx plugins, user added to the `docker` group, `hello-world` ran without `sudo`, lazydocker v0.25.2 installed from the release tarball after a SHA-256 check | VS Code WSL extension; F1-T00b |
 | 2026-10-18 | Updated the diagram to the new section 4 rows (Sealed Secrets to Kubernetes API) and pinned its sources to b5b7b31; the document indexing step stays in a card because its component is `[TO DEFINE]`; automated checks passed and captures reviewed | Owner reviews; push and open the PR when the owner decides; then F1-T00a |
 | 2026-10-18 | Removed an AI co-author trailer from the diagram commit before any push; recorded ADR-014 and ADR-015 and added rule 11 to `AGENTS.md`; filled the five section 4 gaps in `03-architecture.md` | Owner reviews; update the diagram to the new section 4 rows and re-pin its sources; push and open the PR when the owner decides; then F1-T00a |

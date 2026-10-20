@@ -66,7 +66,7 @@ Never change the cluster by hand. If a manual change is needed to investigate, r
 ## Open questions
 
 - [ ] Run F5 before F3 and F4, or after?
-- [ ] Python version and migration tool (F1-T00b, F1-T00e).
+- [x] Python version and migration tool: Python 3.14 with uv (ADR-016), plain SQL with dbmate (ADR-017).
 - [ ] Forecasts with uncertainty intervals or without (the spec promises them to researchers, RF-8 does not require them; fix whichever document is wrong).
 - [ ] MLflow artifact storage.
 - [ ] License confirmation (repository name decided: Atalaya-Coral).

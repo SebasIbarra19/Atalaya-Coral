@@ -25,13 +25,14 @@ Tools and versions here are Proposed until approved. Rules that can be automated
 
 | Area | Standard | Enforced by |
 | --- | --- | --- |
-| Python version | `[TO DEFINE]` (a currently supported release) | CI matrix |
-| Python formatting and linting | Ruff (format and lint) | pre-commit, CI |
+| Python version | 3.14, pinned in `.python-version` (ADR-016) | `uv sync --locked` in CI and Docker |
+| Python environment and dependencies | uv: `pyproject.toml` plus a committed `uv.lock`; add packages with `uv add`; install with `make setup` (`uv sync --locked`); `.venv` is never committed | CI fails if the lockfile is out of date |
+| Python formatting and linting | Ruff (format and lint; rules E, F, I, B, UP; config in `pyproject.toml`). `make lint` checks, `make format` fixes. Ruff also checks Python blocks inside Markdown | Versioned pre-commit hook (`.githooks/`, enabled with `make hooks`), CI |
 | Python typing | Type hints on all public functions; mypy or pyright in strict-ish mode `[TO DEFINE]` | CI |
-| Python tests | pytest | CI |
+| Python tests | pytest, tests in `tests/`; `make test` | Versioned pre-commit hook, CI |
 | TypeScript | `strict` mode on; no `any` without a comment explaining why | tsc, ESLint |
 | TypeScript formatting | Prettier | pre-commit, CI |
-| SQL | Plain SQL migrations, lowercase keywords or consistent uppercase (pick one in F0) | Review |
+| SQL | Plain SQL migrations applied with dbmate, one file per change with `-- migrate:up` and `-- migrate:down` (ADR-017); a merged migration is never edited; lowercase keywords or consistent uppercase `[TO DEFINE in F1-T03]` | Review; `dbmate status` in CI |
 | Shell | `set -euo pipefail` in scripts; ShellCheck | CI |
 | Containers | One process per container, non-root user, pinned base image tags | Review, image scan |
 | Commits | Conventional Commits | commit-msg hook or CI check |
@@ -100,6 +101,7 @@ Names describe what something is or does. Avoid abbreviations unless they are st
 # Good
 def load_observations(site_id: str, start: date, end: date) -> list[Observation]: ...
 
+
 # Bad
 def get(s, a, b): ...
 ```
@@ -130,7 +132,8 @@ The last example describes a behavior to confirm in F1 `[TO VERIFY]`.
 
 ## Open questions
 
-- [ ] Python version and type checker.
+- [x] Python version: 3.14 with uv (ADR-016, 2026-10-19).
+- [ ] Type checker.
 - [ ] Line length and SQL keyword case.
 - [ ] Commit message enforcement.
 

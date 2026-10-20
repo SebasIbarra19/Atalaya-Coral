@@ -59,31 +59,31 @@ F1-T00 prepares the environment and access (flexible: the owner runs each step a
   - Done when: `docker run hello-world` works in Ubuntu without `sudo`, `docker compose version` answers, and `lazydocker` shows the finished container
   - Depends on: none
   - Requirement: RF-14
-- [ ] F1-T00b · Pin the Python version, create a virtual environment and a dependency file with pinned versions
+- [x] F1-T00b · Pin the Python version, create a virtual environment and a dependency file with pinned versions
   - Done when: the version is written in `06-code-style-guide.md` and `make` uses it
   - Depends on: none
   - Requirement: NFR-1
-- [ ] F1-T00c · Local PostgreSQL in a minimal Compose file and a real `.env` created from `.env.example`
+- [x] F1-T00c · Local PostgreSQL in a minimal Compose file and a real `.env` created from `.env.example`
   - Done when: a client connects with the owner's own user and password, and `.env` is still ignored by Git
   - Depends on: F1-T00a
   - Requirement: NFR-8
-- [ ] F1-T00d · Database roles: one with write access for ingestion and one read-only for the API
+- [x] F1-T00d · Database roles: one with write access for ingestion and one read-only for the API
   - Done when: the read-only role fails when it tries to write
   - Depends on: F1-T00c
   - Requirement: NFR-9
-- [ ] F1-T00e · Choose the migration tool (Alembic or plain SQL with a runner) and record an ADR
+- [x] F1-T00e · Choose the migration tool (Alembic or plain SQL with a runner) and record an ADR
   - Done when: the ADR exists. Blocks F1-T03
   - Depends on: F1-T00b
   - Requirement: governance
-- [ ] F1-T00f · Make `make lint` and `make test` real (Ruff and pytest) and add them to the hook and to CI with Python
+- [x] F1-T00f · Make `make lint` and `make test` real (Ruff and pytest) and add them to the hook and to CI with Python
   - Done when: CI runs real tests
   - Depends on: F1-T00b
   - Requirement: NFR-12
-- [ ] F1-T00g · Pin every GitHub Action in CI by full commit hash and set minimal permissions per job
+- [x] F1-T00g · Pin every GitHub Action in CI by full commit hash and set minimal permissions per job
   - Done when: no `uses:` points to a tag (ADR-012)
   - Depends on: none
   - Requirement: NFR-13
-- [ ] F1-T00h · Add CodeQL to CI (official action pinned by hash)
+- [x] F1-T00h · Add CodeQL to CI (official action pinned by hash)
   - Done when: the analysis runs on every pull request
   - Depends on: F1-T00g
   - Requirement: NFR-13
