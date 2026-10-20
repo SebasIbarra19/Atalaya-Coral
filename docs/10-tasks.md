@@ -71,7 +71,7 @@ F1-T00 prepares the environment and access (flexible: the owner runs each step a
   - Done when: the read-only role fails when it tries to write
   - Depends on: F1-T00c
   - Requirement: NFR-9
-- [ ] F1-T00e · Choose the migration tool (Alembic or plain SQL with a runner) and record an ADR
+- [x] F1-T00e · Choose the migration tool (Alembic or plain SQL with a runner) and record an ADR
   - Done when: the ADR exists. Blocks F1-T03
   - Depends on: F1-T00b
   - Requirement: governance

@@ -32,7 +32,7 @@ Tools and versions here are Proposed until approved. Rules that can be automated
 | Python tests | pytest | CI |
 | TypeScript | `strict` mode on; no `any` without a comment explaining why | tsc, ESLint |
 | TypeScript formatting | Prettier | pre-commit, CI |
-| SQL | Plain SQL migrations, lowercase keywords or consistent uppercase (pick one in F0) | Review |
+| SQL | Plain SQL migrations applied with dbmate, one file per change with `-- migrate:up` and `-- migrate:down` (ADR-017); a merged migration is never edited; lowercase keywords or consistent uppercase `[TO DEFINE in F1-T03]` | Review; `dbmate status` in CI |
 | Shell | `set -euo pipefail` in scripts; ShellCheck | CI |
 | Containers | One process per container, non-root user, pinned base image tags | Review, image scan |
 | Commits | Conventional Commits | commit-msg hook or CI check |

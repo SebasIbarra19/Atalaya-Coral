@@ -45,7 +45,8 @@ This Mermaid chart is the quick text overview. The detailed, explorable diagram 
 | --- | --- | --- | --- |
 | Data source | NOAA Coral Reef Watch 5 km via ERDDAP | Decided | Public, daily, global |
 | Language (data and ML) | Python 3.14 with uv | Decided | Ecosystem for data and ML; newest version the ML stack supports (ADR-016) |
-| Database | PostgreSQL 18 (`pgvector/pgvector` image, pinned by digest) | Proposed | Relational, solid for time series at this volume |
+| Database | PostgreSQL 18 (`pgvector/pgvector` image, pinned by digest) | Proposed |
+| Migrations | Plain SQL applied with dbmate | Decided | SQL written by hand, schema snapshot in Git, small runner for Kubernetes (ADR-017) | Relational, solid for time series at this volume |
 | API | FastAPI | Proposed | Typed, generates OpenAPI |
 | Dashboard | Next.js (TypeScript) | Proposed | Owner already uses it; keeps focus on data and infrastructure |
 | Model | XGBoost with SHAP | Decided | Replicates the reference study and is explainable |
@@ -162,7 +163,8 @@ This Mermaid chart is the quick text overview. The detailed, explorable diagram 
 │   ├── mcp/                   # MCP server with read-only tools
 │   └── dashboard/             # Next.js app
 ├── db/
-│   └── migrations/            # versioned schema changes
+│   ├── migrations/            # plain SQL migrations applied with dbmate (ADR-017)
+│   └── schema.sql             # schema snapshot written by dbmate, committed
 ├── deploy/
 │   ├── compose/               # Docker Compose with profiles (ADR-009)
 │   └── k8s/                   # manifests (ArgoCD syncs this folder)
@@ -225,7 +227,7 @@ Each decision lives in `docs/decisions/NNN-title.md` with: context, decision, al
 | ADR-014 | Architecture diagrams as HTML with Archify | Decided |
 | ADR-015 | No AI attribution in the repository | Decided |
 | ADR-016 | Python 3.14 managed with uv | Decided |
-| Pending | Migration tool (Alembic or plain SQL), decided in F1-T00e | Open |
+| ADR-017 | Plain SQL migrations with dbmate | Decided |
 
 ## Open questions
 

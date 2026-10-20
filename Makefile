@@ -1,4 +1,4 @@
-.PHONY: setup db-up db-down db-logs db-reset up test lint check scan
+.PHONY: setup db-up db-down db-logs db-reset migrate-new migrate-up migrate-down migrate-status up test lint check scan
 
 COMPOSE := docker compose -f deploy/compose/compose.yaml --env-file .env
 
@@ -23,6 +23,20 @@ db-reset:
 	$(COMPOSE) --profile core down -v
 	$(COMPOSE) --profile core up -d db
 	$(COMPOSE) --profile core ps
+
+# Migrations (ADR-017). dbmate reads DATABASE_URL (administrator) from .env.
+migrate-new:
+	@test -n "$(name)" || (echo "usage: make migrate-new name=create_sites" && exit 1)
+	dbmate new $(name)
+
+migrate-up:
+	dbmate up
+
+migrate-down:
+	dbmate down
+
+migrate-status:
+	dbmate status
 
 up:
 	@echo "[stub] will start the local core stack (database, ingestion, API, dashboard). Defined in F2-T09."
