@@ -17,10 +17,10 @@ The living document. Update it at the end of every work session. Add entries, ne
 | Item | Value |
 | --- | --- |
 | Current phase | F1 (ingestion and database, strict) |
-| Last completed task | F1-T00h: CodeQL for Python and workflows (2026-10-20); F1-T00 complete pending the pull request |
-| Next task | Open the F1-T00 pull request and confirm CI and CodeQL; then F1-T01 (decide the first sites) |
+| Last completed task | F1-T00 merged (PR #9, all checks green, 2026-10-20) |
+| Next task | F1-T01a (download the Allen Coral Atlas benthic map for the candidate areas) |
 | Blockers | First sites are not decided |
-| Last updated | 2026-10-20 |
+| Last updated | 2026-10-23 |
 
 ## 2. Completed
 
@@ -62,6 +62,9 @@ The living document. Update it at the end of every work session. Add entries, ne
 | 2026-10-18 | gitleaks, CodeQL and Trivy in CI with supply chain rules (ADR-012) | DevSecOps; the March 2026 Trivy incident shows actions must be pinned | Actions pinned by tag; no scanners |
 | 2026-10-18 | MLflow from the first trained model; Dependabot with owner approval | Avoid rebuilding experiments; reviewed updates | MLflow only in F6; automatic merges |
 | 2026-10-18 | Architecture diagrams as HTML with the Archify skill (next task) | Richer, interactive diagrams for the portfolio | Mermaid only |
+| 2026-10-23 | Sites are built from Allen Coral Atlas Coral/Algae polygons (CC BY 4.0) with a Python script: representative point on the coral and every NOAA water pixel that touches it | No official coordinate list exists for Costa Rican reefs; reefs are irregular areas, not points; reproducible | Hand-picked points; published coordinates (the main review names sites but gives no coordinates) |
+| 2026-10-23 | ERDDAP server is configurable; NOAA as primary and PacIOOS (`dhw_5km`) as fallback | NOAA servers were down on 2026-10-23; the PacIOOS copy can lag weeks behind NOAA | A single server |
+| 2026-10-23 | MUR SST (about 1 km, from 2002) noted as a possible second source for F5 | Finer near the coast, but no bleaching metrics and shorter history | Replacing Coral Reef Watch |
 | 2026-10-20 | CodeQL in its own workflow (`codeql.yml`): Python and GitHub Actions workflows, on pull requests, on `main` and weekly; `security-events: write` only in that job; `github/codeql-action` pinned to the v4.39.0 commit hash | Static analysis of code and of the CI itself; results in the Security tab | CodeQL default setup in repository settings (not versioned in Git); a job inside `ci.yml` |
 | 2026-10-20 | Ruff (E, F, I, B, UP) and pytest as uv dev dependencies; `make lint`, `make test`, `make format`; pre-commit hook moved to the versioned `.githooks/` and enabled with `make hooks`; CI installs uv by checksum and runs `uv sync --locked`; Dependabot also watches uv | Same commands locally, in the hook and in CI; a hook in `.git/hooks/` is lost on a new clone | Unversioned hook; `astral-sh/setup-uv` action (one more third-party action) |
 | 2026-10-20 | CI hardened (ADR-012): `actions/checkout` pinned to the v7.0.1 commit hash, `permissions: {}` at the top and `contents: read` per job, `persist-credentials: false`, gitleaks run as a pinned binary with checksum instead of `gitleaks-action` (no `GITHUB_TOKEN` in the scanner job), Dependabot for GitHub Actions | Scanner jobs without secrets; tags can move, hashes cannot | Keeping `gitleaks-action@v2` with a token; pinning by tag |
@@ -89,6 +92,9 @@ The living document. Update it at the end of every work session. Add entries, ne
 - Ruleset required checks match job names; renaming a job requires updating the ruleset.
 - Kubernetes itself is free; a local cluster (kind or k3d) is real Kubernetes. Only managed cloud clusters and their machines cost money (F8).
 - Ubuntu in WSL is a separate machine: it needs its own Git identity, its own gitleaks for the pre-commit hook and `core.fileMode false` for a repository on the Windows disk. Never bypass the hook with `--no-verify`.
+- NOAA's ERDDAP servers can be down; the same Coral Reef Watch data is mirrored by PacIOOS, but the copy may lag.
+- ERDDAP returns the center of the nearest pixel: on the 0.05° grid, centers end in .x25 or .x75.
+- Two decimals locate a coordinate within about 1.1 km, enough to pick a 5 km pixel but not to place a point on a reef; records use four.
 - Ruff also formats Python blocks inside Markdown, so code examples in the docs must follow PEP 8 (two blank lines between functions).
 - pytest fails when it collects no tests; the first tests make CI meaningful.
 - The hook now needs `make` and `uv`, so commits are made from WSL Ubuntu, not PowerShell.
@@ -124,6 +130,7 @@ The living document. Update it at the end of every work session. Add entries, ne
 | 2026-10-18 | 03-architecture | Section 4: rows for NGINX Ingress, dashboard to domain agent, HolmesGPT to Ollama, the document indexing step and the Sealed Secrets controller (unknown facts marked `[TO DEFINE]`); section 10 lists ADR-014 and 015; two open questions added |
 | 2026-10-18 | decisions | ADR-014 (architecture diagrams with Archify) and ADR-015 (no AI attribution) added |
 | 2026-10-18 | AGENTS.md | Rule 11: no AI attribution, one-line commit messages (ADR-015) |
+| 2026-10-23 | 10-tasks | F1-T01 split into T01a to T01e for the automated site list |
 | 2026-10-20 | .github/workflows/codeql.yml, 05-security, 10-tasks | CodeQL workflow added; F1-T00h checked |
 | 2026-10-20 | pyproject.toml, uv.lock, Makefile, tests/, .githooks/, ci.yml, dependabot.yml, 06-code-style, 10-tasks | Real lint and tests, versioned hook, uv in CI, Dependabot for uv, code example fixed to PEP 8; F1-T00f checked |
 | 2026-10-20 | .github/workflows/ci.yml, .github/dependabot.yml, 05-security, 10-tasks | Actions pinned by hash, per-job permissions, gitleaks binary in CI, Dependabot; F1-T00g checked |
@@ -139,6 +146,7 @@ The living document. Update it at the end of every work session. Add entries, ne
 
 | Date | What was done | What is next |
 | --- | --- | --- |
+| 2026-10-23 | F1-T01 started. PR #9 (F1-T00) merged with `secret-scan`, `make-check`, `codeql (python)` and `codeql (actions)` green. Eight candidate sites chosen; first pixel check with approximate coordinates through the PacIOOS ERDDAP: all eight pixels are valid water (mask 0). NOAA's `coastwatch` and `upwell` ERDDAP servers did not respond (also from the browser). Decided to build sites from Allen Coral Atlas coral polygons with a Python script; F1-T01 split into T01a to T01e | F1-T01a |
 | 2026-10-20 | F1-T00h done: `.github/workflows/codeql.yml` (Python and Actions, pinned by hash, minimal permissions). Verified only when the pull request runs | Open the F1-T00 pull request; check the CI and CodeQL runs; decide whether CodeQL becomes a required check |
 | 2026-10-20 | F1-T00f done: `uv add --dev ruff pytest` (Ruff 0.17.1, pytest 9.1.1); two environment tests (pinned Python version, no real passwords in `.env.example`); `make lint` and `make test` pass; versioned hook enabled; CI updated (verified when the pull request runs) | F1-T00h (CodeQL); then the F1-T00 pull request |
 | 2026-10-20 | F1-T00g done: CI actions pinned by full commit hash, minimal permissions per job, gitleaks as a pinned binary, `.github/dependabot.yml`; job names unchanged, so the ruleset needs no change. Verified only when the pull request runs | F1-T00f |
