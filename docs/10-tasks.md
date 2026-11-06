@@ -93,7 +93,7 @@ F1-T00 prepares the environment and access (flexible: the owner runs each step a
   - Depends on: none
   - Requirement: RF-4
   - Approach (decided 2026-10-23): sites are built from coral polygons, not hand-picked points. Eight candidates: Bahía Culebra, Sámara, Isla Tortuga, Manuel Antonio, Isla del Caño, Golfo Dulce, Isla del Coco, Cahuita.
-- [ ] F1-T01a · Download the Allen Coral Atlas benthic map (class Coral/Algae) for the Costa Rican candidate areas
+- [x] F1-T01a · Download the Allen Coral Atlas benthic map (class Coral/Algae) for the Costa Rican candidate areas
   - Done when: the files are in `data/raw/allen/` (not committed), and the download steps, version and CC BY 4.0 citation are written in `data/README.md`
   - Depends on: none
   - Requirement: RF-4

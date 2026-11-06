@@ -18,8 +18,8 @@ The living document. Update it at the end of every work session. Add entries, ne
 | --- | --- |
 | Current phase | F1 (ingestion and database, strict) |
 | Last completed task | F1-T00 merged (PR #9, all checks green, 2026-10-20) |
-| Next task | F1-T01a (download the Allen Coral Atlas benthic map for the candidate areas) |
-| Blockers | First sites are not decided |
+| Next task | F1-T01b (search area of each candidate site in `data/sites/areas.csv`) |
+| Blockers | None; the final site list is confirmed in F1-T01e |
 | Last updated | 2026-11-06 |
 
 ## 2. Completed
@@ -82,6 +82,7 @@ The living document. Update it at the end of every work session. Add entries, ne
 | 2026-11-06 | Grafana Alloy collects logs for Loki in F4 | Promtail reached end of life on 2026-03-02 | Promtail |
 | 2026-11-06 | The alert scale has eight levels (NOAA added levels 3 to 5 in December 2023); design tokens for levels 3 to 5 are defined before F2-T07 | Current NOAA product definition | Keeping the five-level scale |
 | 2026-11-06 | The Spanish learning map of the project lives in the Claude project (`claude/atalaya-mapa-aprendizaje.md`) and in Claude Docs, not in the repository | It is a personal study guide in Spanish; the repository is public and in English | A Spanish copy under `docs/` |
+| 2026-11-06 | Allen Coral Atlas downloads live in `data/raw/allen/<area>/<area>-<timestamp>/` with ASCII names; original zips in `_zips/`. 13 active areas with a benthic map. Isla Tortuga is merged with Curú, Pochote and Tambor. Discarded (kept in `_discarded/`): Mar Isla del Coco (a Coral/Algae strip in open ocean, likely an artifact), Sámara and Conchal-Brasilito-Potrero (less than 0.1 km² of Coral/Algae, proposed threshold), Punta Banco and San Pedrillo (only reef extent, no benthic map). Sources, citation and the area table are in `data/README.md` | A site needs a point on mapped coral habitat; two areas in the same NOAA pixel are one thermal series | Keeping every download; Tortuga and Curú as separate sites |
 
 ## 4. In progress and blockers
 
@@ -155,6 +156,7 @@ The living document. Update it at the end of every work session. Add entries, ne
 
 | Date | What was done | What is next |
 | --- | --- | --- |
+| 2026-11-06 | F1-T01a: benthic maps downloaded for 19 areas (14 on 2026-10-24, 5 on 2026-11-06) and reviewed: every GeoJSON is CRS84 with one `class` property, and computed Coral/Algae areas match `statistics.csv`. Folders renamed and moved to `data/raw/allen/`; Punta Banco and San Pedrillo discarded; `data/README.md` written (sources, citation, imagery dates, area table); F1-T01a done; decisions in section 3 | F1-T01b; decide whether Bahía Santa Elena is split into two sites (two coral clusters, about 10 NOAA cells) |
 | 2026-11-06 | Wrote a Spanish learning map of the whole project (what, why, how and theory per layer), kept in the Claude project and Claude Docs. While writing it found four issues and applied the plan adjustments on branch `docs/plan-adjustments` (see section 6) | Owner reviews the diff and commits; regenerate the Archify diagram (gateway and indexing job, ADR-014); continue F1-T01a |
 | 2026-10-23 | F1-T01 started. PR #9 (F1-T00) merged with `secret-scan`, `make-check`, `codeql (python)` and `codeql (actions)` green. Eight candidate sites chosen; first pixel check with approximate coordinates through the PacIOOS ERDDAP: all eight pixels are valid water (mask 0). NOAA's `coastwatch` and `upwell` ERDDAP servers did not respond (also from the browser). Decided to build sites from Allen Coral Atlas coral polygons with a Python script; F1-T01 split into T01a to T01e | F1-T01a |
 | 2026-10-20 | F1-T00h done: `.github/workflows/codeql.yml` (Python and Actions, pinned by hash, minimal permissions). Verified only when the pull request runs | Open the F1-T00 pull request; check the CI and CodeQL runs; decide whether CodeQL becomes a required check |
