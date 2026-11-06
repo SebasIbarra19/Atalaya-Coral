@@ -92,6 +92,27 @@ F1-T00 prepares the environment and access (flexible: the owner runs each step a
   - Done when: a short list of sites with coordinates is recorded and the 5 km pixel question is checked
   - Depends on: none
   - Requirement: RF-4
+  - Approach (decided 2026-10-23): sites are built from coral polygons, not hand-picked points. Eight candidates: Bahía Culebra, Sámara, Isla Tortuga, Manuel Antonio, Isla del Caño, Golfo Dulce, Isla del Coco, Cahuita.
+- [ ] F1-T01a · Download the Allen Coral Atlas benthic map (class Coral/Algae) for the Costa Rican candidate areas
+  - Done when: the files are in `data/raw/allen/` (not committed), and the download steps, version and CC BY 4.0 citation are written in `data/README.md`
+  - Depends on: none
+  - Requirement: RF-4
+- [ ] F1-T01b · Define the search area of each candidate site
+  - Done when: `data/sites/areas.csv` lists name, coast and a bounding box per site, and every box contains Coral/Algae polygons
+  - Depends on: F1-T01a
+  - Requirement: RF-4
+- [ ] F1-T01c · Write the grid functions with tests
+  - Done when: pure functions map a coordinate to its 0.05° NOAA pixel and a polygon to the pixels it touches, and pytest covers pixel edges and negative longitudes
+  - Depends on: none
+  - Requirement: RF-4, RF-1
+- [ ] F1-T01d · Write the script that builds the site list
+  - Done when: one command reads the polygons and the areas, computes a representative point on the coral (4 decimals) and the water pixels that touch it (NOAA mask through ERDDAP, base URL from configuration), and writes `data/sites/sites.csv`; running it twice gives the same file
+  - Depends on: F1-T01b, F1-T01c
+  - Requirement: RF-4
+- [ ] F1-T01e · Review the result and record the decision
+  - Done when: each site has a quality note and an active flag decided by the owner, and an ADR records how sites are defined
+  - Depends on: F1-T01d
+  - Requirement: RF-4
 - [ ] F1-T02 · Explore the ERDDAP dataset by hand
   - Done when: exact variable names, units and valid ranges are written in `03-architecture.md` (replacing the TO VERIFY marks)
   - Depends on: F1-T01
@@ -154,11 +175,11 @@ F1-T00 prepares the environment and access (flexible: the owner runs each step a
   - Depends on: F2-T02
   - Requirement: RF-5
 - [ ] F2-T05 · Admin endpoints with API key
-  - Done when: missing key returns 401 (TC-9) and a site can be added
+  - Done when: missing key returns 401 (TC-9), a site can be added, and the routes connect with an `atalaya_admin` role created with insert and update on `sites` only (TC-29)
   - Depends on: F2-T04
   - Requirement: RF-4
 - [ ] F2-T06 · Dashboard skeleton with design tokens
-  - Done when: tokens from `07-design-guide.md` are in place in both themes
+  - Done when: tokens from `07-design-guide.md` are in place in both themes, including the eight alert levels
   - Depends on: F2-T02
   - Requirement: RF-6
 - [ ] F2-T07 · Site list with `AlertBadge` and all states
@@ -186,13 +207,13 @@ F1-T00 prepares the environment and access (flexible: the owner runs each step a
 
 ## Phase F3: Kubernetes and GitOps (flexible, owner explains each piece)
 
-Outline, refine at phase start: cap WSL2 memory with `.wslconfig` (ADR-009); Dockerfiles for each service; build images in CI, scan them with Trivy and push them to GHCR; Terraform creates the local cluster (kind or k3d) and installs NGINX Ingress, ArgoCD and Sealed Secrets (back up the private key outside the repository; check the project is still maintained); manifests under `deploy/k8s` with NetworkPolicies and Pod Security; sync from Git; choose Helm or Kustomize and record an ADR. Optional early Terraform practice: describe the `protect-main` ruleset with the GitHub provider.
+Outline, refine at phase start: cap WSL2 memory with `.wslconfig` (ADR-009); Dockerfiles for each service; build images in CI, scan them with Trivy and push them to GHCR; Terraform creates the local cluster (kind or k3d) and installs a Gateway API implementation (ADR-018: compare maintained options such as Envoy Gateway, NGINX Gateway Fabric and Traefik, including rate limits and memory use), ArgoCD and Sealed Secrets (back up the private key outside the repository; check the project is still maintained); manifests under `deploy/k8s` with NetworkPolicies and Pod Security; sync from Git; choose Helm or Kustomize and record an ADR. Optional early Terraform practice: describe the `protect-main` ruleset with the GitHub provider.
 
 **Gate F3:** a change in Git reaches the cluster without manual steps.
 
 ## Phase F4: Observability (mixed)
 
-Outline, refine at phase start: expose metrics from ingestion and API; deploy Prometheus, Grafana and Loki; add OpenTelemetry traces; dashboards and alert rules as code; provoke a failure and confirm the alert.
+Outline, refine at phase start: expose metrics from ingestion and API; deploy Prometheus, Grafana and Loki, with Grafana Alloy as the log collector (Promtail reached end of life on 2026-03-02); add OpenTelemetry traces; dashboards and alert rules as code; provoke a failure and confirm the alert.
 
 **Gate F4:** a provoked failure raises an alert visible on the dashboards.
 
@@ -214,7 +235,7 @@ Requirements: RF-10, RF-11.
 
 ## Phase F7: Agents, Branch C (mixed; agent logic strict)
 
-Outline, refine at phase start: install Ollama on the host and pick a small model by evaluations; MCP server with read-only tools (`get_site_status`, `get_forecast`, `search_docs`); public document corpus and pgvector ingestion; domain agent with structured outputs; Phoenix traces through OpenTelemetry; evaluation set (grounding, refusal, schema, injection) running in CI; guardrails; HolmesGPT with read-only access. If a hosted model API is ever used, its key has a spend limit set at the provider; never a key without a limit.
+Outline, refine at phase start: install Ollama on the host and pick a small model by evaluations; MCP server with read-only tools (`get_site_status`, `get_forecast`, `search_docs`) plus `query_sql` with guardrails and its `atalaya_agent_sql` role (ADR-019); public document corpus and the document indexing job (chunks, embeddings and full text); hybrid search with RRF compared against vector-only search and whole-document context; evaluation dataset generator (answers computed with SQL, document questions reviewed by hand); domain agent with structured outputs; Phoenix traces through OpenTelemetry; evaluation set (grounding, refusal, schema, injection) running in CI; guardrails; HolmesGPT with read-only access. If a hosted model API is ever used, its key has a spend limit set at the provider; never a key without a limit.
 
 Requirements: RF-12, RF-13.
 

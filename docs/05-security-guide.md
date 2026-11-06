@@ -29,7 +29,7 @@ This guide defines how the platform is kept safe, even though it only handles pu
 | --- | --- |
 | Public read endpoints | No credential; protected by rate limits (see `04-api-guide.md`) |
 | Admin endpoints | API key, checked on every request in the API layer, not only at the ingress |
-| Database roles | Separate roles, created by `deploy/compose/initdb/10-roles.sh`: administrator (owns schema `atalaya`, runs migrations), `atalaya_ingest` (select, insert, update; no delete, no DDL), `atalaya_api` (read-only). Default privileges give every new table these grants. A training role (write forecasts) is added in F5 |
+| Database roles | Separate roles, created by `deploy/compose/initdb/10-roles.sh`: administrator (owns schema `atalaya`, runs migrations), `atalaya_ingest` (select, insert, update; no delete, no DDL), `atalaya_api` (read-only). Default privileges give every new table these grants. `atalaya_admin` (insert and update on `sites` only, used only by the admin routes) is added in F2 with explicit grants, never default privileges. A training role (write forecasts) is added in F5, and `atalaya_agent_sql` (select on an allowlist of views only, read-only transactions, statement timeout and row limit) in F7 (ADR-019) |
 | Kubernetes | One service account per workload; HolmesGPT and the domain agent get read-only roles; NetworkPolicies allow only the traffic each workload needs; Pod Security standards enforced per namespace |
 | GitHub | Ruleset `protect-main` on the main branch; no direct pushes (done in F0) |
 | Cloud | MFA on the AWS root account and no access keys for it; separate IAM identity for Terraform; GitHub Actions uses OIDC, never long-lived keys; no personal admin credentials inside the cluster |
@@ -94,9 +94,10 @@ The project has one owner, so the process is short.
 - [ ] Secret scan passes and no `.env` is tracked.
 - [ ] Dependency audit shows no unreviewed high-severity findings.
 - [ ] Admin endpoints require the key and fail closed.
-- [ ] Database roles are least-privilege and the API role is read-only.
+- [ ] Database roles are least-privilege: `atalaya_api` is read-only and `atalaya_admin` can change only `sites`.
 - [ ] Containers run as non-root.
 - [ ] Agents have read-only access and their evaluations pass.
+- [ ] The agent's SQL tool accepts only one `SELECT` over allowed views (TC-26).
 - [ ] AWS has a Budgets alert, MFA on the root account and no long-lived access keys.
 - [ ] No weakness described in the docs is still open.
 

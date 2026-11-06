@@ -41,7 +41,7 @@ Colors are defined as tokens (names), never as raw values in components. Both th
 
 Computed contrast: `text-primary` on `bg` is 16.56 (light) and 16.02 (dark). `text-secondary` on `bg` is 6.39 and 7.76. `primary` on `bg` is 6.67 and 7.49. All pass the 4.5 text threshold.
 
-**Alert-level tokens (Proposed; levels `[TO VERIFY against NOAA product documentation]`, which may define more than five)**
+**Alert-level tokens (Proposed; NOAA uses eight levels since December 2023: no stress, watch, warning and alert levels 1 to 5)**
 
 | Level | Dot | Chip background (light) | Chip background (dark) |
 | --- | --- | --- | --- |
@@ -50,8 +50,11 @@ Computed contrast: `text-primary` on `bg` is 16.56 (light) and 16.02 (dark). `te
 | Warning | `#F4A261` | `#FCE5D0` | `#43280F` |
 | Alert level 1 | `#E76F51` | `#FADBD2` | `#46201A` |
 | Alert level 2 | `#9B2226` | `#F3D0D1` | `#471719` |
+| Alert level 3 | `[TO DEFINE]` | `[TO DEFINE]` | `[TO DEFINE]` |
+| Alert level 4 | `[TO DEFINE]` | `[TO DEFINE]` | `[TO DEFINE]` |
+| Alert level 5 | `[TO DEFINE]` | `[TO DEFINE]` | `[TO DEFINE]` |
 
-Chip text uses `text-primary`, with contrast of 11.63 or higher in both themes. Some dot colors are below 3:1 against the page background (for example Watch on white is 1.67), so the dot is never the only signal: every chip carries a text label and a distinct icon. Revisit these colors once real screens exist.
+Chip text uses `text-primary`, with contrast of 11.63 or higher in both themes. Some dot colors are below 3:1 against the page background (for example Watch on white is 1.67), so the dot is never the only signal: every chip carries a text label and a distinct icon. Colors for alert levels 3 to 5 are defined before F2-T07, and the eight levels must stay distinguishable by label and icon alone. Revisit these colors once real screens exist.
 
 ## 3. Typography
 
@@ -87,7 +90,7 @@ Breakpoints follow the Tailwind defaults (640, 768, 1024, 1280 px). The dashboar
 
 | Component | Purpose | States and rules |
 | --- | --- | --- |
-| `AlertBadge` | Shows a site's alert level | Dot, label and icon; five levels; never color alone |
+| `AlertBadge` | Shows a site's alert level | Dot, label and icon; eight levels; never color alone |
 | `SiteCard` | Summary of one site in the list | Name, badge, latest date, mini series; hover, focus, loading skeleton |
 | `SiteMap` or `SiteList` | Overview of all sites | Map is optional (`[TO DEFINE]`); list is the accessible baseline |
 | `TimeSeriesChart` | Observations and forecast over time | Forecast band for uncertainty; axis labels; accessible summary text |

@@ -42,7 +42,7 @@ The core and Branch A are the minimum deliverable. Branches B and C are added in
 | Module | What it includes | Priority |
 | --- | --- | --- |
 | Core | NOAA ingestion through ERDDAP, PostgreSQL database, read API, simple dashboard, Docker Compose and CI | Required |
-| Branch A: forecast | Baseline model, then XGBoost with SHAP, replicating the approach of Arcodia et al. (2025) for Costa Rica | Required |
+| Branch A: forecast | Baseline model, then XGBoost with SHAP, applying the approach of Arcodia et al. (2025), first tested on three Florida reefs, to Costa Rica | Required |
 | Branch B: MLOps | Experiment tracking, scheduled retraining and drift detection | After A |
 | Branch C: agents | HolmesGPT for operations and an own domain agent that explains reef status: read-only tools through an MCP server, retrieval over reference documents (RAG with pgvector), structured outputs, guardrails, evaluations and LLM observability | After B |
 | Platform | Local Kubernetes, GitOps with ArgoCD, observability (Prometheus, Grafana, Loki, OpenTelemetry), then cloud with Terraform | In layers, alongside the phases |
@@ -136,18 +136,18 @@ Four choices are decided. The rest are proposals confirmed when each phase is re
 | ML tracking | MLflow from the first trained model (F5) | Decided | Loose files: no comparable history; adding it later means rebuilding experiments |
 | Containers and local cluster | Docker, and kind or k3d | Proposed | Minikube: heavier |
 | GitOps | ArgoCD | Proposed | Flux: valid alternative, may be compared later |
-| Observability | Prometheus, Grafana, Loki and OpenTelemetry | Proposed | Paid services: outside the budget |
+| Observability | Prometheus, Grafana, Loki (logs collected with Grafana Alloy) and OpenTelemetry | Proposed | Paid services: outside the budget |
 | Infrastructure as code | Terraform, from F3 for the local cluster and in F8 for AWS (ADR-013) | Decided | Pulumi: valid, but Terraform appeared among the skills seen in job postings |
 | Configuration management | None; Kubernetes and Terraform are already declarative (ADR-013) | Decided | Ansible: would be added only for the label, with no real use |
-| Ingress | NGINX Ingress (ADR-013) | Decided | Traefik: valid, but NGINX appears more in job postings |
+| Ingress | Gateway API; implementation chosen at the start of F3 (ADR-018, replaces the ingress part of ADR-013) | Decided | Ingress NGINX: retired in March 2026, no more security patches; Traefik with Ingress resources: the Ingress API is frozen |
 | Cluster secrets | Sealed Secrets (ADR-011) | Decided | Plain Kubernetes Secrets in Git: unsafe; External Secrets: needs a paid secret store |
 | CI security | gitleaks, CodeQL and Trivy, with every action pinned by full commit hash (ADR-012) | Decided | Actions pinned by tag: a moved tag can run malicious code |
 | Image registry | GitHub Container Registry (GHCR) | Proposed | Docker Hub: pull limits; AWS ECR: only exists from F8 |
 | Cloud provider | AWS on the free plan, only in F8 (ADR-010) | Decided | Azure through the Student Pack: AWS appears more often in the job postings reviewed |
 | CI | GitHub Actions | Proposed | Other providers: already in use |
 | Language model | Small open-weight model served by Ollama on the host machine; exact model chosen in F7 by evaluations (ADR-006) | Proposed | Paid API by default: billing risk; may be compared later only with a provider spend limit |
-| Agent tools | MCP server exposing read-only tools (ADR-007) | Proposed | Data pasted into the prompt: harder to control and evaluate |
-| Document retrieval | pgvector in the same PostgreSQL (ADR-007) | Proposed | A separate vector database: one more service for little data |
+| Agent tools | MCP server exposing read-only tools, including a guarded SQL tool over an allowlist of views (ADR-007, ADR-019) | Proposed | Data pasted into the prompt: harder to control and evaluate |
+| Document retrieval | Hybrid search in the same PostgreSQL: pgvector plus full text, fused with RRF (ADR-007, ADR-019) | Proposed | A separate vector database: one more service for little data |
 | Model adaptation | RAG and prompting, no fine-tuning (ADR-007) | Proposed | Fine-tuning: there is no training set and the data changes daily |
 | LLM observability | Arize Phoenix, built on OpenTelemetry (ADR-008) | Proposed | Langfuse self-hosted: needs several extra services, too heavy for the laptop |
 | Documentation language | English | Decided | Spanish: less readable for international recruiters |

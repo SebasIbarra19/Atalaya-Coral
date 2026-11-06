@@ -23,14 +23,14 @@ In scope: ingestion, storage, forecasting, read API, dashboard, agents, observab
 | TR-1 | RF-1 | The ingestion job requests ERDDAP by site coordinates and date range and handles a missing or late day by recording it, not by failing the whole run |
 | TR-2 | RF-2 | Writes are upserts keyed by (site_id, date). A run record is written for every execution, including failed ones |
 | TR-3 | RF-3 | A backfill command loads history in bounded chunks, can resume after interruption and reports coverage per site |
-| TR-4 | RF-4 | Sites are rows in `sites`; ingestion reads the active ones at start. Changes are made through the admin endpoint or a migration |
+| TR-4 | RF-4 | Sites are rows in `sites`; ingestion reads the active ones at start. Changes are made through the admin endpoints, which connect with the `atalaya_admin` role (insert and update on `sites` only), or a migration |
 | TR-5 | RF-5 | The API is read-only for data, versioned under `/v1`, and documented through an OpenAPI schema generated from code |
 | TR-6 | RF-6 | The dashboard consumes only the API and renders loading, empty and error states |
 | TR-7 | RF-7, RF-8 | Training uses a fixed random seed, and every run stores parameters, metrics, data window and model version |
 | TR-8 | RF-9 | A test asserts that the latest training timestamp is earlier than the first evaluation timestamp |
 | TR-9 | RF-10 | Retraining and a drift check run on a schedule and write their results to MLflow and to metrics |
 | TR-10 | RF-11 | Alert-level transitions are detected by comparing consecutive observations and de-duplicated per site and level |
-| TR-11 | RF-12 | The domain agent has read-only access, a system prompt that forbids unsupported claims, and a per-request data context limited to the requested site. It reads data only through read-only tools exposed by an MCP server, retrieves reference documents through pgvector, and returns a structured answer (text, sources, data used) validated against a schema |
+| TR-11 | RF-12 | The domain agent has read-only access, a system prompt that forbids unsupported claims, and a per-request data context limited to the requested site. It reads data only through read-only tools exposed by an MCP server, retrieves reference documents through hybrid search (pgvector plus PostgreSQL full text, fused with RRF), may query an allowlist of views through a guarded read-only SQL tool (ADR-019), and returns a structured answer (text, sources, data used) validated against a schema |
 | TR-12 | RF-13 | HolmesGPT runs with a read-only Kubernetes service account and read-only access to Prometheus and Loki |
 | TR-13 | RF-14 | `make up` starts the core; `make test` runs the test suite; both are documented and tested in CI on a clean runner |
 | TR-14 | RF-12, RF-13 | Every model call records prompt, answer, tokens, latency and tool calls as OpenTelemetry traces visible in Phoenix |
@@ -72,7 +72,7 @@ The initial model is in `03-architecture.md`, section 7. All data is public, so 
 | Environment | Requirements |
 | --- | --- |
 | Local core | Docker and Docker Compose with profiles (`core`, `ml`, `agent`, `obs`) so only the services in use run |
-| Local cluster | kind or k3d created with Terraform; NGINX Ingress, ArgoCD, Sealed Secrets, Prometheus, Grafana, Loki, OpenTelemetry collector |
+| Local cluster | kind or k3d created with Terraform; a Gateway API implementation (ADR-018), ArgoCD, Sealed Secrets, Prometheus, Grafana, Loki with Grafana Alloy, OpenTelemetry collector |
 | Local LLM | Ollama on the host machine using the GPU; Phoenix for LLM traces |
 | Cloud | AWS through Terraform (EKS or k3s on EC2, decided in F8); destroyed when idle; AWS Budgets alert |
 

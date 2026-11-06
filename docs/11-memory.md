@@ -17,10 +17,10 @@ The living document. Update it at the end of every work session. Add entries, ne
 | Item | Value |
 | --- | --- |
 | Current phase | F1 (ingestion and database, strict) |
-| Last completed task | F1-T00h: CodeQL for Python and workflows (2026-10-20); F1-T00 complete pending the pull request |
-| Next task | Open the F1-T00 pull request and confirm CI and CodeQL; then F1-T01 (decide the first sites) |
+| Last completed task | F1-T00 merged (PR #9, all checks green, 2026-10-20) |
+| Next task | F1-T01a (download the Allen Coral Atlas benthic map for the candidate areas) |
 | Blockers | First sites are not decided |
-| Last updated | 2026-10-20 |
+| Last updated | 2026-11-06 |
 
 ## 2. Completed
 
@@ -62,6 +62,9 @@ The living document. Update it at the end of every work session. Add entries, ne
 | 2026-10-18 | gitleaks, CodeQL and Trivy in CI with supply chain rules (ADR-012) | DevSecOps; the March 2026 Trivy incident shows actions must be pinned | Actions pinned by tag; no scanners |
 | 2026-10-18 | MLflow from the first trained model; Dependabot with owner approval | Avoid rebuilding experiments; reviewed updates | MLflow only in F6; automatic merges |
 | 2026-10-18 | Architecture diagrams as HTML with the Archify skill (next task) | Richer, interactive diagrams for the portfolio | Mermaid only |
+| 2026-10-23 | Sites are built from Allen Coral Atlas Coral/Algae polygons (CC BY 4.0) with a Python script: representative point on the coral and every NOAA water pixel that touches it | No official coordinate list exists for Costa Rican reefs; reefs are irregular areas, not points; reproducible | Hand-picked points; published coordinates (the main review names sites but gives no coordinates) |
+| 2026-10-23 | ERDDAP server is configurable; NOAA as primary and PacIOOS (`dhw_5km`) as fallback | NOAA servers were down on 2026-10-23; the PacIOOS copy can lag weeks behind NOAA | A single server |
+| 2026-10-23 | MUR SST (about 1 km, from 2002) noted as a possible second source for F5 | Finer near the coast, but no bleaching metrics and shorter history | Replacing Coral Reef Watch |
 | 2026-10-20 | CodeQL in its own workflow (`codeql.yml`): Python and GitHub Actions workflows, on pull requests, on `main` and weekly; `security-events: write` only in that job; `github/codeql-action` pinned to the v4.39.0 commit hash | Static analysis of code and of the CI itself; results in the Security tab | CodeQL default setup in repository settings (not versioned in Git); a job inside `ci.yml` |
 | 2026-10-20 | Ruff (E, F, I, B, UP) and pytest as uv dev dependencies; `make lint`, `make test`, `make format`; pre-commit hook moved to the versioned `.githooks/` and enabled with `make hooks`; CI installs uv by checksum and runs `uv sync --locked`; Dependabot also watches uv | Same commands locally, in the hook and in CI; a hook in `.git/hooks/` is lost on a new clone | Unversioned hook; `astral-sh/setup-uv` action (one more third-party action) |
 | 2026-10-20 | CI hardened (ADR-012): `actions/checkout` pinned to the v7.0.1 commit hash, `permissions: {}` at the top and `contents: read` per job, `persist-credentials: false`, gitleaks run as a pinned binary with checksum instead of `gitleaks-action` (no `GITHUB_TOKEN` in the scanner job), Dependabot for GitHub Actions | Scanner jobs without secrets; tags can move, hashes cannot | Keeping `gitleaks-action@v2` with a token; pinning by tag |
@@ -73,12 +76,18 @@ The living document. Update it at the end of every work session. Add entries, ne
 | 2026-10-18 | lazydocker and k9s as personal development tools | Faster inspection of containers and the cluster | Only raw `docker` and `kubectl` commands |
 | 2026-10-18 | Diagrams are Archify HTML plus JSON source in `docs/diagrams/`, built only from the documents, arrows from caller to callee, delivery receipts not committed (ADR-014) | Explorable diagrams a reviewer can check line by line | Mermaid only; output in `.archify/`; arrows in the direction of the data |
 | 2026-10-18 | No AI attribution in commits, pull requests or files; one-line commit messages (ADR-015) | The owner is the only author of record, as decided on 2026-10-10 | Co-author trailer on AI-assisted commits |
+| 2026-11-06 | Gateway API replaces NGINX Ingress for the local cluster; implementation chosen at the start of F3 (ADR-018) | The community Ingress NGINX controller was retired and gets no security patches since March 2026; Gateway API is the successor of the Ingress API | Keep Ingress NGINX; another controller with Ingress resources |
+| 2026-11-06 | Admin routes connect with a separate `atalaya_admin` role (insert and update on `sites` only); `atalaya_api` stays read-only | The admin routes write, but the API role is read-only; least privilege per route group | Admin writes with `atalaya_api`; managing sites only with a command |
+| 2026-11-06 | Branch C additions (ADR-019): document indexing job, hybrid search with RRF, guarded `query_sql` tool, evaluation dataset generator | Closes the open indexing question; exact terms such as DHW need full text; comparisons across sites need flexible but safe queries; evaluations need checkable answers | Vector-only search; a separate search engine; free SQL without guardrails; a hand-written evaluation set only |
+| 2026-11-06 | Grafana Alloy collects logs for Loki in F4 | Promtail reached end of life on 2026-03-02 | Promtail |
+| 2026-11-06 | The alert scale has eight levels (NOAA added levels 3 to 5 in December 2023); design tokens for levels 3 to 5 are defined before F2-T07 | Current NOAA product definition | Keeping the five-level scale |
+| 2026-11-06 | The Spanish learning map of the project lives in the Claude project (`claude/atalaya-mapa-aprendizaje.md`) and in Claude Docs, not in the repository | It is a personal study guide in Spanish; the repository is public and in English | A Spanish copy under `docs/` |
 
 ## 4. In progress and blockers
 
 - Review of the 13 drafts by the owner.
 - Open: first sites, forecast horizon, notification channel, license confirmation, EKS or k3s on EC2, uncertainty intervals, MLflow artifact storage.
-- `03-architecture.md` section 4 still has two `[TO DEFINE]` items: the protocol between the dashboard and the domain agent, and the step that embeds `doc_chunks` (also what embeds the `search_docs` query).
+- `03-architecture.md` section 4 still has one `[TO DEFINE]` item: the protocol between the dashboard and the domain agent. The document indexing step was decided in ADR-019 (2026-11-06).
 ## 5. Lessons learned
 
 - VS Code keeps the PATH from when it was opened; restart it fully after installing a tool. `make` reads the `Makefile` in the current folder.
@@ -89,9 +98,14 @@ The living document. Update it at the end of every work session. Add entries, ne
 - Ruleset required checks match job names; renaming a job requires updating the ruleset.
 - Kubernetes itself is free; a local cluster (kind or k3d) is real Kubernetes. Only managed cloud clusters and their machines cost money (F8).
 - Ubuntu in WSL is a separate machine: it needs its own Git identity, its own gitleaks for the pre-commit hook and `core.fileMode false` for a repository on the Windows disk. Never bypass the hook with `--no-verify`.
+- NOAA's ERDDAP servers can be down; the same Coral Reef Watch data is mirrored by PacIOOS, but the copy may lag.
+- ERDDAP returns the center of the nearest pixel: on the 0.05° grid, centers end in .x25 or .x75.
+- Two decimals locate a coordinate within about 1.1 km, enough to pick a 5 km pixel but not to place a point on a reef; records use four.
 - Ruff also formats Python blocks inside Markdown, so code examples in the docs must follow PEP 8 (two blank lines between functions).
 - pytest fails when it collects no tests; the first tests make CI meaningful.
 - The hook now needs `make` and `uv`, so commits are made from WSL Ubuntu, not PowerShell.
+- Components retire: check a component's maintenance status before building on it (Ingress NGINX in March 2026, Promtail on 2026-03-02).
+- Check a source before citing it in an ADR: ADR-002 said the reference study was for Costa Rica, but it covered three Florida reefs (corrected on 2026-11-06).
 - `source .env` leaves the variables alive in that terminal, and they override later edits to the file (dbmate gives the shell variable priority); `unset` them or open a new terminal.
 - dbmate's Postgres driver requires SSL unless the URL says `sslmode=disable`; the local database has no SSL.
 - In WSL, `Permission denied` for a command often means it is not installed in Ubuntu: the search reaches Windows folders on the `PATH` that Linux cannot read.
@@ -124,6 +138,7 @@ The living document. Update it at the end of every work session. Add entries, ne
 | 2026-10-18 | 03-architecture | Section 4: rows for NGINX Ingress, dashboard to domain agent, HolmesGPT to Ollama, the document indexing step and the Sealed Secrets controller (unknown facts marked `[TO DEFINE]`); section 10 lists ADR-014 and 015; two open questions added |
 | 2026-10-18 | decisions | ADR-014 (architecture diagrams with Archify) and ADR-015 (no AI attribution) added |
 | 2026-10-18 | AGENTS.md | Rule 11: no AI attribution, one-line commit messages (ADR-015) |
+| 2026-10-23 | 10-tasks | F1-T01 split into T01a to T01e for the automated site list |
 | 2026-10-20 | .github/workflows/codeql.yml, 05-security, 10-tasks | CodeQL workflow added; F1-T00h checked |
 | 2026-10-20 | pyproject.toml, uv.lock, Makefile, tests/, .githooks/, ci.yml, dependabot.yml, 06-code-style, 10-tasks | Real lint and tests, versioned hook, uv in CI, Dependabot for uv, code example fixed to PEP 8; F1-T00f checked |
 | 2026-10-20 | .github/workflows/ci.yml, .github/dependabot.yml, 05-security, 10-tasks | Actions pinned by hash, per-job permissions, gitleaks binary in CI, Dependabot; F1-T00g checked |
@@ -134,11 +149,14 @@ The living document. Update it at the end of every work session. Add entries, ne
 | 2026-10-19 | 10-tasks | F1-T00a installs Docker Engine inside WSL2 (no Docker Desktop) and lazydocker, used from F1-T00c to inspect the PostgreSQL container and its logs |
 | 2026-10-19 | 03-architecture, README | Review: link to the Archify diagram; MLflow row aligned with the spec (Decided, from F5); PostgreSQL stores `doc_chunks`; `docs/diagrams/` and Compose profiles in the repository tree; local cluster created with Terraform; decision log intro updated. No component or connection changed, so the diagram needs no regeneration |
 | 2026-10-18 | docs/diagrams/ | Diagram updated to the new section 4 rows: Sealed Secrets arrow to the Kubernetes API, Ollama moved to the left outside the cluster; sources pinned to b5b7b31 |
+| 2026-11-06 | ADR-002, ADR-013, ADR-018, ADR-019, 00-spec, 02-trd, 03-architecture, 04-api, 05-security, 07-design, 08-testing, 09-plan, 10-tasks | ADR-002 context corrected (Florida); ADR-018 Gateway API replaces the ingress part of ADR-013; ADR-019 adds the document indexing job, hybrid search, `query_sql` and the evaluation dataset generator; `atalaya_admin` role for admin routes; Grafana Alloy for logs; eight alert levels in the design tokens; TC-26 to TC-30 |
 
 ## 7. Session log
 
 | Date | What was done | What is next |
 | --- | --- | --- |
+| 2026-11-06 | Wrote a Spanish learning map of the whole project (what, why, how and theory per layer), kept in the Claude project and Claude Docs. While writing it found four issues and applied the plan adjustments on branch `docs/plan-adjustments` (see section 6) | Owner reviews the diff and commits; regenerate the Archify diagram (gateway and indexing job, ADR-014); continue F1-T01a |
+| 2026-10-23 | F1-T01 started. PR #9 (F1-T00) merged with `secret-scan`, `make-check`, `codeql (python)` and `codeql (actions)` green. Eight candidate sites chosen; first pixel check with approximate coordinates through the PacIOOS ERDDAP: all eight pixels are valid water (mask 0). NOAA's `coastwatch` and `upwell` ERDDAP servers did not respond (also from the browser). Decided to build sites from Allen Coral Atlas coral polygons with a Python script; F1-T01 split into T01a to T01e | F1-T01a |
 | 2026-10-20 | F1-T00h done: `.github/workflows/codeql.yml` (Python and Actions, pinned by hash, minimal permissions). Verified only when the pull request runs | Open the F1-T00 pull request; check the CI and CodeQL runs; decide whether CodeQL becomes a required check |
 | 2026-10-20 | F1-T00f done: `uv add --dev ruff pytest` (Ruff 0.17.1, pytest 9.1.1); two environment tests (pinned Python version, no real passwords in `.env.example`); `make lint` and `make test` pass; versioned hook enabled; CI updated (verified when the pull request runs) | F1-T00h (CodeQL); then the F1-T00 pull request |
 | 2026-10-20 | F1-T00g done: CI actions pinned by full commit hash, minimal permissions per job, gitleaks as a pinned binary, `.github/dependabot.yml`; job names unchanged, so the ruleset needs no change. Verified only when the pull request runs | F1-T00f |

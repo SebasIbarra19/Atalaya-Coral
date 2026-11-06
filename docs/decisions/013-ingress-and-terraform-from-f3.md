@@ -1,6 +1,6 @@
 # ADR-013: NGINX Ingress and Terraform from F3; no Ansible
 
-- Status: Decided
+- Status: Decided; the ingress part is replaced by ADR-018 (2026-11-06)
 - Date: 2026-10-18
 
 ## Context
