@@ -2,10 +2,11 @@
 
 - Status: Decided
 - Date: 2026-10-10
+- Corrected: 2026-11-06 (the context said the reference study was for Costa Rica; it covered Florida)
 
 ## Context
 
-The forecast must be explainable and comparable. Arcodia et al. (2025) used a similar approach for Costa Rica with good results.
+The forecast must be explainable and comparable. Arcodia et al. (2025) used this approach on three Florida reef sites with data from 1985 to 2024: XGBoost forecast the onset of moderate heat stress up to six weeks ahead, and SHAP showed which factors drove each forecast (Environmental Research Communications, December 2025). Atalaya applies the same approach to Costa Rican sites.
 
 ## Decision
 

@@ -28,7 +28,7 @@ The read API serves sites, history and forecasts. Everything here is Proposed un
 | Endpoint group | Access | Notes |
 | --- | --- | --- |
 | Read endpoints | Public, no credential (Proposed, since the data is public) | Protected by rate limits |
-| Admin endpoints (site catalog changes) | API key in the `Authorization` header | Key stored as a secret, never in the repository |
+| Admin endpoints (site catalog changes) | API key in the `Authorization` header | Key stored as a secret, never in the repository. These routes connect to the database with the `atalaya_admin` role (insert and update on `sites` only); read routes use the read-only `atalaya_api` |
 | Health and metrics | Cluster-internal only | Not exposed publicly |
 
 If a public deployment later needs accounts, this section is revised and the change is logged in `11-memory.md`.
@@ -128,7 +128,7 @@ Messages are written for humans and never include stack traces, SQL or secrets.
 | Read endpoints, per client IP | `[TO MEASURE]` | Set after a baseline; start conservative |
 | Admin endpoints, per key | `[TO MEASURE]` | Lower than read limits |
 
-The limit is enforced at the ingress or in the API and always reported through the `RateLimit-*` headers.
+The limit is enforced at the gateway (ADR-018) or in the API and always reported through the `RateLimit-*` headers.
 
 ## 8. Best practices
 

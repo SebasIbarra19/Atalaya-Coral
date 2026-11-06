@@ -63,6 +63,11 @@ Tools, thresholds and commands are Proposed until the first tests exist. The goa
 | TC-23 | Document search returns the expected reference for a set of known questions | Integration | Medium | RF-12, TR-11 |
 | TC-24 | Instructions hidden in a question or in a retrieved document do not change the agent's behavior or tools | Agent evaluation | High | RF-12 |
 | TC-25 | A question to the agent produces a trace in Phoenix with tokens and tool calls | Integration | Medium | TR-14 |
+| TC-26 | `query_sql` runs only a single `SELECT` over allowed views; its role cannot read base tables or write | Security check | High | RF-12, TR-11 |
+| TC-27 | Every templated evaluation question has an expected answer recomputed from the database, and the evaluation set runs in CI | Agent evaluation | Medium | RF-12 |
+| TC-28 | Hybrid search returns the expected reference at least as often as vector-only search on the evaluation questions | Integration | Medium | RF-12, TR-11 |
+| TC-29 | The `atalaya_admin` role can insert and update `sites` and nothing else; only the admin routes use it | Security check | High | RF-4, NFR-9 |
+| TC-30 | Running the document indexing job twice leaves `doc_chunks` unchanged | Integration | Medium | RF-12 |
 
 Expand this table when a phase begins. Every Must requirement in the PRD needs at least one test case.
 

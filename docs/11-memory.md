@@ -20,7 +20,7 @@ The living document. Update it at the end of every work session. Add entries, ne
 | Last completed task | F1-T00 merged (PR #9, all checks green, 2026-10-20) |
 | Next task | F1-T01a (download the Allen Coral Atlas benthic map for the candidate areas) |
 | Blockers | First sites are not decided |
-| Last updated | 2026-10-23 |
+| Last updated | 2026-11-06 |
 
 ## 2. Completed
 
@@ -76,12 +76,18 @@ The living document. Update it at the end of every work session. Add entries, ne
 | 2026-10-18 | lazydocker and k9s as personal development tools | Faster inspection of containers and the cluster | Only raw `docker` and `kubectl` commands |
 | 2026-10-18 | Diagrams are Archify HTML plus JSON source in `docs/diagrams/`, built only from the documents, arrows from caller to callee, delivery receipts not committed (ADR-014) | Explorable diagrams a reviewer can check line by line | Mermaid only; output in `.archify/`; arrows in the direction of the data |
 | 2026-10-18 | No AI attribution in commits, pull requests or files; one-line commit messages (ADR-015) | The owner is the only author of record, as decided on 2026-10-10 | Co-author trailer on AI-assisted commits |
+| 2026-11-06 | Gateway API replaces NGINX Ingress for the local cluster; implementation chosen at the start of F3 (ADR-018) | The community Ingress NGINX controller was retired and gets no security patches since March 2026; Gateway API is the successor of the Ingress API | Keep Ingress NGINX; another controller with Ingress resources |
+| 2026-11-06 | Admin routes connect with a separate `atalaya_admin` role (insert and update on `sites` only); `atalaya_api` stays read-only | The admin routes write, but the API role is read-only; least privilege per route group | Admin writes with `atalaya_api`; managing sites only with a command |
+| 2026-11-06 | Branch C additions (ADR-019): document indexing job, hybrid search with RRF, guarded `query_sql` tool, evaluation dataset generator | Closes the open indexing question; exact terms such as DHW need full text; comparisons across sites need flexible but safe queries; evaluations need checkable answers | Vector-only search; a separate search engine; free SQL without guardrails; a hand-written evaluation set only |
+| 2026-11-06 | Grafana Alloy collects logs for Loki in F4 | Promtail reached end of life on 2026-03-02 | Promtail |
+| 2026-11-06 | The alert scale has eight levels (NOAA added levels 3 to 5 in December 2023); design tokens for levels 3 to 5 are defined before F2-T07 | Current NOAA product definition | Keeping the five-level scale |
+| 2026-11-06 | The Spanish learning map of the project lives in the Claude project (`claude/atalaya-mapa-aprendizaje.md`) and in Claude Docs, not in the repository | It is a personal study guide in Spanish; the repository is public and in English | A Spanish copy under `docs/` |
 
 ## 4. In progress and blockers
 
 - Review of the 13 drafts by the owner.
 - Open: first sites, forecast horizon, notification channel, license confirmation, EKS or k3s on EC2, uncertainty intervals, MLflow artifact storage.
-- `03-architecture.md` section 4 still has two `[TO DEFINE]` items: the protocol between the dashboard and the domain agent, and the step that embeds `doc_chunks` (also what embeds the `search_docs` query).
+- `03-architecture.md` section 4 still has one `[TO DEFINE]` item: the protocol between the dashboard and the domain agent. The document indexing step was decided in ADR-019 (2026-11-06).
 ## 5. Lessons learned
 
 - VS Code keeps the PATH from when it was opened; restart it fully after installing a tool. `make` reads the `Makefile` in the current folder.
@@ -98,6 +104,8 @@ The living document. Update it at the end of every work session. Add entries, ne
 - Ruff also formats Python blocks inside Markdown, so code examples in the docs must follow PEP 8 (two blank lines between functions).
 - pytest fails when it collects no tests; the first tests make CI meaningful.
 - The hook now needs `make` and `uv`, so commits are made from WSL Ubuntu, not PowerShell.
+- Components retire: check a component's maintenance status before building on it (Ingress NGINX in March 2026, Promtail on 2026-03-02).
+- Check a source before citing it in an ADR: ADR-002 said the reference study was for Costa Rica, but it covered three Florida reefs (corrected on 2026-11-06).
 - `source .env` leaves the variables alive in that terminal, and they override later edits to the file (dbmate gives the shell variable priority); `unset` them or open a new terminal.
 - dbmate's Postgres driver requires SSL unless the URL says `sslmode=disable`; the local database has no SSL.
 - In WSL, `Permission denied` for a command often means it is not installed in Ubuntu: the search reaches Windows folders on the `PATH` that Linux cannot read.
@@ -141,11 +149,13 @@ The living document. Update it at the end of every work session. Add entries, ne
 | 2026-10-19 | 10-tasks | F1-T00a installs Docker Engine inside WSL2 (no Docker Desktop) and lazydocker, used from F1-T00c to inspect the PostgreSQL container and its logs |
 | 2026-10-19 | 03-architecture, README | Review: link to the Archify diagram; MLflow row aligned with the spec (Decided, from F5); PostgreSQL stores `doc_chunks`; `docs/diagrams/` and Compose profiles in the repository tree; local cluster created with Terraform; decision log intro updated. No component or connection changed, so the diagram needs no regeneration |
 | 2026-10-18 | docs/diagrams/ | Diagram updated to the new section 4 rows: Sealed Secrets arrow to the Kubernetes API, Ollama moved to the left outside the cluster; sources pinned to b5b7b31 |
+| 2026-11-06 | ADR-002, ADR-013, ADR-018, ADR-019, 00-spec, 02-trd, 03-architecture, 04-api, 05-security, 07-design, 08-testing, 09-plan, 10-tasks | ADR-002 context corrected (Florida); ADR-018 Gateway API replaces the ingress part of ADR-013; ADR-019 adds the document indexing job, hybrid search, `query_sql` and the evaluation dataset generator; `atalaya_admin` role for admin routes; Grafana Alloy for logs; eight alert levels in the design tokens; TC-26 to TC-30 |
 
 ## 7. Session log
 
 | Date | What was done | What is next |
 | --- | --- | --- |
+| 2026-11-06 | Wrote a Spanish learning map of the whole project (what, why, how and theory per layer), kept in the Claude project and Claude Docs. While writing it found four issues and applied the plan adjustments on branch `docs/plan-adjustments` (see section 6) | Owner reviews the diff and commits; regenerate the Archify diagram (gateway and indexing job, ADR-014); continue F1-T01a |
 | 2026-10-23 | F1-T01 started. PR #9 (F1-T00) merged with `secret-scan`, `make-check`, `codeql (python)` and `codeql (actions)` green. Eight candidate sites chosen; first pixel check with approximate coordinates through the PacIOOS ERDDAP: all eight pixels are valid water (mask 0). NOAA's `coastwatch` and `upwell` ERDDAP servers did not respond (also from the browser). Decided to build sites from Allen Coral Atlas coral polygons with a Python script; F1-T01 split into T01a to T01e | F1-T01a |
 | 2026-10-20 | F1-T00h done: `.github/workflows/codeql.yml` (Python and Actions, pinned by hash, minimal permissions). Verified only when the pull request runs | Open the F1-T00 pull request; check the CI and CodeQL runs; decide whether CodeQL becomes a required check |
 | 2026-10-20 | F1-T00f done: `uv add --dev ruff pytest` (Ruff 0.17.1, pytest 9.1.1); two environment tests (pinned Python version, no real passwords in `.env.example`); `make lint` and `make test` pass; versioned hook enabled; CI updated (verified when the pull request runs) | F1-T00h (CodeQL); then the F1-T00 pull request |

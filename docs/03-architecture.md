@@ -1,9 +1,9 @@
 ---
 titulo: Architecture
 proyecto: Atalaya (coral reef thermal-stress platform)
-version: 0.2
+version: 0.3
 estado: borrador
-fecha: 2026-10-19
+fecha: 2026-11-06
 duenio: Sebastián Ibarra Herrera
 depende_de: [00-spec.md, 01-prd.md]
 ---
@@ -26,6 +26,7 @@ flowchart LR
   API --> DASH[Dashboard]
   API --> MCP[MCP server]
   DB -. pgvector .-> MCP
+  IDX[Document indexing job] --> DB
   MCP --> AGENT[Domain agent]
   LLM[Ollama on host] <--> AGENT
   AGENT --> PHX[Phoenix]
@@ -55,13 +56,14 @@ This Mermaid chart is the quick text overview. The detailed, explorable diagram 
 | Local cluster | kind or k3d | Proposed | Free and repeatable |
 | GitOps | ArgoCD | Proposed | Git as the source of truth for the cluster |
 | Observability | Prometheus, Grafana, Loki, OpenTelemetry | Proposed | Open source, covers metrics, logs and traces |
+| Log collector | Grafana Alloy | Proposed | Ships logs to Loki; Promtail reached end of life on 2026-03-02 |
 | Operations agent | HolmesGPT | Decided | CNCF project that reads Prometheus, Loki and the Kubernetes API |
 | Language model runtime | Ollama on the host with a small open-weight model | Proposed | Free, uses the laptop GPU, OpenAI-compatible API (ADR-006) |
 | Agent tools | MCP server (Python SDK) | Proposed | Standard way to give agents tools; read-only by design (ADR-007) |
-| Vector search | pgvector | Proposed | Extension of the existing PostgreSQL, no extra service (ADR-007) |
+| Document search | pgvector plus PostgreSQL full text, fused with RRF | Proposed | No extra service; full text catches exact terms such as DHW (ADR-007, ADR-019) |
 | LLM observability | Arize Phoenix | Proposed | Single container, built on OpenTelemetry (ADR-008) |
 | IaC | Terraform (local cluster from F3, AWS in F8) | Decided | Industry standard; practiced for free before the cloud (ADR-013) |
-| Ingress | NGINX Ingress | Decided | Widely used reverse proxy for Kubernetes (ADR-013) |
+| Ingress | Gateway API, implementation chosen in F3 | Decided | Successor of the Ingress API; the Ingress NGINX controller is retired (ADR-018) |
 | Cluster secrets | Sealed Secrets | Decided | Free, fits GitOps: encrypted secrets can live in Git (ADR-011) |
 | Image registry | GHCR | Proposed | Free with the repository; images built and pushed from CI |
 | CI security | gitleaks, CodeQL, Trivy | Decided | Secret, code and image scanning with pinned actions (ADR-012) |
@@ -79,13 +81,14 @@ This Mermaid chart is the quick text overview. The detailed, explorable diagram 
 | Read API | Exposes sites, history and forecasts in a documented format | Write data (except the admin site catalog, see `04-api-guide.md`) |
 | Dashboard | Shows status, series and explanations | Query the database directly |
 | Domain agent | Answers questions using only the MCP tools, returns a structured answer with sources | Make predictions, write data or call anything outside its tools |
-| MCP server | Exposes read-only tools: site status, forecast, document search | Write data or run arbitrary queries |
+| MCP server | Exposes read-only tools: site status, forecast, hybrid document search and guarded SQL over allowed views (ADR-019) | Write data or run queries outside the allowed views |
 | Ollama (host) | Serves the language model and the embedding model | Run inside the cluster or store data |
 | Phoenix | Stores and shows traces of model and tool calls | Store business data |
 | Observability stack | Collects metrics, logs and traces and fires alerts | Store business data |
 | HolmesGPT | Investigates alerts with read-only access | Change cluster state |
 | ArgoCD | Syncs the cluster to what is in Git | Build images |
-| NGINX Ingress | Routes HTTP traffic to the API and dashboard; TLS and request limits | Hold application logic |
+| Gateway (Gateway API) | Routes HTTP traffic to the API and dashboard; TLS and request limits (ADR-018) | Hold application logic |
+| Document indexing job | Turns public reference documents into chunks with embeddings and full-text vectors in `doc_chunks` (ADR-019) | Index user data or run on every request |
 | Sealed Secrets controller | Decrypts sealed secrets from Git into Kubernetes Secrets | Store the private key in Git |
 
 ## 4. How the parts connect
@@ -96,14 +99,14 @@ This Mermaid chart is the quick text overview. The detailed, explorable diagram 
 | Ingestion job | PostgreSQL | SQL, upserts keyed by site and date |
 | Training job | PostgreSQL | SQL reads of observations; writes forecasts |
 | Training job | MLflow | HTTP, logs runs and artifacts |
-| Read API | PostgreSQL | SQL with a read-only role |
-| NGINX Ingress | Read API, Dashboard | HTTP routing with TLS and request limits (ADR-013) |
+| Read API | PostgreSQL | SQL with the read-only role `atalaya_api`; the admin routes use `atalaya_admin`, limited to insert and update on `sites` |
+| Gateway | Read API, Dashboard | HTTP routing (`HTTPRoute`) with TLS and request limits (ADR-018) |
 | Dashboard | Read API | HTTPS, JSON |
 | Dashboard | Domain agent | The user's question about a site; a structured JSON answer validated against a schema (ADR-007). Protocol `[TO DEFINE]` |
-| Domain agent | MCP server | MCP, read-only tools (`get_site_status`, `get_forecast`, `search_docs`) |
+| Domain agent | MCP server | MCP, read-only tools (`get_site_status`, `get_forecast`, `search_docs`, `query_sql`) (ADR-007, ADR-019) |
 | MCP server | Read API | HTTPS, JSON, read-only |
-| MCP server | PostgreSQL (pgvector) | SQL with a read-only role, similarity search over document chunks |
-| Document indexing step `[TO DEFINE]` | Ollama, PostgreSQL (pgvector) | Embeds the public reference documents with the embedding model and writes `doc_chunks` (ADR-007) |
+| MCP server | PostgreSQL (pgvector) | SQL with read-only roles: hybrid search over document chunks (pgvector plus full text, RRF); `query_sql` with `atalaya_agent_sql` over allowed views only (ADR-019) |
+| Document indexing job | Ollama, PostgreSQL (pgvector) | Parses the public reference documents, embeds each chunk with the embedding model and writes `doc_chunks` with a full-text vector; idempotent by source and content hash (ADR-019) |
 | Domain agent, HolmesGPT | Ollama | HTTP, OpenAI-compatible API on the host machine (ADR-006) |
 | Domain agent, HolmesGPT | Phoenix | OpenTelemetry traces of model and tool calls |
 | Services | Observability stack | Prometheus scrape, OpenTelemetry export, logs to Loki |
@@ -134,7 +137,7 @@ This Mermaid chart is the quick text overview. The detailed, explorable diagram 
 
 1. The user asks a question about a site in the dashboard.
 2. The domain agent sends the question and its tool list to the model in Ollama.
-3. The model calls read-only tools through the MCP server: site status, forecast, and document search over pgvector.
+3. The model calls read-only tools through the MCP server: site status, forecast, hybrid document search and, when needed, guarded SQL over allowed views.
 4. The agent returns a structured answer (text, sources, data used), validated against a schema.
 5. The whole exchange is recorded as a trace in Phoenix.
 
@@ -184,7 +187,7 @@ All tables live in schema `atalaya`, owned by the administrator role. Role grant
 | `observations` | site_id, date, sst, anomaly, hotspot, dhw, alert_level | Unique on (site_id, date); ranges validated `[exact variables TO VERIFY in ERDDAP]` |
 | `forecasts` | site_id, issued_at, horizon, value, shap_values, model_version | Unique on (site_id, issued_at, horizon) |
 | `ingestion_runs` | id, started_at, finished_at, rows_written, status, error | Never updated after finishing |
-| `doc_chunks` | id, source, title, chunk, embedding | Only public reference documents; embedding size fixed by the chosen model (Branch C) |
+| `doc_chunks` | id, source, title, section, chunk, content_hash, embedding, tsv | Only public reference documents; unique on (source, content_hash); embedding size fixed by the chosen model (Branch C, ADR-019) |
 
 ## 8. Environments and deployment
 
@@ -200,7 +203,7 @@ All tables live in schema `atalaya`, owned by the administrator role. Role grant
 | Signal | Tool | Example |
 | --- | --- | --- |
 | Metrics | Prometheus | Ingestion freshness, run failures, API latency |
-| Logs | Loki | Ingestion and API logs with a run identifier |
+| Logs | Loki, collected with Grafana Alloy | Ingestion and API logs with a run identifier |
 | Traces | OpenTelemetry | API request through to the database |
 | Dashboards and alerts | Grafana | Missing-data day, failed run, stale forecast |
 | LLM traces | Phoenix | Prompt, answer, tokens, latency and tool calls per question |
@@ -223,11 +226,13 @@ Each decision lives in `docs/decisions/NNN-title.md` with: context, decision, al
 | ADR-010 | AWS as the cloud provider, free plan only | Decided |
 | ADR-011 | Sealed Secrets for cluster secrets | Decided |
 | ADR-012 | CI supply chain rules | Decided |
-| ADR-013 | NGINX Ingress and Terraform from F3; no Ansible | Decided |
+| ADR-013 | NGINX Ingress and Terraform from F3; no Ansible | Decided (ingress part replaced by ADR-018) |
 | ADR-014 | Architecture diagrams as HTML with Archify | Decided |
 | ADR-015 | No AI attribution in the repository | Decided |
 | ADR-016 | Python 3.14 managed with uv | Decided |
 | ADR-017 | Plain SQL migrations with dbmate | Decided |
+| ADR-018 | Gateway API instead of Ingress NGINX | Decided |
+| ADR-019 | Agent retrieval, guarded SQL tool and evaluation dataset | Proposed |
 
 ## Open questions
 
@@ -235,7 +240,7 @@ Each decision lives in `docs/decisions/NNN-title.md` with: context, decision, al
 - [ ] Do we need a time-series extension or is plain PostgreSQL enough?
 - [ ] Helm or Kustomize for manifests?
 - [ ] Protocol between the dashboard and the domain agent.
-- [ ] Which step embeds the documents into `doc_chunks`, and what embeds the `search_docs` query.
+- [x] Which step embeds the documents into `doc_chunks`, and what embeds the `search_docs` query. Decided in ADR-019: a document indexing job, and the same embedding model for the query.
 
 ## Related documents
 
