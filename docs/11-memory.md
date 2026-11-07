@@ -18,7 +18,7 @@ The living document. Update it at the end of every work session. Add entries, ne
 | --- | --- |
 | Current phase | F1 (ingestion and database, strict) |
 | Last completed task | F1-T00 merged (PR #9, all checks green, 2026-10-20) |
-| Next task | F1-T01b (search area of each candidate site in `data/sites/areas.csv`) |
+| Next task | F1-T01c (grid functions: coordinate and polygon to 0.05° NOAA pixels) |
 | Blockers | None; the final site list is confirmed in F1-T01e |
 | Last updated | 2026-11-06 |
 
@@ -156,6 +156,7 @@ The living document. Update it at the end of every work session. Add entries, ne
 
 | Date | What was done | What is next |
 | --- | --- | --- |
+| 2026-11-06 | F1-T01b done: `sites.bbox` (`bbox_from_geojson`, `round_outward`, `union_bbox`) with tests; `data/sites/areas.csv` with 13 areas (boxes from each `boundary.geojson`, rounded outward to 4 decimals; Curú and Tortuga as one box); `test_areas_csv.py` checks slugs, coasts and box order in CI, and coral inside every box locally (marker `data`, skipped without `data/raw`) | F1-T01c |
 | 2026-11-06 | F1-T01a: benthic maps downloaded for 19 areas (14 on 2026-10-24, 5 on 2026-11-06) and reviewed: every GeoJSON is CRS84 with one `class` property, and computed Coral/Algae areas match `statistics.csv`. Folders renamed and moved to `data/raw/allen/`; Punta Banco and San Pedrillo discarded; `data/README.md` written (sources, citation, imagery dates, area table); F1-T01a done; decisions in section 3 | F1-T01b; decide whether Bahía Santa Elena is split into two sites (two coral clusters, about 10 NOAA cells) |
 | 2026-11-06 | Wrote a Spanish learning map of the whole project (what, why, how and theory per layer), kept in the Claude project and Claude Docs. While writing it found four issues and applied the plan adjustments on branch `docs/plan-adjustments` (see section 6) | Owner reviews the diff and commits; regenerate the Archify diagram (gateway and indexing job, ADR-014); continue F1-T01a |
 | 2026-10-23 | F1-T01 started. PR #9 (F1-T00) merged with `secret-scan`, `make-check`, `codeql (python)` and `codeql (actions)` green. Eight candidate sites chosen; first pixel check with approximate coordinates through the PacIOOS ERDDAP: all eight pixels are valid water (mask 0). NOAA's `coastwatch` and `upwell` ERDDAP servers did not respond (also from the browser). Decided to build sites from Allen Coral Atlas coral polygons with a Python script; F1-T01 split into T01a to T01e | F1-T01a |

@@ -97,7 +97,7 @@ F1-T00 prepares the environment and access (flexible: the owner runs each step a
   - Done when: the files are in `data/raw/allen/` (not committed), and the download steps, version and CC BY 4.0 citation are written in `data/README.md`
   - Depends on: none
   - Requirement: RF-4
-- [ ] F1-T01b · Define the search area of each candidate site
+- [x] F1-T01b · Define the search area of each candidate site
   - Done when: `data/sites/areas.csv` lists name, coast and a bounding box per site, and every box contains Coral/Algae polygons
   - Depends on: F1-T01a
   - Requirement: RF-4

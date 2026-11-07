@@ -16,7 +16,7 @@ select = ["E", "F", "I", "B", "UP"]
 testpaths = ["tests"]
 addopts = "-ra --strict-markers"
 pythonpath = ["services/ingestion"]
-markers = ["data: needs local raw data un data/raw (skipped when missing)"]
+markers = ["data: needs local raw data in data/raw (skipped when missing)"]
 
 [dependency-groups]
 dev = [
