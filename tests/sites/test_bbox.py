@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from sites.bbox import bbox_from_geojson
+from sites.bbox import bbox_from_geojson, round_outward, union_bbox
 
 SQUARE = [[[-85.0, 9.0], [-84.9, 9.0], [-84.9, 9.1], [-85.0, 9.1], [-85.0, 9.0]]]
 
@@ -45,3 +45,19 @@ def test_other_geometry_types_are_rejected(tmp_path: Path) -> None:
     path = write_geojson(tmp_path / "point.json", geometry)
     with pytest.raises(ValueError, match="Point"):
         bbox_from_geojson(path)
+
+
+def test_round_outward_moves_minimums_down_and_maximus_up() -> None:
+    box = (-85.02081, 9.69321, -84.91249, 9.79739)
+    assert round_outward(box) == pytest.approx((-85.0209, 9.6932, -84.9124, 9.7974))
+
+
+def test_round_outward_keeps_values_already_rounded() -> None:
+    box = (-85.0208, 1.005, -84.8776, 9.7973)
+    assert round_outward(box) == pytest.approx(box)
+
+
+def test_union_bbos_of_curu_and_tortuga() -> None:
+    curu = (-85.0208, 9.6932, -84.9125, 9.7973)
+    tortuga = (-84.9089, 9.7609, -84.8776, 9.7917)
+    assert union_bbox(curu, tortuga) == (-85.0208, 9.6932, -84.8776, 9.7973)

@@ -1,4 +1,5 @@
 import json
+import math
 from pathlib import Path
 
 type BBox = tuple[float, float, float, float]
@@ -38,3 +39,22 @@ def bbox_from_geojson(path: Path) -> BBox:
         raise ValueError(f"No polygon coordinates found in {path}")
 
     return (min(lons), min(lats), max(lons), max(lats))
+
+
+def round_outward(bbox: BBox, decimals: int = 4) -> BBox:
+    """Round the coordinates of a bounding box outward to the given
+    number of decimals, so the box never shrinks."""
+
+    factor = 10**decimals
+    min_lon, min_lat, max_lon, max_lat = bbox
+    return (
+        math.floor(round(min_lon * factor, 6)) / factor,
+        math.floor(round(min_lat * factor, 6)) / factor,
+        math.ceil(round(max_lon * factor, 6)) / factor,
+        math.ceil(round(max_lat * factor, 6)) / factor,
+    )
+
+
+def union_bbox(a: BBox, b: BBox) -> BBox:
+    """Return the smallest box that contains both boxes."""
+    return (min(a[0], b[0]), min(a[1], b[1]), max(a[2], b[2]), max(a[3], b[3]))
