@@ -7,7 +7,7 @@ from shapely.geometry.base import BaseGeometry
 
 CELLS_PER_DEGREE = 20  # 1 / 0.5
 
-type Pixel = tuple[int, int]  # (row, col) in the grid
+type Pixel = tuple[int, int]  # (col, row) in the grid
 
 
 def pixel_of(lon: float, lat: float) -> Pixel:
@@ -16,7 +16,7 @@ def pixel_of(lon: float, lat: float) -> Pixel:
     A point exactly on an edge belongs to the cell east of it and south of it.
     """
     if not (-180 <= lon < 180 and -90 < lat <= 90):
-        raise ValueError(f"Longitude {lon} is out of range:({lon}, {lat})")
+        raise ValueError(f"Coordinate is out of range:({lon}, {lat})")
 
     col = math.floor(round((lon + 180) * CELLS_PER_DEGREE, 6))
     row = math.floor(round((90 - lat) * CELLS_PER_DEGREE, 6))
