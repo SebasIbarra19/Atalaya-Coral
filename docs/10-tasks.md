@@ -101,7 +101,7 @@ F1-T00 prepares the environment and access (flexible: the owner runs each step a
   - Done when: `data/sites/areas.csv` lists name, coast and a bounding box per site, and every box contains Coral/Algae polygons
   - Depends on: F1-T01a
   - Requirement: RF-4
-- [ ] F1-T01c · Write the grid functions with tests
+- [x] F1-T01c · Write the grid functions with tests
   - Done when: pure functions map a coordinate to its 0.05° NOAA pixel and a polygon to the pixels it touches, and pytest covers pixel edges and negative longitudes
   - Depends on: none
   - Requirement: RF-4, RF-1
