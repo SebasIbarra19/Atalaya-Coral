@@ -24,6 +24,8 @@ class Area:
     coast: str
     downloads: tuple[str, ...]
     bbox: BBox
+    active: bool = True
+    note: str = ""
 
 
 @dataclass(frozen=True)
@@ -34,6 +36,13 @@ class CoralSite:
     lon: float
     lat: float
     pixels: tuple[Pixel, ...]
+
+
+def parse_active(value: str) -> bool:
+    """Turn the 'active' column into a bool, accepting only 'true' or 'false'."""
+    if value not in ("true", "false"):
+        raise ValueError(f"active must be 'true' or 'false', got {value!r}")
+    return value == "true"
 
 
 def read_areas(path: Path) -> list[Area]:
@@ -51,6 +60,8 @@ def read_areas(path: Path) -> list[Area]:
                     float(row["max_lon"]),
                     float(row["max_lat"]),
                 ),
+                active=parse_active(row["active"]),
+                note=row["note"],
             )
             for row in csv.DictReader(f)
         ]

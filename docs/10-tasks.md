@@ -88,7 +88,7 @@ F1-T00 prepares the environment and access (flexible: the owner runs each step a
   - Depends on: F1-T00g
   - Requirement: NFR-13
 
-- [ ] F1-T01 · Decide the first sites
+- [x] F1-T01 · Decide the first sites
   - Done when: a short list of sites with coordinates is recorded and the 5 km pixel question is checked
   - Depends on: none
   - Requirement: RF-4
@@ -109,7 +109,7 @@ F1-T00 prepares the environment and access (flexible: the owner runs each step a
   - Done when: one command reads the polygons and the areas, computes a representative point on the coral (4 decimals) and the water pixels that touch it (NOAA mask through ERDDAP, base URL from configuration), and writes `data/sites/sites.csv`; running it twice gives the same file
   - Depends on: F1-T01b, F1-T01c
   - Requirement: RF-4
-- [ ] F1-T01e · Review the result and record the decision
+- [x] F1-T01e · Review the result and record the decision
   - Done when: each site has a quality note and an active flag decided by the owner, and an ADR records how sites are defined
   - Depends on: F1-T01d
   - Requirement: RF-4
@@ -250,7 +250,7 @@ Outline, refine at phase start: prepare AWS access first (create the account on 
 ## Open questions
 
 - [x] Repository name for F0-T01: Atalaya-Coral (decided 2026-10-14).
-- [ ] Choice of first sites for F1-T01.
+- [x] Choice of first sites for F1-T01: 13 sites in `data/sites/sites.csv`, 12 active (ADR-020, decided 2026-11-09).
 
 ## Related documents
 

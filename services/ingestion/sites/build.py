@@ -12,7 +12,18 @@ ROOT = Path(__file__).resolve().parents[3]
 AREAS_CSV = ROOT / "data" / "sites" / "areas.csv"
 SITES_CSV = ROOT / "data" / "sites" / "sites.csv"
 RAW_ALLEN = ROOT / "data" / "raw" / "allen"
-COLUMNS = ["slug", "name", "coast", "lon", "lat", "coral_cells", "cells_from", "cells"]
+COLUMNS = [
+    "slug",
+    "name",
+    "coast",
+    "active",
+    "lon",
+    "lat",
+    "coral_cells",
+    "cells_from",
+    "cells",
+    "note",
+]
 
 
 def choose_cells(
@@ -60,6 +71,8 @@ def main() -> None:
                 "coral_cells": len(site.pixels),
                 "cells_from": cells_from,
                 "cells": format_cells(cells),
+                "active": "true" if area.active else "false",
+                "note": area.note,
             }
         )
     with SITES_CSV.open("w", encoding="utf-8", newline="") as f:

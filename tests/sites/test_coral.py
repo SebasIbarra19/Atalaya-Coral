@@ -6,7 +6,7 @@ from pathlib import Path
 import pytest
 from shapely.geometry import Point, box, mapping
 
-from sites.coral import Area, coral_geometry, coral_site, read_areas
+from sites.coral import Area, coral_geometry, coral_site, parse_active, read_areas
 
 ROOT = Path(__file__).resolve().parents[2]
 RAW_ALLEN = ROOT / "data" / "raw" / "allen"
@@ -37,6 +37,13 @@ def make_area(downloads: tuple[str, ...], bbox=WHOLE_CELL) -> Area:
     return Area(
         slug="test", name="Test", coast="pacific", downloads=downloads, bbox=bbox
     )
+
+
+def test_active_accepts_only_true_or_false() -> None:
+    assert parse_active("true") is True
+    assert parse_active("false") is False
+    with pytest.raises(ValueError, match="active must be"):
+        parse_active("yes")
 
 
 def test_only_coral_is_kept(tmp_path: Path) -> None:

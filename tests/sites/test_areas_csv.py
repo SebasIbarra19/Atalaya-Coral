@@ -37,6 +37,13 @@ def has_coral_inside(downloads: str, box: tuple[float, float, float, float]) -> 
     return False
 
 
+def test_inactive_sites_explain_why() -> None:
+    for row in read_areas():
+        assert row["active"] in {"true", "false"}, row["slug"]
+        if row["active"] == "false":
+            assert row["note"].strip(), row["slug"]
+
+
 def test_slugs_are_unique() -> None:
     slugs = [row["slug"] for row in read_areas()]
     assert len(slugs) == len(set(slugs))

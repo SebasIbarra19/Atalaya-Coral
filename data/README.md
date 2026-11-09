@@ -81,4 +81,4 @@ Reviewed on 2026-11-06. Coral/Algae comes from `statistics.csv`. NOAA cells is a
 | `punta-banco` | Only reef extent; no benthic map |
 | `san-pedrillo` | Only reef extent; no benthic map |
 
-Working rule (proposed, confirmed in F1-T01e): an area needs a benthic map and at least 0.1 km² of Coral/Algae, and areas that share a NOAA cell are merged.
+Rule (ADR-020): an area needs a benthic map and at least 0.1 km² of Coral/Algae, and areas that share a NOAA cell are merged. Each site in `areas.csv` also has an `active` flag and a quality `note` set by the owner; Golfo Dulce, Los Mogos is inactive (its coral cells are land in the NOAA mask).

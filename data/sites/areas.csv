@@ -1,14 +1,14 @@
-slug,name,coast,downloads,min_lon,min_lat,max_lon,max_lat
-bahia-culebra,Bahía Culebra,pacific,bahia-culebra/bahia-culebra-20261106213432,-85.7064,10.5858,-85.6238,10.6453
-bahia-santa-elena,Bahía Santa Elena,pacific,bahia-santa-elena/bahia-santa-elena-20261106213500,-85.8876,10.9069,-85.6840,11.0347
-cabo-blanco,Cabo Blanco,pacific,cabo-blanco/cabo-blanco-20261024031355,-85.1518,9.5360,-85.0669,9.5979
-curu-tambor-tortuga,"Curú, Tambor e Isla Tortuga",pacific,curu-tambor-tortuga/curu-pochote-tambor-20261024031136;curu-tambor-tortuga/isla-tortuga-20261024031509,-85.0208,9.6931,-84.8776,9.7973
-manuel-antonio,Manuel Antonio,pacific,manuel-antonio/manuel-antonio-20261024031537,-84.1879,9.3455,-84.1120,9.4428
-uvita-bahia-ballena,Uvita (Bahía Ballena),pacific,uvita-bahia-ballena/uvita-20261024031711,-83.8545,9.1298,-83.7182,9.2396
-isla-del-cano,Isla del Caño,pacific,isla-del-cano/isla-del-cano-20261024031150,-83.8985,8.6945,-83.8643,8.7190
-golfo-dulce-los-mogos,"Golfo Dulce, Los Mogos",pacific,golfo-dulce-los-mogos/los-mogos-20261024031233,-83.4368,8.7093,-83.3526,8.7495
-golfo-dulce-animas-dos-rios,"Golfo Dulce, Ánimas y Dos Ríos",pacific,golfo-dulce-animas-dos-rios/animas-dos-rios-bajo-mansito-20261024031102,-83.3368,8.6217,-83.2212,8.7084
-isla-del-coco,Isla del Coco,oceanic,isla-del-coco/isla-del-coco-20261024031004,-87.0999,5.4947,-87.0241,5.5643
-limon-isla-uvita,Limón (Isla Uvita),caribbean,limon-isla-uvita/limon-20261024031211,-83.0874,9.9886,-83.0023,10.0226
-cahuita,Cahuita,caribbean,cahuita/cahuita-20261024031317,-82.8336,9.7279,-82.7911,9.7590
-puerto-viejo-manzanillo,Puerto Viejo a Manzanillo,caribbean,puerto-viejo-manzanillo/puerto-viejo-chiquita-manzanillo-mona-20261024031616,-82.7656,9.6153,-82.6104,9.6717
+slug,name,coast,downloads,min_lon,min_lat,max_lon,max_lat,active,note
+bahia-culebra,Bahía Culebra,pacific,bahia-culebra/bahia-culebra-20261106213432,-85.7064,10.5858,-85.6238,10.6453,true,"Gulf of Papagayo, seasonal upwelling; 3 of 4 coral cells are water"
+bahia-santa-elena,Bahía Santa Elena,pacific,bahia-santa-elena/bahia-santa-elena-20261106213500,-85.8876,10.9069,-85.6840,11.0347,true,"Largest coral area (12 km²) with 9 water cells, much wider than the other sites; split it if the model needs it"
+cabo-blanco,Cabo Blanco,pacific,cabo-blanco/cabo-blanco-20261024031355,-85.1518,9.5360,-85.0669,9.5979,true,All 3 coral cells are water
+curu-tambor-tortuga,"Curú, Tambor e Isla Tortuga",pacific,curu-tambor-tortuga/curu-pochote-tambor-20261024031136;curu-tambor-tortuga/isla-tortuga-20261024031509,-85.0208,9.6931,-84.8776,9.7973,true,"Curú, Pochote and Tambor merged with Isla Tortuga (shared cell); 4 of 8 coral cells are water"
+manuel-antonio,Manuel Antonio,pacific,manuel-antonio/manuel-antonio-20261024031537,-84.1879,9.3455,-84.1120,9.4428,true,All 4 coral cells are water
+uvita-bahia-ballena,Uvita (Bahía Ballena),pacific,uvita-bahia-ballena/uvita-20261024031711,-83.8545,9.1298,-83.7182,9.2396,true,3 of 4 coral cells are water
+isla-del-cano,Isla del Caño,pacific,isla-del-cano/isla-del-cano-20261024031150,-83.8985,8.6945,-83.8643,8.7190,true,Both coral cells are water
+golfo-dulce-los-mogos,"Golfo Dulce, Los Mogos",pacific,golfo-dulce-los-mogos/los-mogos-20261024031233,-83.4368,8.7093,-83.3526,8.7495,false,"Both coral cells are land in the NOAA mask, and the neighbor cells overlap golfo-dulce-animas-dos-rios; revisit with MUR SST (about 1 km) in F5"
+golfo-dulce-animas-dos-rios,"Golfo Dulce, Ánimas y Dos Ríos",pacific,golfo-dulce-animas-dos-rios/animas-dos-rios-bajo-mansito-20261024031102,-83.3368,8.6217,-83.2212,8.7084,true,2 of 5 coral cells are water (narrow gulf)
+isla-del-coco,Isla del Coco,oceanic,isla-del-coco/isla-del-coco-20261024031004,-87.0999,5.4947,-87.0241,5.5643,true,Oceanic; all 4 coral cells are water
+limon-isla-uvita,Limón (Isla Uvita),caribbean,limon-isla-uvita/limon-20261024031211,-83.0874,9.9886,-83.0023,10.0226,true,Small coral area (0.18 km²); both coral cells are water
+cahuita,Cahuita,caribbean,cahuita/cahuita-20261024031317,-82.8336,9.7279,-82.7911,9.7590,true,All 3 coral cells are water
+puerto-viejo-manzanillo,Puerto Viejo a Manzanillo,caribbean,puerto-viejo-manzanillo/puerto-viejo-chiquita-manzanillo-mona-20261024031616,-82.7656,9.6153,-82.6104,9.6717,true,All 5 coral cells are water
