@@ -233,6 +233,7 @@ Each decision lives in `docs/decisions/NNN-title.md` with: context, decision, al
 | ADR-017 | Plain SQL migrations with dbmate | Decided |
 | ADR-018 | Gateway API instead of Ingress NGINX | Decided |
 | ADR-019 | Agent retrieval, guarded SQL tool and evaluation dataset | Proposed |
+| ADR-020 | How candidate sites are defined | Decided |
 
 ## Open questions
 

@@ -2,10 +2,13 @@
 name = "atalaya"
 version = "0.1.0"
 requires-python = ">=3.14"
-dependencies = []
+dependencies = [
+    "shapely>=2.2.0",
+]
 
 [tool.ruff]
 target-version = "py314"
+src = ["services/ingestion"]
 
 [tool.ruff.lint]
 # pycodestyle errors, Pyflakes, import sorting, bugbear, pyupgrade.
@@ -14,6 +17,8 @@ select = ["E", "F", "I", "B", "UP"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-ra --strict-markers"
+pythonpath = ["services/ingestion"]
+markers = ["data: needs local raw data in data/raw (skipped when missing)"]
 
 [dependency-groups]
 dev = [
