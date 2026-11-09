@@ -1,0 +1,14 @@
+slug,name,coast,lon,lat,coral_cells,cells_from,cells
+bahia-culebra,Bahía Culebra,pacific,-85.6726,10.5917,4,coral,-85.725 10.625;-85.675 10.625;-85.675 10.575
+bahia-santa-elena,Bahía Santa Elena,pacific,-85.7157,10.9284,10,coral,-85.875 10.975;-85.875 10.925;-85.825 10.925;-85.775 11.025;-85.775 10.975;-85.775 10.925;-85.725 11.025;-85.725 10.975;-85.725 10.925
+cabo-blanco,Cabo Blanco,pacific,-85.0767,9.5858,3,coral,-85.125 9.575;-85.125 9.525;-85.075 9.575
+curu-tambor-tortuga,"Curú, Tambor e Isla Tortuga",pacific,-84.9706,9.7305,8,coral,-85.025 9.675;-84.975 9.675;-84.925 9.725;-84.875 9.775
+manuel-antonio,Manuel Antonio,pacific,-84.1649,9.3951,4,coral,-84.175 9.425;-84.175 9.375;-84.125 9.375;-84.125 9.325
+uvita-bahia-ballena,Uvita (Bahía Ballena),pacific,-83.7736,9.1464,4,coral,-83.775 9.175;-83.775 9.125;-83.725 9.125
+isla-del-cano,Isla del Caño,pacific,-83.8929,8.7087,2,coral,-83.875 8.725;-83.875 8.675
+golfo-dulce-los-mogos,"Golfo Dulce, Los Mogos",pacific,-83.4041,8.7315,2,neighbors,-83.475 8.675;-83.425 8.675;-83.375 8.675;-83.325 8.675
+golfo-dulce-animas-dos-rios,"Golfo Dulce, Ánimas y Dos Ríos",pacific,-83.2853,8.6562,5,coral,-83.325 8.675;-83.275 8.625
+isla-del-coco,Isla del Coco,oceanic,-87.0437,5.5516,4,coral,-87.075 5.575;-87.075 5.525;-87.025 5.575;-87.025 5.525
+limon-isla-uvita,Limón (Isla Uvita),caribbean,-83.0068,9.9933,2,coral,-83.025 10.025;-83.025 9.975
+cahuita,Cahuita,caribbean,-82.8045,9.7445,3,coral,-82.825 9.775;-82.825 9.725;-82.775 9.725
+puerto-viejo-manzanillo,Puerto Viejo a Manzanillo,caribbean,-82.7197,9.6473,5,coral,-82.775 9.675;-82.725 9.675;-82.725 9.625;-82.675 9.625;-82.625 9.625

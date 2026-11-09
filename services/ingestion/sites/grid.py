@@ -58,3 +58,13 @@ def pixels_touched(geometry: BaseGeometry) -> set[Pixel]:
                 touched.add((col, row))
 
     return touched
+
+
+def with_neighbors(pixels: set[Pixel]) -> set[Pixel]:
+    """Return the pixels plus every cell around them, diagonals included."""
+    return {
+        (col + dcol, row + drow)
+        for col, row in pixels
+        for dcol in (-1, 0, 1)
+        for drow in (-1, 0, 1)
+    }

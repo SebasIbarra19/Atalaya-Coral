@@ -57,7 +57,10 @@ lint:
 	uv run ruff check .
 
 scan:
-		gitleaks git --redact --verbose 
+	gitleaks git --redact --verbose 
+
+sites:
+	PYTHONPATH=services/ingestion uv run --env-file .env python -m sites.build
 
 check: lint test scan
 	@echo "check finished: lint, tests and secret scan passed"

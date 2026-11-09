@@ -105,7 +105,7 @@ F1-T00 prepares the environment and access (flexible: the owner runs each step a
   - Done when: pure functions map a coordinate to its 0.05° NOAA pixel and a polygon to the pixels it touches, and pytest covers pixel edges and negative longitudes
   - Depends on: none
   - Requirement: RF-4, RF-1
-- [ ] F1-T01d · Write the script that builds the site list
+- [x] F1-T01d · Write the script that builds the site list
   - Done when: one command reads the polygons and the areas, computes a representative point on the coral (4 decimals) and the water pixels that touch it (NOAA mask through ERDDAP, base URL from configuration), and writes `data/sites/sites.csv`; running it twice gives the same file
   - Depends on: F1-T01b, F1-T01c
   - Requirement: RF-4

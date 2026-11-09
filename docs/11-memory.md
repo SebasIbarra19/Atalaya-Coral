@@ -18,7 +18,7 @@ The living document. Update it at the end of every work session. Add entries, ne
 | --- | --- |
 | Current phase | F1 (ingestion and database, strict) |
 | Last completed task | F1-T00 merged (PR #9, all checks green, 2026-10-20) |
-| Next task | F1-T01d (script that builds `data/sites/sites.csv`) |
+| Next task | F1-T01e (review the sites, active flags and quality notes, ADR on how sites are defined) |
 | Blockers | None; the final site list is confirmed in F1-T01e |
 | Last updated | 2026-11-06 |
 
@@ -107,6 +107,8 @@ The living document. Update it at the end of every work session. Add entries, ne
 - The hook now needs `make` and `uv`, so commits are made from WSL Ubuntu, not PowerShell.
 - Components retire: check a component's maintenance status before building on it (Ingress NGINX in March 2026, Promtail on 2026-03-02).
 - Check a source before citing it in an ADR: ADR-002 said the reference study was for Costa Rica, but it covered three Florida reefs (corrected on 2026-11-06).
+- Validate configuration as soon as it is read: a repeated name in `.env` (`ERDDAP_BASE_URL=ERDDAP_BASE_URL=...`) surfaced deep inside `urllib` as `unknown url type`.
+- Keep network calls in a thin function and the logic in pure functions (`mask_url`, `parse_mask_csv`, `choose_cells`): the tests pass even when ERDDAP is down.
 - `source .env` leaves the variables alive in that terminal, and they override later edits to the file (dbmate gives the shell variable priority); `unset` them or open a new terminal.
 - dbmate's Postgres driver requires SSL unless the URL says `sslmode=disable`; the local database has no SSL.
 - In WSL, `Permission denied` for a command often means it is not installed in Ubuntu: the search reaches Windows folders on the `PATH` that Linux cannot read.
@@ -156,6 +158,7 @@ The living document. Update it at the end of every work session. Add entries, ne
 
 | Date | What was done | What is next |
 | --- | --- | --- |
+| 2026-11-09 | F1-T01d done: `sites.coral` (coral union clipped to the area box, representative point at 4 decimals, candidate cells), `sites.mask` (ERDDAP `dhw_5km`, variable `CRW_DHW_mask`, fixed date 2026-01-01, 0 = water) and `sites.build` (`make sites` writes `data/sites/sites.csv`; base URL from `ERDDAP_BASE_URL`). NOAA's server (upwell) did not answer, so the run used PacIOOS. Result: 13 sites; Los Mogos has no water cell under its coral and uses 4 neighbor cells, one shared with Ánimas y Dos Ríos; Curú-Tambor-Tortuga keeps 4 of 8 cells | F1-T01e: decide Los Mogos and the active flags; ADR; switch back to NOAA when upwell answers |
 | 2026-11-08 | F1-T01c done: `sites.grid` (`pixel_of`, `pixel_center`, `pixel_box`, `pixels_touched`) with tests for the learning-map example, cell edges (a point on an edge goes east and south), longitudes around Greenwich, out-of-range input and polygons inside, across and on a cell edge. Shapely added as the first runtime dependency. Lesson: multiplying by 20 is exact where dividing by 0.05 is not | F1-T01d |
 | 2026-11-06 | F1-T01b done: `sites.bbox` (`bbox_from_geojson`, `round_outward`, `union_bbox`) with tests; `data/sites/areas.csv` with 13 areas (boxes from each `boundary.geojson`, rounded outward to 4 decimals; Curú and Tortuga as one box); `test_areas_csv.py` checks slugs, coasts and box order in CI, and coral inside every box locally (marker `data`, skipped without `data/raw`) | F1-T01c |
 | 2026-11-06 | F1-T01a: benthic maps downloaded for 19 areas (14 on 2026-10-24, 5 on 2026-11-06) and reviewed: every GeoJSON is CRS84 with one `class` property, and computed Coral/Algae areas match `statistics.csv`. Folders renamed and moved to `data/raw/allen/`; Punta Banco and San Pedrillo discarded; `data/README.md` written (sources, citation, imagery dates, area table); F1-T01a done; decisions in section 3 | F1-T01b; decide whether Bahía Santa Elena is split into two sites (two coral clusters, about 10 NOAA cells) |
