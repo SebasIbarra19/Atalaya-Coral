@@ -17,8 +17,8 @@ The living document. Update it at the end of every work session. Add entries, ne
 | Item | Value |
 | --- | --- |
 | Current phase | F1 (ingestion and database, strict) |
-| Last completed task | F1-T02 done on branch `docs/f1-t02-erddap-variables` (2026-11-12, pull request pending); F1-T01 merged (PR #16) |
-| Next task | Open the F1-T02 pull request; then F1-T03 (first migration with the verified columns) |
+| Last completed task | F1-T03 done on branch `feat/f1-t03-first-migration` (2026-11-12, pull request pending); F1-T02 merged (PR #20) |
+| Next task | Open the F1-T03 pull request; then F1-T03b (load `sites.csv` into the database) |
 | Blockers | None |
 | Last updated | 2026-11-12 |
 
@@ -31,6 +31,7 @@ The living document. Update it at the end of every work session. Add entries, ne
 | 2026-10-14 | Reusable documentation prompt created and applied; 13 documents drafted in English |
 | 2026-10-15 | F0 complete: README diagram, ADR-001 to 005, Makefile, CI green (PR #1, #2), repository public, ruleset `protect-main`, local gitleaks pre-commit hook |
 | 2026-10-18 | Planned architecture diagram generated with Archify: `docs/diagrams/architecture.json` (source) and `architecture.html`; every node links to its lines in `03-architecture.md` and the ADRs at commit 6c3ea42 |
+| 2026-11-12 | F1-T03 done: first migration with `sites`, `cells`, `site_cells`, `cell_observations`, `ingestion_runs` and the view `site_observations`; applies, rolls back and applies again; ADR-022 |
 | 2026-11-12 | F1-T02 done: `dhw_5km` variables, units, valid ranges and missing values verified and written in `03-architecture.md` section 7; ADR-021 |
 | 2026-11-09 | F1-T01 done: 13 sites built from Allen Coral Atlas coral and the NOAA mask with `make sites` (12 active), 35 tests, ADR-020 |
 
@@ -87,6 +88,9 @@ The living document. Update it at the end of every work session. Add entries, ne
 | 2026-11-06 | Allen Coral Atlas downloads live in `data/raw/allen/<area>/<area>-<timestamp>/` with ASCII names; original zips in `_zips/`. 13 active areas with a benthic map. Isla Tortuga is merged with Curú, Pochote and Tambor. Discarded (kept in `_discarded/`): Mar Isla del Coco (a Coral/Algae strip in open ocean, likely an artifact), Sámara and Conchal-Brasilito-Potrero (less than 0.1 km² of Coral/Algae, proposed threshold), Punta Banco and San Pedrillo (only reef extent, no benthic map). Sources, citation and the area table are in `data/README.md` | A site needs a point on mapped coral habitat; two areas in the same NOAA pixel are one thermal series | Keeping every download; Tortuga and Curú as separate sites |
 | 2026-11-09 | How sites are defined (ADR-020): areas need a benthic map and at least 0.1 km² of Coral/Algae; point on the coral, water cells from the NOAA mask, neighbor fallback. `active` and `note` live in the curated `areas.csv` and are copied to `sites.csv`. Golfo Dulce, Los Mogos is inactive (coral cells are land; revisit with MUR SST in F5). Bahía Santa Elena stays one site with 9 cells | Reproducible, and manual decisions survive a rerun of `make sites` | Hand-picked points; deleting Los Mogos; splitting Santa Elena now; flags edited in the generated `sites.csv` |
 | 2026-11-12 | PacIOOS is the default ERDDAP server (replaces the 2026-10-23 row: NOAA primary). Atalaya computes the eight-level alert from HotSpot and DHW and also stores `CRW_BAA`; capped at 4 they must match (ADR-021) | NOAA's servers timed out on three days while PacIOOS was one day behind; `CRW_BAA` in `dhw_5km` stops at Alert Level 2 (Culebra had DHW 12.07, Alert Level 3, shown as 4) | NOAA as default; `CRW_BAA` as the alert level |
+| 2026-11-12 | Observations are stored per cell (`cell_observations`) and sites are read through the view `site_observations`, which takes the whole row of the most stressed cell (ADR-022) | Keeps NOAA's raw data, stores a shared cell once, and every site row comes from one real cell, close to NOAA's 90th percentile pixel | One row per site stored at ingestion; averaging cells; mixing the maximum of each variable from different cells |
+| 2026-11-12 | SQL style: uppercase keywords, lowercase names, a comment per table | Same style as `10-roles.sh` | Lowercase keywords |
+| 2026-11-12 | Dependabot groups `github/codeql-action` init and analyze into one pull request (PR #21) | The two parts must share a version; separate pull requests failed CodeQL | Merging the separate pull requests one by one |
 
 ## 4. In progress and blockers
 
@@ -131,6 +135,12 @@ The living document. Update it at the end of every work session. Add entries, ne
 - `bool("false")` is `True` in Python (any non-empty text is true); parse text flags explicitly and reject unknown values (`parse_active`).
 - Human decisions go in the curated input (`areas.csv`), never in a generated file (`sites.csv`), or the next run erases them.
 - `make check` only checks formatting; `make format` fixes it. Files saved with CRLF on Windows are normalized to LF by `.gitattributes`, so Git's CRLF warning is harmless.
+- A red Dependabot pull request is not fixed by merging it: read why it fails. CodeQL `init` and `analyze` came in separate pull requests and each left the two parts on different versions.
+- Bring a branch up to date with `main` before its first commit (`git merge --ff-only main`); while it has no commits, that is a fast-forward without conflicts. One topic per commit: `git add .github` kept a CI fix out of the migration branch.
+- `git branch -d` only deletes merged branches; `git fetch --prune` drops references to remote branches that no longer exist.
+- In SQL a `NULL` passes every `CHECK`, so a column can be optional and still have a valid range.
+- An identity value is used up even when the insert fails (the rejected cell took id 2), so ids can have gaps; never rely on them being consecutive.
+- `DISTINCT ON (keys)` keeps the first row of each group in the `ORDER BY`; `NULLS LAST` stops a missing value from winning.
 - On this laptop, RAM (16 GB) limits the local stack more than the GPU does; XGBoost needs no GPU at this data size.
 
 ## 6. Document changes
@@ -162,6 +172,7 @@ The living document. Update it at the end of every work session. Add entries, ne
 | 2026-10-19 | 10-tasks | F1-T00a installs Docker Engine inside WSL2 (no Docker Desktop) and lazydocker, used from F1-T00c to inspect the PostgreSQL container and its logs |
 | 2026-10-19 | 03-architecture, README | Review: link to the Archify diagram; MLflow row aligned with the spec (Decided, from F5); PostgreSQL stores `doc_chunks`; `docs/diagrams/` and Compose profiles in the repository tree; local cluster created with Terraform; decision log intro updated. No component or connection changed, so the diagram needs no regeneration |
 | 2026-10-18 | docs/diagrams/ | Diagram updated to the new section 4 rows: Sealed Secrets arrow to the Kubernetes API, Ollama moved to the left outside the cluster; sources pinned to b5b7b31 |
+| 2026-11-12 | ADR-022, 03-architecture, 06-code-style, 10-tasks, db/ | Data model per cell with a site view; SQL keyword case decided; F1-T03 checked and F1-T03b added (load `sites.csv`); first migration and `db/schema.sql` |
 | 2026-11-12 | ADR-021, 00-spec, 01-prd, 02-trd, 03-architecture, 10-tasks, .env.example | Verified variable table in `03-architecture.md` section 7; `crw_baa` and `source_url` columns; NOAA availability assumption replaced; F1-T02 checked; F1-T05 includes the alert function |
 | 2026-11-09 | ADR-020, 03-architecture, 10-tasks, data/README | ADR-020 on how sites are defined, added to the decision log; F1-T01 and F1-T01a to e checked; first-sites question closed |
 | 2026-11-06 | ADR-002, ADR-013, ADR-018, ADR-019, 00-spec, 02-trd, 03-architecture, 04-api, 05-security, 07-design, 08-testing, 09-plan, 10-tasks | ADR-002 context corrected (Florida); ADR-018 Gateway API replaces the ingress part of ADR-013; ADR-019 adds the document indexing job, hybrid search, `query_sql` and the evaluation dataset generator; `atalaya_admin` role for admin routes; Grafana Alloy for logs; eight alert levels in the design tokens; TC-26 to TC-30 |
@@ -170,6 +181,7 @@ The living document. Update it at the end of every work session. Add entries, ne
 
 | Date | What was done | What is next |
 | --- | --- | --- |
+| 2026-11-12 | Merged F1-T02 (PR #20), pytest 9.2.0 (#14), Ruff 0.17.4 (#19) and CodeQL 4.39.3 with a Dependabot group (#21); cleaned local and remote branches. F1-T03 done: decided per-cell storage and the site view (ADR-022); migration `create_core_tables` applied, rolled back and applied again; checked a wrong cell center is rejected, `atalaya_api` can read the view and cannot insert | Owner opens the F1-T03 pull request; F1-T03b |
 | 2026-11-12 | F1-T02 done by hand with `curl`: NOAA's upwell and coastwatch timed out, PacIOOS answered (latest day 2026-11-11). Read the `dhw_5km` metadata (names, units, valid ranges, fill values, flags) and a week of Bahía Culebra (DHW above 12). Found that `CRW_BAA` has only 5 levels; decided to compute the 8-level alert (ADR-021) | Owner opens the F1-T02 pull request; F1-T03 |
 | 2026-11-09 | F1-T01e done: `active` and `note` columns in `areas.csv` (read with `parse_active`) and copied to `sites.csv`; Los Mogos inactive; notes per site; test that inactive sites explain why; ADR-020. F1-T01 complete | Owner opens the F1-T01 pull request; F1-T02 |
 | 2026-11-09 | F1-T01d done: `sites.coral` (coral union clipped to the area box, representative point at 4 decimals, candidate cells), `sites.mask` (ERDDAP `dhw_5km`, variable `CRW_DHW_mask`, fixed date 2026-01-01, 0 = water) and `sites.build` (`make sites` writes `data/sites/sites.csv`; base URL from `ERDDAP_BASE_URL`). NOAA's server (upwell) did not answer, so the run used PacIOOS. Result: 13 sites; Los Mogos has no water cell under its coral and uses 4 neighbor cells, one shared with Ánimas y Dos Ríos; Curú-Tambor-Tortuga keeps 4 of 8 cells | F1-T01e: decide Los Mogos and the active flags; ADR; switch back to NOAA when upwell answers |
