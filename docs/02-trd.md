@@ -57,7 +57,7 @@ In scope: ingestion, storage, forecasting, read API, dashboard, agents, observab
 
 | System | Direction | Interface | Notes |
 | --- | --- | --- | --- |
-| NOAA ERDDAP | Inbound | HTTPS, griddap dataset `dhw_5km` | Endpoint and variables `[TO VERIFY]` |
+| NOAA ERDDAP | Inbound | HTTPS, griddap dataset `dhw_5km` | PacIOOS mirror by default, URL in `ERDDAP_BASE_URL`; variables in `03-architecture.md` section 7 (verified 2026-11-12, ADR-021) |
 | GitHub | Both | Git, Actions | Source of truth and CI |
 | AWS | Outbound | Terraform provider; GitHub Actions through OIDC (no long-lived keys) | Only in phase F8 |
 | Language model runtime | Outbound | HTTP, OpenAI-compatible API of Ollama on the host machine | Runs outside the cluster to use the laptop GPU (ADR-006); a paid API is optional and only with a spend limit |
@@ -84,7 +84,7 @@ Deployment is declarative: the cluster is synced from Git by ArgoCD. Nothing is 
 - The local LLM must fit in 6 GB of VRAM: small quantized models (3 to 4 billion parameters) by default; 7 to 8 billion only for comparison.
 - Training XGBoost on this data size runs on the CPU in seconds; no GPU is needed for Branch A.
 - Available hours vary, so work is split into small tasks (see `10-tasks.md`).
-- NOAA data stays available at the same endpoints `[TO VERIFY]`.
+- NOAA data stays publicly available. NOAA's own ERDDAP servers timed out on several days in October and November 2026; the PacIOOS mirror serves the same dataset one day behind (ADR-021).
 - The reference study covers 3 Florida sites; Costa Rican sites may behave differently `[TO VERIFY]`.
 
 ## 8. Technical risks

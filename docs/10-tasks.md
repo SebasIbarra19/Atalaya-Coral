@@ -113,7 +113,7 @@ F1-T00 prepares the environment and access (flexible: the owner runs each step a
   - Done when: each site has a quality note and an active flag decided by the owner, and an ADR records how sites are defined
   - Depends on: F1-T01d
   - Requirement: RF-4
-- [ ] F1-T02 · Explore the ERDDAP dataset by hand
+- [x] F1-T02 · Explore the ERDDAP dataset by hand
   - Done when: exact variable names, units and valid ranges are written in `03-architecture.md` (replacing the TO VERIFY marks)
   - Depends on: F1-T01
   - Requirement: RF-1
@@ -125,8 +125,8 @@ F1-T00 prepares the environment and access (flexible: the owner runs each step a
   - Done when: a script prints the values and they match what the web interface shows
   - Depends on: F1-T02
   - Requirement: RF-1
-- [ ] F1-T05 · Validate values (ranges and dates)
-  - Done when: unit tests cover valid, out-of-range and missing values (TC-3)
+- [ ] F1-T05 · Validate values (ranges and dates) and compute the alert level
+  - Done when: unit tests cover valid, out-of-range and missing values (TC-3); a pure function computes the eight-level alert from HotSpot and DHW, with tests at every threshold, and its value capped at 4 matches `CRW_BAA` (ADR-021)
   - Depends on: F1-T04
   - Requirement: NFR-4
 - [ ] F1-T06 · Write idempotent upserts

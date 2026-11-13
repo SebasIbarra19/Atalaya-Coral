@@ -17,10 +17,10 @@ The living document. Update it at the end of every work session. Add entries, ne
 | Item | Value |
 | --- | --- |
 | Current phase | F1 (ingestion and database, strict) |
-| Last completed task | F1-T01 done on branch `feat/f1-t01-sites` (2026-11-09, pull request pending) |
-| Next task | Open the F1-T01 pull request; then F1-T02 (explore the ERDDAP dataset; switch back to NOAA when upwell answers) |
+| Last completed task | F1-T02 done on branch `docs/f1-t02-erddap-variables` (2026-11-12, pull request pending); F1-T01 merged (PR #16) |
+| Next task | Open the F1-T02 pull request; then F1-T03 (first migration with the verified columns) |
 | Blockers | None |
-| Last updated | 2026-11-09 |
+| Last updated | 2026-11-12 |
 
 ## 2. Completed
 
@@ -31,6 +31,7 @@ The living document. Update it at the end of every work session. Add entries, ne
 | 2026-10-14 | Reusable documentation prompt created and applied; 13 documents drafted in English |
 | 2026-10-15 | F0 complete: README diagram, ADR-001 to 005, Makefile, CI green (PR #1, #2), repository public, ruleset `protect-main`, local gitleaks pre-commit hook |
 | 2026-10-18 | Planned architecture diagram generated with Archify: `docs/diagrams/architecture.json` (source) and `architecture.html`; every node links to its lines in `03-architecture.md` and the ADRs at commit 6c3ea42 |
+| 2026-11-12 | F1-T02 done: `dhw_5km` variables, units, valid ranges and missing values verified and written in `03-architecture.md` section 7; ADR-021 |
 | 2026-11-09 | F1-T01 done: 13 sites built from Allen Coral Atlas coral and the NOAA mask with `make sites` (12 active), 35 tests, ADR-020 |
 
 ## 3. Important decisions
@@ -85,6 +86,7 @@ The living document. Update it at the end of every work session. Add entries, ne
 | 2026-11-06 | The Spanish learning map of the project lives in the Claude project (`claude/atalaya-mapa-aprendizaje.md`) and in Claude Docs, not in the repository | It is a personal study guide in Spanish; the repository is public and in English | A Spanish copy under `docs/` |
 | 2026-11-06 | Allen Coral Atlas downloads live in `data/raw/allen/<area>/<area>-<timestamp>/` with ASCII names; original zips in `_zips/`. 13 active areas with a benthic map. Isla Tortuga is merged with Curú, Pochote and Tambor. Discarded (kept in `_discarded/`): Mar Isla del Coco (a Coral/Algae strip in open ocean, likely an artifact), Sámara and Conchal-Brasilito-Potrero (less than 0.1 km² of Coral/Algae, proposed threshold), Punta Banco and San Pedrillo (only reef extent, no benthic map). Sources, citation and the area table are in `data/README.md` | A site needs a point on mapped coral habitat; two areas in the same NOAA pixel are one thermal series | Keeping every download; Tortuga and Curú as separate sites |
 | 2026-11-09 | How sites are defined (ADR-020): areas need a benthic map and at least 0.1 km² of Coral/Algae; point on the coral, water cells from the NOAA mask, neighbor fallback. `active` and `note` live in the curated `areas.csv` and are copied to `sites.csv`. Golfo Dulce, Los Mogos is inactive (coral cells are land; revisit with MUR SST in F5). Bahía Santa Elena stays one site with 9 cells | Reproducible, and manual decisions survive a rerun of `make sites` | Hand-picked points; deleting Los Mogos; splitting Santa Elena now; flags edited in the generated `sites.csv` |
+| 2026-11-12 | PacIOOS is the default ERDDAP server (replaces the 2026-10-23 row: NOAA primary). Atalaya computes the eight-level alert from HotSpot and DHW and also stores `CRW_BAA`; capped at 4 they must match (ADR-021) | NOAA's servers timed out on three days while PacIOOS was one day behind; `CRW_BAA` in `dhw_5km` stops at Alert Level 2 (Culebra had DHW 12.07, Alert Level 3, shown as 4) | NOAA as default; `CRW_BAA` as the alert level |
 
 ## 4. In progress and blockers
 
@@ -101,7 +103,10 @@ The living document. Update it at the end of every work session. Add entries, ne
 - Ruleset required checks match job names; renaming a job requires updating the ruleset.
 - Kubernetes itself is free; a local cluster (kind or k3d) is real Kubernetes. Only managed cloud clusters and their machines cost money (F8).
 - Ubuntu in WSL is a separate machine: it needs its own Git identity, its own gitleaks for the pre-commit hook and `core.fileMode false` for a repository on the Windows disk. Never bypass the hook with `--no-verify`.
-- NOAA's ERDDAP servers can be down; the same Coral Reef Watch data is mirrored by PacIOOS, but the copy may lag.
+- NOAA's ERDDAP servers can be down; the same Coral Reef Watch data is mirrored by PacIOOS, which was only one day behind on 2026-11-12 (the earlier "lags weeks" note was an unmeasured assumption).
+- Measure before writing an assumption down: the PacIOOS lag and the `CRW_BAA` scale were both different from what the docs assumed.
+- DHW grows by HotSpot divided by 7 only on days with HotSpot of 1 or more, and the alert depends on that day's HotSpot: DHW 12.07 with HotSpot 0.83 is only a Watch.
+- A `_FillValue` of -327.68 means the value is packed as a 16-bit integer times 0.01; that is the real precision, and the source of float noise in the CSV.
 - ERDDAP returns the center of the nearest pixel: on the 0.05° grid, centers end in .x25 or .x75.
 - Two decimals locate a coordinate within about 1.1 km, enough to pick a 5 km pixel but not to place a point on a reef; records use four.
 - Ruff also formats Python blocks inside Markdown, so code examples in the docs must follow PEP 8 (two blank lines between functions).
@@ -157,6 +162,7 @@ The living document. Update it at the end of every work session. Add entries, ne
 | 2026-10-19 | 10-tasks | F1-T00a installs Docker Engine inside WSL2 (no Docker Desktop) and lazydocker, used from F1-T00c to inspect the PostgreSQL container and its logs |
 | 2026-10-19 | 03-architecture, README | Review: link to the Archify diagram; MLflow row aligned with the spec (Decided, from F5); PostgreSQL stores `doc_chunks`; `docs/diagrams/` and Compose profiles in the repository tree; local cluster created with Terraform; decision log intro updated. No component or connection changed, so the diagram needs no regeneration |
 | 2026-10-18 | docs/diagrams/ | Diagram updated to the new section 4 rows: Sealed Secrets arrow to the Kubernetes API, Ollama moved to the left outside the cluster; sources pinned to b5b7b31 |
+| 2026-11-12 | ADR-021, 00-spec, 01-prd, 02-trd, 03-architecture, 10-tasks, .env.example | Verified variable table in `03-architecture.md` section 7; `crw_baa` and `source_url` columns; NOAA availability assumption replaced; F1-T02 checked; F1-T05 includes the alert function |
 | 2026-11-09 | ADR-020, 03-architecture, 10-tasks, data/README | ADR-020 on how sites are defined, added to the decision log; F1-T01 and F1-T01a to e checked; first-sites question closed |
 | 2026-11-06 | ADR-002, ADR-013, ADR-018, ADR-019, 00-spec, 02-trd, 03-architecture, 04-api, 05-security, 07-design, 08-testing, 09-plan, 10-tasks | ADR-002 context corrected (Florida); ADR-018 Gateway API replaces the ingress part of ADR-013; ADR-019 adds the document indexing job, hybrid search, `query_sql` and the evaluation dataset generator; `atalaya_admin` role for admin routes; Grafana Alloy for logs; eight alert levels in the design tokens; TC-26 to TC-30 |
 
@@ -164,6 +170,7 @@ The living document. Update it at the end of every work session. Add entries, ne
 
 | Date | What was done | What is next |
 | --- | --- | --- |
+| 2026-11-12 | F1-T02 done by hand with `curl`: NOAA's upwell and coastwatch timed out, PacIOOS answered (latest day 2026-11-11). Read the `dhw_5km` metadata (names, units, valid ranges, fill values, flags) and a week of Bahía Culebra (DHW above 12). Found that `CRW_BAA` has only 5 levels; decided to compute the 8-level alert (ADR-021) | Owner opens the F1-T02 pull request; F1-T03 |
 | 2026-11-09 | F1-T01e done: `active` and `note` columns in `areas.csv` (read with `parse_active`) and copied to `sites.csv`; Los Mogos inactive; notes per site; test that inactive sites explain why; ADR-020. F1-T01 complete | Owner opens the F1-T01 pull request; F1-T02 |
 | 2026-11-09 | F1-T01d done: `sites.coral` (coral union clipped to the area box, representative point at 4 decimals, candidate cells), `sites.mask` (ERDDAP `dhw_5km`, variable `CRW_DHW_mask`, fixed date 2026-01-01, 0 = water) and `sites.build` (`make sites` writes `data/sites/sites.csv`; base URL from `ERDDAP_BASE_URL`). NOAA's server (upwell) did not answer, so the run used PacIOOS. Result: 13 sites; Los Mogos has no water cell under its coral and uses 4 neighbor cells, one shared with Ánimas y Dos Ríos; Curú-Tambor-Tortuga keeps 4 of 8 cells | F1-T01e: decide Los Mogos and the active flags; ADR; switch back to NOAA when upwell answers |
 | 2026-11-08 | F1-T01c done: `sites.grid` (`pixel_of`, `pixel_center`, `pixel_box`, `pixels_touched`) with tests for the learning-map example, cell edges (a point on an edge goes east and south), longitudes around Greenwich, out-of-range input and polygons inside, across and on a cell edge. Shapely added as the first runtime dependency. Lesson: multiplying by 20 is exact where dividing by 0.05 is not | F1-T01d |

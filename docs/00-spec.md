@@ -182,7 +182,7 @@ The core and Branch A (F5) are the minimum deliverable. Per-phase deliverables a
 | The agent invents answers | It only reads database data, cites its source and is evaluated before publishing |
 | The laptop runs out of memory with the whole stack | Compose profiles, only the services in use run, WSL2 memory capped (ADR-009) |
 
-**Assumption.** NOAA data stays publicly available at the same endpoints. `[TO VERIFY]`
+**Assumption.** NOAA data stays publicly available. Checked on 2026-11-12: NOAA's own ERDDAP servers time out often, and the PacIOOS mirror serves the same dataset one day behind, so the server is configurable (ADR-021).
 
 **Open questions**
 
