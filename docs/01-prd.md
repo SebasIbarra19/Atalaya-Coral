@@ -91,7 +91,7 @@ IDs match the specification so traceability stays simple. Priority uses MoSCoW: 
 
 ## 8. Assumptions, dependencies and constraints
 
-- NOAA data stays publicly available at the same endpoints `[TO VERIFY]`.
+- NOAA data stays publicly available; the ERDDAP server is configurable and the PacIOOS mirror is the default (ADR-021).
 - Available hours vary by semester, so there are no dates.
 - Budget is close to zero: local first, cloud on the AWS free plan only in F8.
 - The agents depend on a language model: a small open-weight model served locally by Ollama (Proposed, exact model chosen in F7 by evaluations).

@@ -44,7 +44,7 @@ This Mermaid chart is the quick text overview. The detailed, explorable diagram 
 
 | Layer | Technology | Status | Why |
 | --- | --- | --- | --- |
-| Data source | NOAA Coral Reef Watch 5 km via ERDDAP | Decided | Public, daily, global |
+| Data source | NOAA Coral Reef Watch 5 km (`dhw_5km`) via ERDDAP, PacIOOS mirror by default | Decided | Public, daily, global; NOAA's own servers often time out (ADR-021) |
 | Language (data and ML) | Python 3.14 with uv | Decided | Ecosystem for data and ML; newest version the ML stack supports (ADR-016) |
 | Database | PostgreSQL 18 (`pgvector/pgvector` image, pinned by digest) | Proposed |
 | Migrations | Plain SQL applied with dbmate | Decided | SQL written by hand, schema snapshot in Git, small runner for Kubernetes (ADR-017) | Relational, solid for time series at this volume |
@@ -184,10 +184,29 @@ All tables live in schema `atalaya`, owned by the administrator role. Role grant
 | Entity | Key fields | Rules |
 | --- | --- | --- |
 | `sites` | id, name, latitude, longitude, active | Unique name; coordinates validated |
-| `observations` | site_id, date, sst, anomaly, hotspot, dhw, alert_level | Unique on (site_id, date); ranges validated `[exact variables TO VERIFY in ERDDAP]` |
+| `observations` | site_id, date, sst, anomaly, hotspot, dhw, crw_baa, alert_level | Unique on (site_id, date); ranges from the table below; values have 2 decimals; `alert_level` (0 to 7) is computed from HotSpot and DHW, `crw_baa` (0 to 4) is NOAA's own value (ADR-021) |
 | `forecasts` | site_id, issued_at, horizon, value, shap_values, model_version | Unique on (site_id, issued_at, horizon) |
-| `ingestion_runs` | id, started_at, finished_at, rows_written, status, error | Never updated after finishing |
+| `ingestion_runs` | id, started_at, finished_at, source_url, rows_written, status, error | Never updated after finishing |
 | `doc_chunks` | id, source, title, section, chunk, content_hash, embedding, tsv | Only public reference documents; unique on (source, content_hash); embedding size fixed by the chosen model (Branch C, ADR-019) |
+
+### NOAA variables (verified in ERDDAP on 2026-11-12)
+
+Dataset `dhw_5km`, NOAA Coral Reef Watch version 3.1, daily global 5 km. Read through the PacIOOS mirror (ADR-021).
+
+| Column | ERDDAP variable | Meaning | Units | Valid range | Missing value |
+| --- | --- | --- | --- | --- | --- |
+| `sst` | `CRW_SST` | Sea surface temperature | Celsius | -2 to 50 | -327.68 |
+| `anomaly` | `CRW_SSTANOMALY` | Difference from the long-term mean for that day | Celsius | -15 to 15 | -327.68 |
+| `hotspot` | `CRW_HOTSPOT` | Amount above the maximum monthly mean | Celsius | -15 to 15 | -327.68 |
+| `dhw` | `CRW_DHW` | Heat stress accumulated over 12 weeks (HotSpot of 1 or more, divided by 7) | Celsius weeks | 0 to 100 | -327.68 |
+| `crw_baa` | `CRW_BAA` | NOAA's bleaching alert area: no stress, watch, warning, alert level 1, alert level 2 | none | 0 to 4 | 251 |
+
+- Time: one value per day stamped `12:00:00Z`, from 1985-04-01. The series is not complete (about 12 days are missing), so the ingestion must not assume every day exists.
+- Grid: 0.05 degrees; cell centers end in .x25 or .x75; latitude runs north to south.
+- Each variable has its own mask (`CRW_SST` aside): `<variable>_mask`, with 0 valid water, 1 land, 2 missing, 4 ice.
+- Values are stored packed with a 0.01 step, so the CSV can show float noise (`2.3000000000000003`); store them rounded to 2 decimals.
+- In the CSV answer, line 1 has the names, line 2 the units, and missing values come as `NaN`.
+- Also in the dataset, not used for now: `CRW_BAA_7D_MAX` (7-day maximum of `CRW_BAA`) and `CRW_SEAICE`.
 
 ## 8. Environments and deployment
 
@@ -234,10 +253,11 @@ Each decision lives in `docs/decisions/NNN-title.md` with: context, decision, al
 | ADR-018 | Gateway API instead of Ingress NGINX | Decided |
 | ADR-019 | Agent retrieval, guarded SQL tool and evaluation dataset | Proposed |
 | ADR-020 | How candidate sites are defined | Decided |
+| ADR-021 | ERDDAP server and computed alert level | Decided |
 
 ## Open questions
 
-- [ ] Exact variable names and units in the ERDDAP dataset.
+- [x] Exact variable names and units in the ERDDAP dataset. Verified on 2026-11-12 (section 7, ADR-021).
 - [ ] Do we need a time-series extension or is plain PostgreSQL enough?
 - [ ] Helm or Kustomize for manifests?
 - [ ] Protocol between the dashboard and the domain agent.
