@@ -117,10 +117,14 @@ F1-T00 prepares the environment and access (flexible: the owner runs each step a
   - Done when: exact variable names, units and valid ranges are written in `03-architecture.md` (replacing the TO VERIFY marks)
   - Depends on: F1-T01
   - Requirement: RF-1
-- [ ] F1-T03 · Write the first migration (`sites`, `observations`, `ingestion_runs`)
+- [x] F1-T03 · Write the first migration (`sites`, `cells`, `site_cells`, `cell_observations`, view `site_observations`, `ingestion_runs`; ADR-022)
   - Done when: the migration applies to an empty database and rolls back cleanly
   - Depends on: F1-T02
   - Requirement: RF-1, RF-2
+- [ ] F1-T03b · Load `data/sites/sites.csv` into `sites`, `cells` and `site_cells`
+  - Done when: one command loads the file, running it twice changes nothing, and a site removed from the file is reported, not deleted
+  - Depends on: F1-T03
+  - Requirement: RF-4
 - [ ] F1-T04 · Download one day for one site and print it
   - Done when: a script prints the values and they match what the web interface shows
   - Depends on: F1-T02

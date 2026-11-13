@@ -183,10 +183,13 @@ All tables live in schema `atalaya`, owned by the administrator role. Role grant
 
 | Entity | Key fields | Rules |
 | --- | --- | --- |
-| `sites` | id, name, latitude, longitude, active | Unique name; coordinates validated |
-| `observations` | site_id, date, sst, anomaly, hotspot, dhw, crw_baa, alert_level | Unique on (site_id, date); ranges from the table below; values have 2 decimals; `alert_level` (0 to 7) is computed from HotSpot and DHW, `crw_baa` (0 to 4) is NOAA's own value (ADR-021) |
+| `sites` | id, slug, name, coast, longitude, latitude, active, note | Unique slug; known coast; coordinates validated; loaded from `data/sites/sites.csv` (ADR-020) |
+| `cells` | id, longitude, latitude | NOAA 0.05 degree cell centers; unique pair; every center ends in .x25 or .x75 (checked) |
+| `site_cells` | site_id, cell_id | Which cells describe each site; a cell can belong to more than one site (ADR-022) |
+| `cell_observations` | cell_id, date, sst, anomaly, hotspot, dhw, crw_baa, alert_level, run_id | Primary key (cell_id, date); ranges from the table below; values have 2 decimals and are NULL when NOAA has no data; `alert_level` (0 to 7) is computed from HotSpot and DHW, `crw_baa` (0 to 4) is NOAA's own value (ADR-021); `run_id` points to the run that wrote the row |
+| `site_observations` (view) | site_id, date, cell_id, sst, anomaly, hotspot, dhw, crw_baa, alert_level | One row per site and day, taken whole from the site's most stressed cell: highest alert level, then DHW, then HotSpot (ADR-022) |
 | `forecasts` | site_id, issued_at, horizon, value, shap_values, model_version | Unique on (site_id, issued_at, horizon) |
-| `ingestion_runs` | id, started_at, finished_at, source_url, rows_written, status, error | Never updated after finishing |
+| `ingestion_runs` | id, started_at, finished_at, source_url, rows_written, status, error | Status `running`, `succeeded` or `failed`; running if and only if not finished; a failed run has an error (checked); never updated after finishing |
 | `doc_chunks` | id, source, title, section, chunk, content_hash, embedding, tsv | Only public reference documents; unique on (source, content_hash); embedding size fixed by the chosen model (Branch C, ADR-019) |
 
 ### NOAA variables (verified in ERDDAP on 2026-11-12)
@@ -254,6 +257,7 @@ Each decision lives in `docs/decisions/NNN-title.md` with: context, decision, al
 | ADR-019 | Agent retrieval, guarded SQL tool and evaluation dataset | Proposed |
 | ADR-020 | How candidate sites are defined | Decided |
 | ADR-021 | ERDDAP server and computed alert level | Decided |
+| ADR-022 | Observations stored per cell, sites read through a view | Decided |
 
 ## Open questions
 
